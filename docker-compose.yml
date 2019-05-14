@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  db:
+  
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: dlacjfrb
+      POSTGRES_USER: dlacjfrb
+      POSTGRES_DB: dev
+    ports:
+      - 5432:5432
+  #  volumes: 
+  #    - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9090:8080
