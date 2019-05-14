@@ -23,15 +23,16 @@ pub fn re_test_password_contain_special(text: &str) -> bool {
     }
     RE.is_match(text)
 }
-pub fn re_test_password_contain_alpha(text: &str) -> bool {
-    lazy_static! {
-        static ref RE: Regex = Regex::new(r"([[:alpha:]])+").unwrap();
-    }
-    RE.is_match(text)
-}
 pub fn re_test_password_contain_num(text: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"([0-9])+").unwrap();
+    }
+    RE.is_match(text)
+}
+pub fn re_test_email(text: &str) -> bool {
+    lazy_static! {
+        static ref RE: Regex =
+            Regex::new(r"^([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)$").unwrap();
     }
     RE.is_match(text)
 }
