@@ -1,13 +1,78 @@
+use crate::schema::user;
+use crate::svc::errors::ServiceError;
 use crate::svc::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
+use actix::Message;
 use actix_web::{error, Error};
+use bcrypt::{hash, DEFAULT_COST};
+use chrono::{Duration, Local, NaiveDateTime, Utc};
+use diesel;
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
+#[table_name = "user"]
+pub struct User {
+    pub id: i32,
+    pub account_id: String,
+    pub account_password: String,
+    pub email: String,
+    pub name: String,
+    pub role: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+}
+
+pub struct SlimUser {
+    pub id: i32,
+    pub account_id: String,
+    pub email: String,
+    pub name: String,
+    pub role: String,
+}
+
+impl From<User> for SlimUser {
+    fn from(user: User) -> Self {
+        SlimUser {
+            id: user.id,
+            account_id: user.account_id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        }
+    }
+}
+
+impl User {
+    pub fn new(account_id: String, account_password: String, email: String) -> Self {
+        User {
+            id: 0,
+            account_id: account_id,
+            account_password: account_password,
+            email: email,
+            role: "ceo".to_owned(),
+            name: "".to_owned(),
+            created_at: Utc::now().naive_utc(),
+            updated_at: None,
+            deleted_at: None,
+        }
+    }
+}
+
+pub fn hash_password(plain: &str) -> Result<String, ServiceError> {
+    // get the hashing cost from the env variable or use default
+    let hashing_cost: u32 = match dotenv::var("HASH_ROUNDS") {
+        Ok(cost) => cost.parse().unwrap_or(DEFAULT_COST),
+        _ => DEFAULT_COST,
+    };
+    hash(plain, hashing_cost).map_err(|_| ServiceError::InternalServerError)
+}
 
 #[derive(Deserialize, Debug)]
 pub struct Login {
-    id: String,
-    password: String,
+    pub id: String,
+    pub password: String,
 }
 
 impl Validate for Login {
@@ -45,8 +110,8 @@ impl Validate for Login {
 #[derive(Deserialize, Debug)]
 pub struct RegUser {
     pub login: Login,
-    password_comfirm: String,
-    email: String,
+    pub password_comfirm: String,
+    pub email: String,
 }
 
 impl Validate for RegUser {

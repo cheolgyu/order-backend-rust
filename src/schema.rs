@@ -1,12 +1,12 @@
 table! {
     user (id) {
         id -> Int4,
-        uuid -> Uuid,
         account_id -> Varchar,
         account_password -> Varchar,
+        email -> Varchar,
         name -> Varchar,
         role -> Varchar,
-        created_at -> Nullable<Timestamp>,
+        created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
     }

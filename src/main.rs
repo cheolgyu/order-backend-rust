@@ -1,20 +1,25 @@
-extern crate diesel;
+#![allow(unused_imports)]
 
+#[macro_use]
+extern crate diesel;
+#[macro_use]
+extern crate actix_derive;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate lazy_static;
-
+use actix::prelude::*;
 mod models;
+mod schema;
 mod svc;
 use dotenv::dotenv;
 use futures::IntoFuture;
 use std::env;
 
+use crate::models::DbExecutor;
 use actix_web::{get, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use diesel::{r2d2::ConnectionManager, PgConnection};
-
 #[get("/resource1/{name}/index.html")]
 fn index(req: HttpRequest, name: web::Path<String>) -> String {
     println!("REQ: {:?}", req);
@@ -37,19 +42,24 @@ fn main() -> std::io::Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     env_logger::init();
 
+    let sys = actix_rt::System::new("mybackend");
+
     // create db connection pool
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool = r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create pool.");
+    let address: Addr<DbExecutor> = SyncArbiter::start(4, move || DbExecutor(pool.clone()));
 
     HttpServer::new(move || {
         App::new()
-            .data(pool.clone())
+            .data(address.clone())
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(svc::auth::router::signup)
+            .service(
+                web::resource("/signup").route(web::post().to_async(svc::auth::router::signup)),
+            )
             /*
             .service(
                 web::scope("/api/v1").service(
@@ -72,5 +82,7 @@ fn main() -> std::io::Result<()> {
     })
     .bind(addr)?
     .workers(1)
-    .run()
+    .start();
+
+    sys.run()
 }
