@@ -24,7 +24,7 @@ pub struct User {
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
 }
-
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SlimUser {
     pub id: Uuid,
     pub account_id: String,
@@ -70,7 +70,8 @@ pub fn hash_password(plain: &str) -> Result<String, ServiceError> {
     hash(plain, hashing_cost).map_err(|_| ServiceError::BadRequest("hash_password".into()))
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<SlimUser, ServiceError>")]
 pub struct Login {
     pub id: String,
     pub password: String,
@@ -108,7 +109,8 @@ impl Validate for Login {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<User, ServiceError>")]
 pub struct RegUser {
     pub login: Login,
     pub password_comfirm: String,

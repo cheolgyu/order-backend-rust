@@ -1,16 +1,14 @@
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{hash_password, RegUser, SlimUser, User};
+use crate::svc::auth::model::{hash_password, Login, RegUser, SlimUser, User};
 use crate::svc::errors::ServiceError;
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
+use bcrypt::verify;
 use diesel;
 use diesel::prelude::*;
 use diesel::prelude::*;
 use uuid::Uuid;
-impl Message for RegUser {
-    type Result = Result<User, ServiceError>;
-}
 // register/signup user
 // handle msg from api::auth.signup
 impl Handler<RegUser> for DbExecutor {
@@ -35,12 +33,39 @@ impl Handler<RegUser> for DbExecutor {
                 let _id = msg.login.id;
                 let _email = msg.email;
                 let new_user = User::new(_id, _pswd, _email);
-                let insert_user = diesel::insert_into(user)
+                let insert_user: User = diesel::insert_into(user)
                     .values(&new_user)
                     .get_result::<User>(conn)?;
 
                 Ok(insert_user)
             }
         }
+    }
+}
+
+impl Handler<Login> for DbExecutor {
+    type Result = Result<SlimUser, ServiceError>;
+
+    fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::user::dsl::{account_id, user};
+        let conn = &self.0.get()?;
+
+        let mut query_user = user
+            .filter(&account_id.eq(&msg.id))
+            .load::<User>(conn)?
+            .pop();
+        let debug = format!("{:?}", query_user);
+        println!("{:?}", debug);
+        println!("{:?}", msg);
+
+        if let Some(check_user) = query_user {
+            match verify(&msg.password, &check_user.account_password) {
+                Ok(valid) if valid => {
+                    return Ok(check_user.into());
+                }
+                _ => (),
+            }
+        }
+        Err(ServiceError::BadRequest("Auth Failed".into()))
     }
 }

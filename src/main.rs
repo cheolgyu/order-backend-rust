@@ -62,7 +62,9 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
+            .service(svc::auth::router::signup)
+            .service(svc::auth::router::signin)
+            //.service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
             /*
             .service(
                 web::scope("/api/v1").service(
