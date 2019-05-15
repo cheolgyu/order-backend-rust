@@ -119,17 +119,20 @@ impl Validate for RegUser {
         let password_comfirm = &self.password_comfirm;
         let login = &self.login;
         let email = &self.email;
-
         let check_email = re_test_email(email);
-
-        if password_comfirm.trim() != login.password {
-            Err(error::ErrorBadRequest("pwd "))
-        } else {
-            if check_email {
-                Ok(())
-            } else {
-                Err(error::ErrorBadRequest("email "))
+        match login.validate() {
+            Ok(_) => {
+                if password_comfirm.trim() != login.password {
+                    Err(error::ErrorBadRequest("pwd "))
+                } else {
+                    if check_email {
+                        Ok(())
+                    } else {
+                        Err(error::ErrorBadRequest("email "))
+                    }
+                }
             }
+            Err(e) => Err(e),
         }
     }
 }
