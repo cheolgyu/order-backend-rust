@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE "user" (
 
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY,
   account_id VARCHAR NOT NULL,
   account_password VARCHAR NOT NULL,
   email VARCHAR NOT NULL,

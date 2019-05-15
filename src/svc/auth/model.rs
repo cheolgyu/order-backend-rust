@@ -9,11 +9,12 @@ use actix_web::{error, Error};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
+use uuid::Uuid;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
 #[table_name = "user"]
 pub struct User {
-    pub id: i32,
+    pub id: Uuid,
     pub account_id: String,
     pub account_password: String,
     pub email: String,
@@ -25,7 +26,7 @@ pub struct User {
 }
 
 pub struct SlimUser {
-    pub id: i32,
+    pub id: Uuid,
     pub account_id: String,
     pub email: String,
     pub name: String,
@@ -47,7 +48,7 @@ impl From<User> for SlimUser {
 impl User {
     pub fn new(account_id: String, account_password: String, email: String) -> Self {
         User {
-            id: 0,
+            id: Uuid::new_v4(),
             account_id: account_id,
             account_password: account_password,
             email: email,

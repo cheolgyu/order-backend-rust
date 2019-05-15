@@ -7,11 +7,20 @@ Content-Type: {{contentType}}
 
 {
     "login": {
-        "id":"asdafa12321312",
+        "id":"asdafa123213122",
         "password":"aa3232a#@!@!a1231aaa#@!a12!3@"
     },
     "password_comfirm":"aa3232a#@!@!a1231aaa#@!a12!3@",
     "email":"asfas.sdf@abac.com"
 }
+###
+POST {{url}}/signin HTTP/1.1
+Content-Type: {{contentType}}
 
+{
+    "login": {
+        "id":"asdafa12321312",
+        "password":"aa3232a#@!@!a1231aaa#@!a12!3@"
+    }
+}
 

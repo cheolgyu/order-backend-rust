@@ -1,13 +1,13 @@
-use actix::Handler;
-use diesel::prelude::*;
-
 use crate::models::DbExecutor;
 use crate::svc::auth::model::{hash_password, RegUser, SlimUser, User};
 use crate::svc::errors::ServiceError;
+use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
 use diesel;
 use diesel::prelude::*;
+use diesel::prelude::*;
+use uuid::Uuid;
 impl Message for RegUser {
     type Result = Result<User, ServiceError>;
 }
