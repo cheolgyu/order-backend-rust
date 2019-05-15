@@ -1,16 +1,17 @@
 version: "3.7"
 
 services:
-  backend:
-    image: order-back-rust_backend
-    volumes:
-      - ./:/usr/src/app
-    command: "cargo watch -x run"
-    restart: always
-    links: 
-      - db
-    ports: 
-      - 3000:3000
+#  backend:
+#    image: order-back-rust_backend
+#    build: .
+##    volumes:
+#      - ./:/usr/src/app
+#    command: "cargo watch -x run"
+##    restart: always
+ #   links: 
+ #     - db
+ #   ports: 
+ #     - 3000:3000
   db:
     image: postgres
     restart: always

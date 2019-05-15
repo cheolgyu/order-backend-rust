@@ -30,7 +30,7 @@ impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         match *self {
             ServiceError::InternalServerError => {
-                HttpResponse::InternalServerError().json("Internal Server Error")
+                HttpResponse::InternalServerError().json("4444444444444444444444444444")
             }
             ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
             ServiceError::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
@@ -49,24 +49,28 @@ impl From<DieselError> for ServiceError {
                     let msg = info.details().unwrap_or_else(|| info.message()).to_string();
                     return ServiceError::BadRequest(msg);
                 }
-                ServiceError::InternalServerError
+                ServiceError::BadRequest(
+                    info.details().unwrap_or_else(|| info.message()).to_string(),
+                )
             }
             DieselError::NotFound => {
                 ServiceError::NotFound("requested record was not found".into())
             }
-            _ => ServiceError::InternalServerError,
+            _ => ServiceError::NotFound("requested record was not found".into()),
         }
     }
 }
 
 impl From<PoolError> for ServiceError {
     fn from(_error: PoolError) -> Self {
-        ServiceError::InternalServerError
+        //ServiceError::InternalServerError
+        ServiceError::NotFound("222222222222222222222222".into())
     }
 }
 
 impl From<MailboxError> for ServiceError {
     fn from(_error: MailboxError) -> Self {
-        ServiceError::InternalServerError
+        //ServiceError::InternalServerError
+        ServiceError::NotFound("11111111111111111111111111111111".into())
     }
 }

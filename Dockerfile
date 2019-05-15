@@ -9,4 +9,5 @@ RUN cargo install cargo-watch
 RUN ls -al
 
 COPY . .
-CMD ["cargo watch -x run"]
+RUN cargo install diesel_cli --no-default-features --features postgres
+#CMD ["cargo watch -x run"]

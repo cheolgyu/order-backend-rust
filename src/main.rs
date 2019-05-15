@@ -37,6 +37,11 @@ fn no_params() -> &'static str {
 }
 
 fn main() -> std::io::Result<()> {
+    std::env::set_var(
+        "RUST_LOG",
+        "order-back-rust=debug,actix_web=debug,actix_server=debug",
+    );
+
     dotenv().ok();
     let addr = env::var("ADDR").expect("ADDR must be set");
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -57,9 +62,7 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(
-                web::resource("/signup").route(web::post().to_async(svc::auth::router::signup)),
-            )
+            .service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
             /*
             .service(
                 web::scope("/api/v1").service(
