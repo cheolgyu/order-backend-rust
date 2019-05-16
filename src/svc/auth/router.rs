@@ -1,8 +1,8 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::{AuthUser, Login, QueryUser, RegUser, SlimUser};
-use crate::svc::validator::Validate;
 use crate::utils::jwt::{create_token, decode_token};
+use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     get, post, put,

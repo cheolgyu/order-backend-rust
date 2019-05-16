@@ -1,4 +1,6 @@
 pub mod jwt;
+pub mod validator;
+
 use crate::errors::ServiceError;
 use bcrypt::{hash, DEFAULT_COST};
 
