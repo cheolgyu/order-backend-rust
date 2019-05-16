@@ -1,16 +1,16 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{Login, RegUser, SlimUser};
+use crate::svc::auth::model::{AuthUser, Login, QueryUser, RegUser, SlimUser};
 use crate::svc::validator::Validate;
-use crate::utils::jwt::create_token;
+use crate::utils::jwt::{create_token, decode_token};
 use actix::Addr;
 use actix_web::{
-    middleware::identity::Identity,
-    post, put,
+    get, post, put,
     web::{self, Data, Json, Path},
     Error, HttpRequest, HttpResponse, Responder, ResponseError,
 };
 use futures::{future::result, Future};
+use uuid::Uuid;
 #[put("/signup")]
 pub fn signup(
     req: HttpRequest,
@@ -29,7 +29,6 @@ pub fn signup(
 #[post("/signin")]
 pub fn signin(
     req: HttpRequest,
-    identity: Identity,
     json: Json<Login>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
@@ -46,7 +45,6 @@ pub fn signin(
                     pub user: SlimUser,
                     pub token: String,
                 }
-                identity.remember(token);
                 Ok(HttpResponse::Ok().json(Msg {
                     user: _user,
                     token: t,
@@ -54,5 +52,21 @@ pub fn signin(
             }
             //Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
+        })
+}
+
+#[get("/users/{path_id}")]
+pub fn getme(
+    req: HttpRequest,
+    auth_user: AuthUser,
+    path_id: Path<String>,
+    db: Data<Addr<DbExecutor>>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+    result(auth_user.check_role(path_id.into_inner()))
+        .from_err()
+        .and_then(move |_| db.send(QueryUser { id: auth_user.id }).from_err())
+        .and_then(move |res| match res {
+            Ok(user) => Ok(HttpResponse::Ok().json(user)),
+            Err(er) => Ok(er.error_response()),
         })
 }

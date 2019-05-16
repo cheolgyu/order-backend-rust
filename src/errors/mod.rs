@@ -5,6 +5,7 @@ use derive_more::Display;
 use diesel::r2d2::PoolError;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::convert::From;
+use uuid::ParseError;
 
 #[derive(Debug, Display)]
 pub enum ServiceError {
@@ -72,5 +73,11 @@ impl From<MailboxError> for ServiceError {
     fn from(_error: MailboxError) -> Self {
         //ServiceError::InternalServerError
         ServiceError::NotFound("11111111111111111111111111111111".into())
+    }
+}
+
+impl From<ParseError> for ServiceError {
+    fn from(_: ParseError) -> ServiceError {
+        ServiceError::BadRequest("Invalid UUID".into())
     }
 }

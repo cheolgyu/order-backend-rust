@@ -1004,7 +1004,9 @@ name = "order-back-rust"
 version = "0.1.0"
 dependencies = [
  "actix 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "actix-http 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-rt 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "actix-service 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-web 1.0.0-beta.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix_derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bcrypt 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",

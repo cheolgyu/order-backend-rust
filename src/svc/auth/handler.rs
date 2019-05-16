@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{Login, RegUser, SlimUser, User};
+use crate::svc::auth::model::{Login, QueryUser, RegUser, SlimUser, User};
 use crate::utils::hash_password;
 use actix::Handler;
 use actix::Message;
@@ -67,5 +67,18 @@ impl Handler<Login> for DbExecutor {
             }
         }
         Err(ServiceError::BadRequest("Auth Failed".into()))
+    }
+}
+
+impl Handler<QueryUser> for DbExecutor {
+    type Result = Result<SlimUser, ServiceError>;
+
+    fn handle(&mut self, uid: QueryUser, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::user::dsl::*;
+        let conn = &self.0.get()?;
+
+        let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
+
+        Ok(query_user.into())
     }
 }

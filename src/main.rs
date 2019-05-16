@@ -15,13 +15,17 @@ mod models;
 mod schema;
 mod svc;
 mod utils;
+use crate::models::DbExecutor;
+use actix_web::{
+    get,
+    middleware::{self, Logger},
+    web, App, Error, HttpRequest, HttpResponse, HttpServer,
+};
+use chrono::Duration;
+use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
 use futures::IntoFuture;
 use std::env;
-
-use crate::models::DbExecutor;
-use actix_web::{get, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer};
-use diesel::{r2d2::ConnectionManager, PgConnection};
 #[get("/resource1/{name}/index.html")]
 fn index(req: HttpRequest, name: web::Path<String>) -> String {
     println!("REQ: {:?}", req);
@@ -45,7 +49,7 @@ fn main() -> std::io::Result<()> {
     );
 
     dotenv().ok();
-    let addr = env::var("ADDR").expect("ADDR must be set");
+    let domain: String = env::var("DOMAIN").expect("DOMAIN must be set");
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     env_logger::init();
 
@@ -66,6 +70,7 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(svc::auth::router::signup)
             .service(svc::auth::router::signin)
+            .service(svc::auth::router::getme)
             //.service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
             /*
             .service(
@@ -79,15 +84,18 @@ fn main() -> std::io::Result<()> {
             */
             .service(index)
             .service(no_params)
-            .service(
-                web::resource("/resource2/index.html")
-                    .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
-                    .default_service(web::route().to(|| HttpResponse::MethodNotAllowed()))
-                    .route(web::get().to_async(index_async)),
-            )
-            .service(web::resource("/test1.html").to(|| "Test\r\n"))
+        /*
+        .service(
+            web::resource("/resource2/index.html")
+                .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
+                .default_service(web::route().to(|| HttpResponse::MethodNotAllowed()))
+                .route(web::get().to_async(index_async)),
+        )
+
+        .service(web::resource("/test1.html").to(|| "Test\r\n"))
+        */
     })
-    .bind(addr)?
+    .bind(domain)?
     .workers(1)
     .start();
 

@@ -39,6 +39,21 @@ pub struct AuthUser {
     pub id: Uuid,
     pub role: String,
 }
+impl AuthUser {
+    pub fn check_role(&self, path_id: String) -> Result<(), Error> {
+        if &self.role == "ceo" {
+            if path_id == self.id.to_string() {
+                Ok(())
+            } else {
+                Err(error::ErrorUnauthorized(
+                    "본인 계정만 이용 가능합니다.",
+                ))
+            }
+        } else {
+            Err(error::ErrorUnauthorized("ceo가 아닌계정이군"))
+        }
+    }
+}
 
 impl FromRequest for AuthUser {
     type Config = ();
@@ -46,9 +61,12 @@ impl FromRequest for AuthUser {
     type Future = Result<AuthUser, Error>;
 
     fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
-        if let Some(identity) = Identity::from_request(req, pl)?.identity() {
-            let user: AuthUser = decode_token(&identity)?;
-            return Ok(user);
+        if let Some(auth_token) = req.headers().get("authorization") {
+            if let Ok(auth) = auth_token.to_str() {
+                let user: AuthUser = decode_token(auth)?;
+
+                return Ok(user);
+            }
         }
         Err(ServiceError::Unauthorized.into())
     }
@@ -150,4 +168,10 @@ impl Validate for RegUser {
             Err(e) => Err(e),
         }
     }
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Message)]
+#[rtype(result = "Result<SlimUser, ServiceError>")]
+pub struct QueryUser {
+    pub id: Uuid,
 }
