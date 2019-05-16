@@ -10,9 +10,11 @@ extern crate serde_json;
 #[macro_use]
 extern crate lazy_static;
 use actix::prelude::*;
+mod errors;
 mod models;
 mod schema;
 mod svc;
+mod utils;
 use dotenv::dotenv;
 use futures::IntoFuture;
 use std::env;

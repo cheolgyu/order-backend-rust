@@ -1,16 +1,17 @@
+use crate::errors::ServiceError;
 use crate::schema::user;
-use crate::svc::errors::ServiceError;
 use crate::svc::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
+use crate::utils::jwt::decode_token;
 use actix::Message;
-use actix_web::{error, Error};
+use actix_web::{dev::Payload, Error, HttpRequest};
+use actix_web::{error, middleware::identity::Identity, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
 use uuid::Uuid;
-
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
 #[table_name = "user"]
 pub struct User {
@@ -31,6 +32,26 @@ pub struct SlimUser {
     pub email: String,
     pub name: String,
     pub role: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AuthUser {
+    pub id: Uuid,
+    pub role: String,
+}
+
+impl FromRequest for AuthUser {
+    type Config = ();
+    type Error = Error;
+    type Future = Result<AuthUser, Error>;
+
+    fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
+        if let Some(identity) = Identity::from_request(req, pl)?.identity() {
+            let user: AuthUser = decode_token(&identity)?;
+            return Ok(user);
+        }
+        Err(ServiceError::Unauthorized.into())
+    }
 }
 
 impl From<User> for SlimUser {
@@ -59,15 +80,6 @@ impl User {
             deleted_at: None,
         }
     }
-}
-
-pub fn hash_password(plain: &str) -> Result<String, ServiceError> {
-    // get the hashing cost from the env variable or use default
-    let hashing_cost: u32 = match dotenv::var("HASH_ROUNDS") {
-        Ok(cost) => cost.parse().unwrap_or(DEFAULT_COST),
-        _ => DEFAULT_COST,
-    };
-    hash(plain, hashing_cost).map_err(|_| ServiceError::BadRequest("hash_password".into()))
 }
 
 #[derive(Deserialize, Serialize, Debug, Message)]

@@ -1,6 +1,7 @@
+use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{hash_password, Login, RegUser, SlimUser, User};
-use crate::svc::errors::ServiceError;
+use crate::svc::auth::model::{Login, RegUser, SlimUser, User};
+use crate::utils::hash_password;
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -50,13 +51,12 @@ impl Handler<Login> for DbExecutor {
         use crate::schema::user::dsl::{account_id, user};
         let conn = &self.0.get()?;
 
-        let mut query_user = user
+        let query_user = user
             .filter(&account_id.eq(&msg.id))
             .load::<User>(conn)?
             .pop();
         let debug = format!("{:?}", query_user);
         println!("{:?}", debug);
-        println!("{:?}", msg);
 
         if let Some(check_user) = query_user {
             match verify(&msg.password, &check_user.account_password) {
