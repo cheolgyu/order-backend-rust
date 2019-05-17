@@ -5,6 +5,13 @@ pub trait Validate {
     fn validate(&self) -> Result<(), Error>;
 }
 
+pub fn re_test_shop_name(text: &str) -> bool {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[a-zA-Z0-9ㄱ-ㅎ가-힣]{1,19}$").unwrap();
+    }
+    RE.is_match(text)
+}
+
 pub fn re_test_id(text: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[[:alpha:]]+[[:alnum:]]{5,19}$").unwrap();

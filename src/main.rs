@@ -68,9 +68,29 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(svc::auth::router::signup)
-            .service(svc::auth::router::signin)
-            .service(svc::auth::router::getme)
+            /*
+                        .service(svc::auth::router::signup)
+                        .service(svc::auth::router::signin)
+                        .service(svc::auth::router::getme)
+            */
+            .service(
+                web::scope("/api/v1")
+                    .service(
+                        web::resource("/auth")
+                            .route(web::put().to_async(svc::auth::router::signup))
+                            .route(web::post().to_async(svc::auth::router::signin))
+                            .route(web::get().to_async(svc::auth::router::getme)),
+                    )
+                    .service(
+                        web::resource("/users/{id}")
+                            .route(web::get().to_async(svc::auth::router::getme)),
+                    )
+                    .service(
+                        web::resource("/shops")
+                            .route(web::put().to_async(svc::shop::router::put))
+                            .route(web::post().to(svc::shop::router::post)),
+                    ),
+            )
             //.service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
             /*
             .service(

@@ -11,7 +11,7 @@ use actix_web::{
 };
 use futures::{future::result, Future};
 use uuid::Uuid;
-#[put("/signup")]
+
 pub fn signup(
     req: HttpRequest,
     json: Json<RegUser>,
@@ -26,7 +26,6 @@ pub fn signup(
         })
 }
 
-#[post("/signin")]
 pub fn signin(
     req: HttpRequest,
     json: Json<Login>,
@@ -55,7 +54,6 @@ pub fn signin(
         })
 }
 
-#[get("/users/{path_id}")]
 pub fn getme(
     req: HttpRequest,
     auth_user: AuthUser,
