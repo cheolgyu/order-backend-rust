@@ -5,7 +5,7 @@ pub trait Validate {
     fn validate(&self) -> Result<(), Error>;
 }
 
-pub fn re_test_shop_name(text: &str) -> bool {
+pub fn re_test_name(text: &str) -> bool {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[a-zA-Z0-9ㄱ-ㅎ가-힣]{1,19}$").unwrap();
     }

@@ -3,20 +3,15 @@ use crate::models::DbExecutor;
 use crate::svc::auth::model::{Login, QueryUser, RegUser, SlimUser, User};
 use crate::utils::hash_password;
 use actix::Handler;
-use actix::Message;
-use actix_web::{error, Error};
 use bcrypt::verify;
 use diesel;
 use diesel::prelude::*;
-use diesel::prelude::*;
-use uuid::Uuid;
 // register/signup user
 // handle msg from api::auth.signup
 impl Handler<RegUser> for DbExecutor {
     type Result = Result<User, ServiceError>;
 
     fn handle(&mut self, msg: RegUser, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::user;
         use crate::schema::user::dsl::*;
         let conn = &self.0.get()?;
 

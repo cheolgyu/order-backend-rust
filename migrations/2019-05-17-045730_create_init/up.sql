@@ -29,6 +29,19 @@ CREATE TABLE "product" (
   id UUID PRIMARY KEY,
   shop_id UUID NOT NULL,
   name VARCHAR NOT NULL ,
+  option_groups jsonb NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+CREATE TABLE "option_group" (
+
+  id UUID PRIMARY KEY,
+  name VARCHAR NOT NULL ,
+  value_type  VARCHAR NOT NULL DEFAULT 'select' ,
+  options jsonb NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP ,
@@ -36,18 +49,6 @@ CREATE TABLE "product" (
 );
 
 CREATE TABLE "option" (
-
-  id UUID PRIMARY KEY,
-  name VARCHAR NOT NULL ,
-  value_type  VARCHAR NOT NULL DEFAULT 'select' ,
-  option_titles jsonb NULL,
-
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  updated_at TIMESTAMP ,
-  deleted_at TIMESTAMP  
-);
-
-CREATE TABLE "option_title" (
 
   id UUID PRIMARY KEY,
   name VARCHAR NOT NULL ,

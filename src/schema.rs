@@ -2,8 +2,6 @@ table! {
     option (id) {
         id -> Uuid,
         name -> Varchar,
-        value_type -> Varchar,
-        option_titles -> Nullable<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -11,9 +9,11 @@ table! {
 }
 
 table! {
-    option_title (id) {
+    option_group (id) {
         id -> Uuid,
         name -> Varchar,
+        value_type -> Varchar,
+        options -> Nullable<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -25,6 +25,7 @@ table! {
         id -> Uuid,
         shop_id -> Uuid,
         name -> Varchar,
+        option_groups -> Nullable<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -59,7 +60,7 @@ table! {
 
 allow_tables_to_appear_in_same_query!(
     option,
-    option_title,
+    option_group,
     product,
     shop,
     user,

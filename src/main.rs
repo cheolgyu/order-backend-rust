@@ -2,7 +2,6 @@
 
 #[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate actix_derive;
 #[macro_use]
 extern crate serde_derive;
@@ -16,25 +15,14 @@ mod schema;
 mod svc;
 mod utils;
 use crate::models::DbExecutor;
-use actix_web::{
-    get,
-    middleware::{self, Logger},
-    web, App, Error, HttpRequest, HttpResponse, HttpServer,
-};
-use chrono::Duration;
+use actix_web::{get, middleware, web, App, HttpRequest, HttpServer};
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
-use futures::IntoFuture;
 use std::env;
 #[get("/resource1/{name}/index.html")]
 fn index(req: HttpRequest, name: web::Path<String>) -> String {
     println!("REQ: {:?}", req);
     format!("Hello: {}!\r\n", name)
-}
-
-fn index_async(req: HttpRequest) -> impl IntoFuture<Item = &'static str, Error = Error> {
-    println!("REQ: {:?}", req);
-    Ok("Hello world!\r\n")
 }
 
 #[get("/")]
@@ -68,11 +56,7 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            /*
-                        .service(svc::auth::router::signup)
-                        .service(svc::auth::router::signin)
-                        .service(svc::auth::router::getme)
-            */
+      
             .service(
                 web::scope("/api/v1")
                     .service(
@@ -89,31 +73,20 @@ fn main() -> std::io::Result<()> {
                         web::resource("/shops")
                             .route(web::put().to_async(svc::shop::router::put))
                             .route(web::post().to(svc::shop::router::post)),
+                    )
+                    .service(
+                        web::resource("/options")
+                            .route(web::put().to_async(svc::option::router::put)),
+                    )
+                    .service(
+                        web::resource("/option_groups")
+                            .route(web::put().to_async(svc::option_group::router::put))
+                            .route(web::post().to_async(svc::option_group::router::post)),
                     ),
             )
-            //.service(web::resource("/signup").route(web::put().to_async(svc::auth::router::signup)))
-            /*
-            .service(
-                web::scope("/api/v1").service(
-                    web::resource("/auth")
-                        .route(web::post().to_async(auth_routes::login))
-                        .route(web::delete().to(auth_routes::logout))
-                        .route(web::get().to_async(auth_routes::get_me)),
-                ),
-            )
-            */
             .service(index)
             .service(no_params)
-        /*
-        .service(
-            web::resource("/resource2/index.html")
-                .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
-                .default_service(web::route().to(|| HttpResponse::MethodNotAllowed()))
-                .route(web::get().to_async(index_async)),
-        )
-
-        .service(web::resource("/test1.html").to(|| "Test\r\n"))
-        */
+      
     })
     .bind(domain)?
     .workers(1)

@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::schema::shop;
+use crate::schema::product;
 use crate::svc::auth::model::AuthUser;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
@@ -15,31 +15,30 @@ use diesel;
 use uuid::Uuid;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
-#[table_name = "shop"]
-pub struct Shop {
+#[table_name = "product"]
+pub struct Product {
     pub id: Uuid,
-    pub ceo_id: Uuid,
+    pub shop_id: Uuid,
     pub name: String,
-    pub products: Option<serde_json::Value>,
+    pub option_groups: Option<serde_json::Value>,
+
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
-#[rtype(result = "Result<Shop, ServiceError>")]
-#[table_name = "shop"]
-pub struct NewShop {
-    // ... other fields
+#[rtype(result = "Result<Product, ServiceError>")]
+#[table_name = "product"]
+pub struct New {
     pub id: Uuid,
-    pub ceo_id: Uuid,
+    pub shop_id: Uuid,
     pub name: String,
-    pub products: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
-    // ... other fields
+    pub shop_id: Uuid,
     pub name: String,
 }
 
@@ -51,18 +50,17 @@ impl Validate for InpNew {
         if check_name {
             Ok(())
         } else {
-            Err(error::ErrorBadRequest("shop name"))
+            Err(error::ErrorBadRequest("option name"))
         }
     }
 }
 
 impl InpNew {
-    pub fn new_shop(&self, auth_user: AuthUser) -> NewShop {
-        NewShop {
+    pub fn new(&self, shop_id: String) -> New {
+        New {
             id: Uuid::new_v4(),
-            ceo_id: auth_user.id,
+            shop_id: decode_token(shop_id),
             name: self.name.to_string(),
-            products: None,
         }
     }
 }
