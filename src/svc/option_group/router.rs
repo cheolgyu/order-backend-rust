@@ -16,6 +16,7 @@ pub fn put(
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
+    println!("11111111111111111");
     result(json.validate())
         .from_err()
         .and_then(move |_| db.send(json.into_inner().new()).from_err())

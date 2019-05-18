@@ -1,6 +1,8 @@
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::schema::shop;
 use crate::svc::auth::model::AuthUser;
+use crate::svc::product::model::Product;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_name, re_test_password, re_test_password_contain_num,
@@ -14,7 +16,18 @@ use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
 use uuid::Uuid;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
+#[derive(
+    Clone,
+    Debug,
+    Serialize,
+    Associations,
+    Deserialize,
+    PartialEq,
+    Identifiable,
+    Queryable,
+    Insertable,
+)]
+//#[has_many(Product)]
 #[table_name = "shop"]
 pub struct Shop {
     pub id: Uuid,
@@ -65,4 +78,11 @@ impl InpNew {
             products: None,
         }
     }
+}
+
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+pub struct ShopID {
+    // ... other fields
+    pub id: Uuid,
 }

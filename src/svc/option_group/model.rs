@@ -47,7 +47,7 @@ impl Validate for InpNew {
         if check_name {
             Ok(())
         } else {
-            Err(error::ErrorBadRequest("option name"))
+            Err(error::ErrorBadRequest("valid option_group name"))
         }
     }
 }

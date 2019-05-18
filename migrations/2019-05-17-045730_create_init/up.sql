@@ -24,12 +24,23 @@ CREATE TABLE "shop" (
   deleted_at TIMESTAMP  
 );
 
+CREATE TABLE "dict" (
+
+  id BIGSERIAL PRIMARY KEY,
+  kor VARCHAR NOT NULL,
+  eng VARCHAR NOT NULL,
+  kind VARCHAR NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
 CREATE TABLE "product" (
 
-  id UUID PRIMARY KEY,
-  shop_id UUID NOT NULL,
-  name VARCHAR NOT NULL ,
-  option_groups jsonb NULL,
+  id  SERIAL PRIMARY KEY,
+  shop_id UUID NOT NULL references shop (id),
+  name VARCHAR NOT NULL,
+  price float8,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP ,
@@ -38,10 +49,10 @@ CREATE TABLE "product" (
 
 CREATE TABLE "option_group" (
 
-  id UUID PRIMARY KEY,
+  id  SERIAL PRIMARY KEY,
+  product_id int NOT NULL ,
   name VARCHAR NOT NULL ,
-  value_type  VARCHAR NOT NULL DEFAULT 'select' ,
-  options jsonb NULL,
+  value_type  VARCHAR NOT NULL ,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP ,
@@ -50,7 +61,8 @@ CREATE TABLE "option_group" (
 
 CREATE TABLE "option" (
 
-  id UUID PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
+  option_group_id int NOT NULL ,
   name VARCHAR NOT NULL ,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,

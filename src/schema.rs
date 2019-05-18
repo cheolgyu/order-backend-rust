@@ -1,6 +1,19 @@
 table! {
+    dict (id) {
+        id -> Int8,
+        kor -> Varchar,
+        eng -> Varchar,
+        kind -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     option (id) {
-        id -> Uuid,
+        id -> Int4,
+        option_group_id -> Int4,
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
@@ -10,10 +23,10 @@ table! {
 
 table! {
     option_group (id) {
-        id -> Uuid,
+        id -> Int4,
+        product_id -> Int4,
         name -> Varchar,
         value_type -> Varchar,
-        options -> Nullable<Jsonb>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -22,10 +35,10 @@ table! {
 
 table! {
     product (id) {
-        id -> Uuid,
+        id -> Int4,
         shop_id -> Uuid,
         name -> Varchar,
-        option_groups -> Nullable<Jsonb>,
+        price -> Nullable<Float8>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -58,7 +71,10 @@ table! {
     }
 }
 
+joinable!(product -> shop (shop_id));
+
 allow_tables_to_appear_in_same_query!(
+    dict,
     option,
     option_group,
     product,

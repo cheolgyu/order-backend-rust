@@ -1,6 +1,8 @@
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::svc::shop::model::{NewShop, Shop};
+use crate::svc::product::model::Product;
+use crate::svc::shop::model::{NewShop, Shop, ShopID};
 use crate::utils::hash_password;
 use actix::Handler;
 use actix::Message;
@@ -9,6 +11,7 @@ use bcrypt::verify;
 use diesel;
 use diesel::prelude::*;
 use diesel::prelude::*;
+use serde_json::json;
 use uuid::Uuid;
 
 impl Handler<NewShop> for DbExecutor {
@@ -33,6 +36,34 @@ impl Handler<NewShop> for DbExecutor {
 
                 Ok(insert)
             }
+        }
+    }
+}
+impl Handler<ShopID> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: ShopID, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::shop::dsl::{id, shop as tb};
+        let conn = &self.0.get()?;
+        let shop = tb.filter(&id.eq(&msg.id)).load::<Shop>(conn)?.pop();
+
+        match shop {
+            Some(_shop) => {
+                let shop_product = Product::belonging_to(&_shop)
+                    .get_results::<Product>(conn)
+                    .expect("Couldn't find associated posts");
+
+                let payload = json!({
+                    "shop": _shop,
+                    "product": shop_product,
+                });
+
+                Ok(Msg {
+                    status: 200,
+                    data: payload,
+                })
+            }
+            None => Err(ServiceError::BadRequest("없다".into())),
         }
     }
 }

@@ -1,4 +1,5 @@
 {
     "editor.defaultFormatter": "rust-lang.rust",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "rust.racer_completion": false
 }

@@ -4,8 +4,11 @@
 extern crate diesel;
 extern crate actix_derive;
 #[macro_use]
+extern crate diesel_derives;
+#[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+
 #[macro_use]
 extern crate lazy_static;
 use actix::prelude::*;
@@ -56,7 +59,6 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-      
             .service(
                 web::scope("/api/v1")
                     .service(
@@ -75,18 +77,26 @@ fn main() -> std::io::Result<()> {
                             .route(web::post().to(svc::shop::router::post)),
                     )
                     .service(
-                        web::resource("/options")
-                            .route(web::put().to_async(svc::option::router::put)),
+                        web::resource("/shops/{id}")
+                            .route(web::get().to_async(svc::shop::router::get)),
                     )
                     .service(
-                        web::resource("/option_groups")
-                            .route(web::put().to_async(svc::option_group::router::put))
-                            .route(web::post().to_async(svc::option_group::router::post)),
-                    ),
+                        web::resource("/shops/{id}/products")
+                            .route(web::put().to_async(svc::product::router::put)),
+                    ), /*
+                       .service(
+                           web::resource("/options")
+                               .route(web::put().to_async(svc::option::router::put)),
+                       )
+                       .service(
+                           web::resource("/option_groups")
+                               .route(web::put().to_async(svc::option_group::router::put))
+                               .route(web::post().to_async(svc::option_group::router::post)),
+                       ),
+                       */
             )
             .service(index)
             .service(no_params)
-      
     })
     .bind(domain)?
     .workers(1)

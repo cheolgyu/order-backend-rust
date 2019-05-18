@@ -19,6 +19,7 @@ pub fn put(
     shop_id: Path<String>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
+    println!("00000000000000000000");
     result(json.validate())
         .from_err()
         .and_then(move |_| {

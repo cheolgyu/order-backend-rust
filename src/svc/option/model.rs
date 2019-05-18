@@ -17,8 +17,9 @@ use uuid::Uuid;
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
 #[table_name = "option"]
 pub struct Opt {
-    pub id: Uuid,
-    pub name: String,
+    pub id: i32,
+    pub option_group_id: i32,
+    pub name: i64,
 
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
@@ -30,14 +31,15 @@ pub struct Opt {
 #[table_name = "option"]
 pub struct New {
     // ... other fields
-    pub id: Uuid,
-    pub name: String,
+    pub option_group_id: i32,
+    pub name: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
     // ... other fields
     pub name: String,
+    pub option_group_id: i32,
 }
 
 impl Validate for InpNew {
@@ -54,10 +56,10 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self) -> New {
+    pub fn new(&self, option_group_id: i32, name: i64) -> New {
         New {
-            id: Uuid::new_v4(),
-            name: self.name.to_string(),
+            option_group_id: option_group_id,
+            name: name,
         }
     }
 }
