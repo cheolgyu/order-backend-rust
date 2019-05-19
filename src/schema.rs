@@ -39,6 +39,7 @@ table! {
         shop_id -> Uuid,
         name -> Varchar,
         price -> Nullable<Float8>,
+        option_group -> Jsonb,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -70,8 +71,6 @@ table! {
         deleted_at -> Nullable<Timestamp>,
     }
 }
-
-joinable!(product -> shop (shop_id));
 
 allow_tables_to_appear_in_same_query!(
     dict,

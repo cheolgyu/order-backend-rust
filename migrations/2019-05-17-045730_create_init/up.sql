@@ -13,6 +13,7 @@ CREATE TABLE "user" (
   deleted_at TIMESTAMP  
 );
 
+
 CREATE TABLE "shop" (
 
   id UUID PRIMARY KEY,
@@ -38,35 +39,18 @@ CREATE TABLE "dict" (
 CREATE TABLE "product" (
 
   id  SERIAL PRIMARY KEY,
-  shop_id UUID NOT NULL references shop (id),
+  shop_id UUID NOT NULL ,
   name VARCHAR NOT NULL,
   price float8,
+  option_group Jsonb NOT NULL ,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP ,
   deleted_at TIMESTAMP  
 );
 
-CREATE TABLE "option_group" (
 
-  id  SERIAL PRIMARY KEY,
-  product_id int NOT NULL ,
-  name VARCHAR NOT NULL ,
-  value_type  VARCHAR NOT NULL ,
-
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  updated_at TIMESTAMP ,
-  deleted_at TIMESTAMP  
-);
-
-CREATE TABLE "option" (
-
-  id SERIAL PRIMARY KEY,
-  option_group_id int NOT NULL ,
-  name VARCHAR NOT NULL ,
-
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  updated_at TIMESTAMP ,
-  deleted_at TIMESTAMP  
-);
-
+INSERT INTO "user" ("id", "account_id", "account_password", "email", "name", "role", "created_at", "updated_at", "deleted_at") VALUES
+('0290a0ad-9851-461b-af42-0313f15c9702',	'dlacjfrb123',	'$2y$12$D4eLlgcgYwfkFxF4o6hwT.rjtYutR6DjbJk4oDa/YOGESOD9ATPuW',	'asfas.sdf@abac.com',	'',	'ceo',	'2019-05-18 12:44:02.647759',	NULL,	NULL);
+INSERT INTO "shop" ("id", "ceo_id", "name", "products", "created_at", "updated_at", "deleted_at") VALUES
+('109b7b41-f8eb-4702-abdb-6bfb95f57072',	'0290a0ad-9851-461b-af42-0313f15c9702',	'hello coffee',	NULL,	'2019-05-18 12:44:41.184624',	NULL,	NULL);

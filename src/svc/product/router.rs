@@ -20,10 +20,13 @@ pub fn put(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     println!("00000000000000000000");
+    println!("{:?}", json);
     result(json.validate())
         .from_err()
         .and_then(move |_| {
-            db.send(json.into_inner().new(shop_id.into_inner()))
+            let j = json.into_inner();
+            println!("{:?}", j.option_group);
+            db.send(j.new(shop_id.into_inner(), j.option_group.clone()))
                 .from_err()
         })
         .and_then(|res| match res {

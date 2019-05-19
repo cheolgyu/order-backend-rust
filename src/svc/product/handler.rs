@@ -22,6 +22,7 @@ impl Handler<New> for DbExecutor {
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
+                println!("{:?}", &msg.option_group);
                 let insert: Product = diesel::insert_into(tb)
                     .values(&msg)
                     .get_result::<Product>(conn)?;
