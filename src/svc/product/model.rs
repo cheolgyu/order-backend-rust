@@ -3,6 +3,7 @@ use crate::schema::{product, shop as tb_shop};
 use crate::svc::auth::model::AuthUser;
 //use crate::svc::option::model::Opt;
 //use crate::svc::option_group::model::OptGroup;
+use crate::models::msg::Msg;
 use crate::svc::shop::model::Shop;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
@@ -96,3 +97,53 @@ impl InpNew {
         }
     }
 }
+
+#[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "product"]
+pub struct Update {
+    pub id: i32,
+    pub name: String,
+    pub price: f64,
+    pub option_group: serde_json::Value,
+}
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct InpUpdate {
+    pub id: i32,
+    pub name: String,
+    pub price: f64,
+    pub option_group: Option<Vec<OptGroup>>,
+}
+
+impl Validate for InpUpdate {
+    fn validate(&self) -> Result<(), Error> {
+        let name = &self.name;
+        let check_name = re_test_name(name);
+
+        if check_name {
+            Ok(())
+        } else {
+            Err(error::ErrorBadRequest("option name"))
+        }
+    }
+}
+
+impl InpUpdate {
+    pub fn new(&self, opts: Option<Vec<OptGroup>>) -> Update {
+        Update {
+            id: self.id,
+            name: self.name.to_string(),
+            price: self.price,
+            option_group: serde_json::to_value(opts).unwrap(),
+        }
+    }
+}
+
+
+#[derive(Deserialize, Serialize, Debug, Message, Identifiable)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "product"]
+pub struct Get {
+    pub id: i32,
+}
+

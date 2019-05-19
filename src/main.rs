@@ -83,6 +83,11 @@ fn main() -> std::io::Result<()> {
                     .service(
                         web::resource("/shops/{id}/products")
                             .route(web::put().to_async(svc::product::router::put)),
+                    )
+                    .service(
+                        web::resource("/shops/{id}/products/{product_id}")
+                            .route(web::post().to_async(svc::product::router::post))
+                            .route(web::get().to_async(svc::product::router::get)),
                     ), /*
                        .service(
                            web::resource("/options")
