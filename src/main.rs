@@ -13,12 +13,13 @@ extern crate serde_json;
 extern crate lazy_static;
 use actix::prelude::*;
 mod errors;
+mod middleware;
 mod models;
 mod schema;
 mod svc;
 mod utils;
 use crate::models::DbExecutor;
-use actix_web::{get, middleware, web, App, HttpRequest, HttpServer};
+use actix_web::{get, middleware as actix_middleware, web, App, HttpRequest, HttpServer};
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
 use std::env;
@@ -56,9 +57,10 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(address.clone())
-            .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
-            .wrap(middleware::Compress::default())
-            .wrap(middleware::Logger::default())
+            .wrap(actix_middleware::DefaultHeaders::new().header("X-Version", "0.2"))
+            .wrap(actix_middleware::Compress::default())
+            .wrap(actix_middleware::Logger::default())
+            .wrap(middleware::auth::Auth)
             .service(
                 web::scope("/api/v1")
                     .service(
@@ -68,24 +70,24 @@ fn main() -> std::io::Result<()> {
                             .route(web::get().to_async(svc::auth::router::getme)),
                     )
                     .service(
-                        web::resource("/users/{id}")
+                        web::resource("/users/{uid}")
                             .route(web::get().to_async(svc::auth::router::getme)),
                     )
                     .service(
-                        web::resource("/shops")
+                        web::resource("/users/{uid}/shops")
                             .route(web::put().to_async(svc::shop::router::put))
                             .route(web::post().to(svc::shop::router::post)),
                     )
                     .service(
-                        web::resource("/shops/{id}")
+                        web::resource("/users/{uid}/shops/{sid}")
                             .route(web::get().to_async(svc::shop::router::get)),
                     )
                     .service(
-                        web::resource("/shops/{id}/products")
+                        web::resource("/users/{uid}/shops/{sid}/products")
                             .route(web::put().to_async(svc::product::router::put)),
                     )
                     .service(
-                        web::resource("/shops/{id}/products/{product_id}")
+                        web::resource("/users/{uid}/shops/{sid}/products/{pid}")
                             .route(web::post().to_async(svc::product::router::post))
                             .route(web::get().to_async(svc::product::router::get)),
                     ), /*

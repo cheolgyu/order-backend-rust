@@ -52,7 +52,8 @@ pub struct AuthUser {
     pub role: String,
 }
 impl AuthUser {
-    pub fn check_role(&self, path_id: String) -> Result<(), Error> {
+    pub fn check_user(&self, path_id: String) -> Result<(), Error> {
+        println!("check_user==>");
         if &self.role == "ceo" {
             if path_id == self.id.to_string() {
                 Ok(())
@@ -64,6 +65,9 @@ impl AuthUser {
         } else {
             Err(error::ErrorUnauthorized("ceo가 아닌계정이군"))
         }
+    }
+    pub fn role_user(&self, path_id: String) -> bool {
+        !(&self.role == "ceo" && path_id == self.id.to_string())
     }
 }
 
@@ -83,7 +87,6 @@ impl FromRequest for AuthUser {
         Err(ServiceError::Unauthorized.into())
     }
 }
-
 impl From<User> for SlimUser {
     fn from(user: User) -> Self {
         SlimUser {
