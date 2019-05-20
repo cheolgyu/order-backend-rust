@@ -36,7 +36,6 @@ pub struct Product {
     pub name: String,
     pub price: Option<f64>,
     pub option_group: serde_json::Value,
-
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -139,11 +138,9 @@ impl InpUpdate {
     }
 }
 
-
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "product"]
 pub struct Get {
     pub id: i32,
 }
-

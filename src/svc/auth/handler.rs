@@ -1,39 +1,68 @@
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{Login, QueryUser, RegUser, SlimUser, User};
+use crate::svc::auth::model::{Login, New, QueryUser, SlimUser, User};
 use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
 use diesel;
+use diesel::expression::sql_literal::sql;
 use diesel::prelude::*;
+use diesel::sql_query;
+use diesel::sql_types::{Bool, Integer, Text};
+use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
-impl Handler<RegUser> for DbExecutor {
-    type Result = Result<User, ServiceError>;
+impl Handler<New> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
 
-    fn handle(&mut self, msg: RegUser, _: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
         use crate::schema::user::dsl::*;
         let conn = &self.0.get()?;
 
         let check_user = user
-            .filter(&account_id.eq(&msg.login.id))
+            .filter(&account_id.eq(&msg.account_id))
             .load::<User>(conn)?
             .pop();
 
         match check_user {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
-                // hash password
-                let _pswd = hash_password(&msg.login.password)?;
-                // generae uuid as user.id
-                let _id = msg.login.id;
-                let _email = msg.email;
-                let new_user = User::new(_id, _pswd, _email);
-                let insert_user: User = diesel::insert_into(user)
-                    .values(&new_user)
-                    .get_result::<User>(conn)?;
+                let mut s = r#"INSERT INTO "user" ( account_id,account_password, email, name, role) VALUES  "#;
+                let s2 = s.to_string()
+                    + "("
+                    + "'"
+                    + &msg.account_id
+                    + "'"
+                    + ","
+                    + "crypt("
+                    + "'"
+                    + &msg.account_password
+                    + "'"
+                    + ", gen_salt('bf'))"
+                    + ","
+                    + "'"
+                    + &msg.email
+                    + "'"
+                    + ","
+                    + "'"
+                    + &msg.name
+                    + "'"
+                    + ","
+                    + "'"
+                    + &msg.role
+                    + "'"
+                    + ")";
+                let res = sql_query(s2).execute(conn)?;
 
-                Ok(insert_user)
+                let payload = json!({
+                   "res": res,
+                });
+
+                Ok(Msg {
+                    status: 200,
+                    data: payload,
+                })
             }
         }
     }
@@ -46,22 +75,15 @@ impl Handler<Login> for DbExecutor {
         use crate::schema::user::dsl::{account_id, user};
         let conn = &self.0.get()?;
 
-        let query_user = user
-            .filter(&account_id.eq(&msg.id))
-            .load::<User>(conn)?
-            .pop();
-        let debug = format!("{:?}", query_user);
-        println!("{:?}", debug);
+        let mut s = r#"SELECT * FROM "user" WHERE  account_password =  "#;
+        let s2 = s.to_string() + "crypt(" + "'" + &msg.password + "'" + ", account_password)";
+        let s2 = s2.to_string() + " AND account_id = " + "'" + &msg.id + "'";
+        let res: Option<User> = sql_query(s2).load::<User>(conn)?.pop();
 
-        if let Some(check_user) = query_user {
-            match verify(&msg.password, &check_user.account_password) {
-                Ok(valid) if valid => {
-                    return Ok(check_user.into());
-                }
-                _ => (),
-            }
+        match res {
+            Some(u) => Ok(u.into()),
+            None => Err(ServiceError::BadRequest("누구냐".into())),
         }
-        Err(ServiceError::BadRequest("Auth Failed".into()))
     }
 }
 

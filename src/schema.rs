@@ -1,39 +1,4 @@
 table! {
-    dict (id) {
-        id -> Int8,
-        kor -> Varchar,
-        eng -> Varchar,
-        kind -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Nullable<Timestamp>,
-        deleted_at -> Nullable<Timestamp>,
-    }
-}
-
-table! {
-    option (id) {
-        id -> Int4,
-        option_group_id -> Int4,
-        name -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Nullable<Timestamp>,
-        deleted_at -> Nullable<Timestamp>,
-    }
-}
-
-table! {
-    option_group (id) {
-        id -> Int4,
-        product_id -> Int4,
-        name -> Varchar,
-        value_type -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Nullable<Timestamp>,
-        deleted_at -> Nullable<Timestamp>,
-    }
-}
-
-table! {
     product (id) {
         id -> Int4,
         shop_id -> Uuid,
@@ -62,7 +27,7 @@ table! {
     user (id) {
         id -> Uuid,
         account_id -> Varchar,
-        account_password -> Varchar,
+        account_password -> Text,
         email -> Varchar,
         name -> Varchar,
         role -> Varchar,
@@ -73,9 +38,6 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
-    dict,
-    option,
-    option_group,
     product,
     shop,
     user,

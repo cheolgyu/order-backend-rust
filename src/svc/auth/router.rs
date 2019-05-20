@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{AuthUser, Login, QueryUser, RegUser, SlimUser};
+use crate::svc::auth::model::{AuthUser, InpNew, Login, QueryUser, SlimUser};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -14,12 +14,12 @@ use uuid::Uuid;
 
 pub fn signup(
     req: HttpRequest,
-    json: Json<RegUser>,
+    json: Json<InpNew>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
-        .and_then(move |_| db.send(json.into_inner()).from_err())
+        .and_then(move |_| db.send(json.into_inner().new()).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),

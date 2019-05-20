@@ -2,6 +2,4 @@
 DROP TABLE "user";
 DROP TABLE "shop";
 DROP TABLE "product";
-DROP TABLE "option";
-DROP TABLE "option_group";
-DROP TABLE "dict";
+DROP EXTENSION pgcrypto;

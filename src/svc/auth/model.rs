@@ -1,5 +1,7 @@
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::schema::user;
+use crate::utils::hash_password;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
@@ -12,8 +14,17 @@ use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
 use uuid::Uuid;
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Identifiable, Queryable, Insertable)]
+#[derive(
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Identifiable,
+    Queryable,
+    Insertable,
+    QueryableByName,
+)]
 #[table_name = "user"]
 pub struct User {
     pub id: Uuid,
@@ -85,22 +96,6 @@ impl From<User> for SlimUser {
     }
 }
 
-impl User {
-    pub fn new(account_id: String, account_password: String, email: String) -> Self {
-        User {
-            id: Uuid::new_v4(),
-            account_id: account_id,
-            account_password: account_password,
-            email: email,
-            role: "ceo".to_owned(),
-            name: "".to_owned(),
-            created_at: Utc::now().naive_utc(),
-            updated_at: None,
-            deleted_at: None,
-        }
-    }
-}
-
 #[derive(Deserialize, Serialize, Debug, Message)]
 #[rtype(result = "Result<SlimUser, ServiceError>")]
 pub struct Login {
@@ -140,15 +135,37 @@ impl Validate for Login {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Message)]
-#[rtype(result = "Result<User, ServiceError>")]
-pub struct RegUser {
+#[derive(Deserialize, Serialize, Debug)]
+pub struct InpNew {
     pub login: Login,
     pub password_comfirm: String,
     pub email: String,
 }
 
-impl Validate for RegUser {
+#[derive(Deserialize, Serialize, Debug, Message, Insertable)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "user"]
+pub struct New {
+    pub account_id: String,
+    pub account_password: String,
+    pub email: String,
+    pub name: String,
+    pub role: String,
+}
+
+impl InpNew {
+    pub fn new(&self) -> New {
+        New {
+            account_id: self.login.id.to_string(),
+            account_password: self.login.password.to_string(), //hash_password(&self.login.password).unwrap(),
+            email: self.email.to_string(),
+            role: "ceo".to_string(),
+            name: "".to_string(),
+        }
+    }
+}
+
+impl Validate for InpNew {
     fn validate(&self) -> Result<(), Error> {
         let password_comfirm = &self.password_comfirm;
         let login = &self.login;
