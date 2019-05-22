@@ -1,14 +1,22 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
+use crate::models::DbExecutor;
 use crate::schema::user;
+use crate::svc::product::model::Product;
+use crate::svc::shop::model::Shop;
 use crate::utils::hash_password;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
+use actix::Addr;
 use actix::Message;
-use actix_web::{dev::Payload, Error, HttpRequest};
+use actix_web::{
+    dev::Payload,
+    web::{self, Data, Json, Path},
+    Error, HttpRequest,
+};
 use actix_web::{error, middleware::identity::Identity, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
@@ -70,6 +78,7 @@ impl AuthUser {
         !(&self.role == "ceo" && path_id == self.id.to_string())
     }
 }
+use futures::{future::result, Future};
 
 impl FromRequest for AuthUser {
     type Config = ();
@@ -77,11 +86,96 @@ impl FromRequest for AuthUser {
     type Future = Result<AuthUser, Error>;
 
     fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
+        let path_info = Path::<Info>::extract(req)?.into_inner();
+        let db = req.app_data::<Addr<DbExecutor>>().unwrap();
+        println!("auth_user-from_request-path_info:{:?}", path_info);
         if let Some(auth_token) = req.headers().get("authorization") {
+            println!("auth_user-from_request-path_info: 11111111111111111");
             if let Ok(auth) = auth_token.to_str() {
-                let user: AuthUser = decode_token(auth)?;
+                println!("auth_user-from_request-path_info: 2222222222222");
+                let token: AuthUser = decode_token(auth)?;
+                /////////////////////////////////////////////////////////////
+                ///
+                /// /*
+                /**
+                                                                 * db.send(path_info).then(|res| match res {
+                                                                    Ok(user) => user,
+                                                                    Err(e) => panic!("aaaa"),
+                                                                });
 
-                return Ok(user);
+                                                                use crate::schema::product::dsl::{id, name, product as tb};
+                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
+                                                                use diesel;
+                                                                use diesel::prelude::*;
+                                                                let conn = &db.0.get().unwrap();
+                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
+
+                                                                let payload = serde_json::json!({
+                                                                    "item": item,
+                                                                });
+                                                                println!("{:?}", payload);
+
+                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
+                                                                 */
+                /**
+                                                                *
+                                                                 let mut cc;
+                                                                let f = match db.send(path_info) {
+                                                                    Ok(file) => file,
+                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
+                                                                };
+
+                                                                let aa = db
+                                                                    .send(path_info)
+                                                                    .from_err()
+                                                                    .and_then(|db_response| match db_response {
+                                                                        Ok(invitation) => {
+                                                                            println!("aa:{:?}", invitation);
+                                                                            cc = invitation;
+                                                                            Ok("bbbb okd")
+                                                                        }
+                                                                        Err(err) => Ok("errrr"),
+                                                                    });
+
+                                                                */
+                // let mut bb;
+                // let aa = db.send(path).from_err().then(|res| bb = res);
+                //        let aa = result();
+
+                // let aa = db.send(path).map(|res| res);
+                //println!("cc:{:?}", cc);
+
+                //let res = db.send(path).map_err(|e| println!("err: {:?}",e););
+                //println!("ceo: {:?}", res);
+                /*
+                                db.send(path)?.and_then(move |res| match res {
+                                    Ok(ceo) => {
+                                        println!("ceo: {:?}", ceo);
+                                    }
+                                    Err(err) => println!("err: {:?}", err);,
+                                });
+                */
+                /*
+                                if token.role == "ceo" && token.id.to_string() == path.user_id {
+                                    match path.shop_id {
+                                        None => {}
+                                        Some(sid) => {
+                                            //shop id 의 소유확인
+                                            match path.product_id {
+                                                None => {}
+                                                Some(pid) => {
+                                                    //product_id 의 소유확인
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if token.role == "super" {
+
+                                } else {
+                                    return Err(ServiceError::Unauthorized.into());
+                                }
+                */
+                return Ok(token);
             }
         }
         Err(ServiceError::Unauthorized.into())
@@ -195,4 +289,19 @@ impl Validate for InpNew {
 #[rtype(result = "Result<SlimUser, ServiceError>")]
 pub struct QueryUser {
     pub id: Uuid,
+}
+
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<Ceo, ServiceError>")]
+pub struct Info {
+    pub user_id: String,
+    pub shop_id: Option<String>,
+    pub product_id: Option<String>,
+    //pub auth_user: AuthUser,
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Ceo {
+    pub user: User,
+    pub shop: Option<Shop>,
+    pub product: Option<Product>,
 }

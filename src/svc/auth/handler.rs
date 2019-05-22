@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::{Login, New, QueryUser, SlimUser, User};
+use crate::svc::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
 use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
@@ -97,5 +97,53 @@ impl Handler<QueryUser> for DbExecutor {
         let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
 
         Ok(query_user.into())
+    }
+}
+
+impl Handler<Info> for DbExecutor {
+    type Result = Result<Ceo, ServiceError>;
+
+    fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
+        println!("==========================================================================================");
+        use crate::schema::user::dsl::*;
+        use uuid::Uuid;
+        let conn = &self.0.get().expect(" 커넥션 오류 ");
+        let uid = Uuid::parse_str(&msg.user_id).unwrap();
+        let query_user = user
+            .filter(&id.eq(&uid))
+            .get_result::<User>(conn)
+            .expect(" 조회 오류 ");
+        let mut ceo = Ceo {
+            user: query_user,
+            shop: None,
+            product: None,
+        };
+
+        match msg.shop_id {
+            None => {}
+            Some(sid_str) => {
+                let sid = Uuid::parse_str(&sid_str)?;
+                use crate::schema::shop::dsl::{id, shop as tb};
+                use crate::svc::shop::model::Shop;
+                //shop id 의 소유확인
+                let query_shop = tb.filter(&id.eq(&sid)).get_result::<Shop>(conn)?;
+                ceo.shop = Some(query_shop);
+                match msg.product_id {
+                    None => {}
+                    Some(pid) => {
+                        //product_id 의 소유확인
+                        use crate::schema::product::dsl::{id, product as tb};
+                        use crate::svc::product::model::Product;
+                        let n: i32 = std::str::FromStr::from_str(&pid).unwrap();
+                        let query_product = tb.filter(&id.eq(&n)).get_result::<Product>(conn)?;
+                        ceo.product = Some(query_product);
+                    }
+                }
+            }
+        }
+
+        println!("{:?}", ceo);
+        println!("==========================================================================================");
+        Ok(ceo)
     }
 }

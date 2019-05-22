@@ -48,19 +48,24 @@ fn main() -> std::io::Result<()> {
     let sys = actix_rt::System::new("mybackend");
 
     // create db connection pool
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let manager = ConnectionManager::<PgConnection>::new(database_url.clone());
     let pool = r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create pool.");
     let address: Addr<DbExecutor> = SyncArbiter::start(4, move || DbExecutor(pool.clone()));
 
+    let manager2 = ConnectionManager::<PgConnection>::new(database_url.clone());
+    let pool2 = r2d2::Pool::builder()
+        .build(manager2)
+        .expect("Failed to create pool.");
+
     HttpServer::new(move || {
         App::new()
             .data(address.clone())
+            .data(pool2.clone())
             .wrap(actix_middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(actix_middleware::Compress::default())
             .wrap(actix_middleware::Logger::default())
-            .wrap(middleware::auth::Auth)
             .service(
                 web::scope("/api/v1")
                     .service(
@@ -70,37 +75,77 @@ fn main() -> std::io::Result<()> {
                             .route(web::get().to_async(svc::auth::router::getme)),
                     )
                     .service(
-                        web::resource("/users/{uid}")
-                            .route(web::get().to_async(svc::auth::router::getme)),
-                    )
-                    .service(
-                        web::resource("/users/{uid}/shops")
-                            .route(web::put().to_async(svc::shop::router::put))
-                            .route(web::post().to(svc::shop::router::post)),
-                    )
-                    .service(
-                        web::resource("/users/{uid}/shops/{sid}")
-                            .route(web::get().to_async(svc::shop::router::get)),
-                    )
-                    .service(
-                        web::resource("/users/{uid}/shops/{sid}/products")
-                            .route(web::put().to_async(svc::product::router::put)),
-                    )
-                    .service(
-                        web::resource("/users/{uid}/shops/{sid}/products/{pid}")
-                            .route(web::post().to_async(svc::product::router::post))
-                            .route(web::get().to_async(svc::product::router::get)),
+                        web::scope("/users").service(
+                            web::scope("/{user_id}")
+                                .service(
+                                    web::resource("")
+                                        .route(web::get().to_async(svc::auth::router::getme)),
+                                )
+                                .service(
+                                    web::scope("/shops")
+                                        .service(
+                                            web::resource("")
+                                                .route(web::put().to_async(svc::shop::router::put))
+                                                .route(web::post().to(svc::shop::router::post)),
+                                        )
+                                        .service(
+                                            web::scope("/{shop_id}")
+                                                .service(web::resource("").route(
+                                                    web::get().to_async(svc::shop::router::get),
+                                                ))
+                                                .service(
+                                                    web::scope("/products")
+                                                        .service(web::resource("").route(
+                                                            web::put().to_async(
+                                                                svc::product::router::put,
+                                                            ),
+                                                        ))
+                                                        .service(
+                                                            web::scope("/{products_id}").service(
+                                                                web::resource("")
+                                                                    .route(web::post().to_async(
+                                                                        svc::product::router::post,
+                                                                    ))
+                                                                    .route(web::get().to_async(
+                                                                        svc::product::router::get,
+                                                                    )),
+                                                            ),
+                                                        ),
+                                                ),
+                                        ),
+                                ),
+                        )// .wrap(middleware::auth::Auth),
                     ), /*
                        .service(
-                           web::resource("/options")
-                               .route(web::put().to_async(svc::option::router::put)),
+                           web::resource("/users/{user_id}/shops")
+                               .route(web::put().to_async(svc::shop::router::put))
+                               .route(web::post().to(svc::shop::router::post)),
                        )
                        .service(
-                           web::resource("/option_groups")
-                               .route(web::put().to_async(svc::option_group::router::put))
-                               .route(web::post().to_async(svc::option_group::router::post)),
+                           web::resource("/users/{user_id}/shops/{shop_id}")
+                               .route(web::get().to_async(svc::shop::router::get)),
+                       )
+                       .service(
+                           web::resource("/users/{user_id}/shops/{shop_id}/products")
+                               .route(web::put().to_async(svc::product::router::put)),
+                       )
+                       .service(
+                           web::resource("/users/{user_id}/shops/{shop_id}/products/{product_id}")
+                               .route(web::post().to_async(svc::product::router::post))
+                               .route(web::get().to_async(svc::product::router::get)),
                        ),
                        */
+                       /*
+                          .service(
+                              web::resource("/options")
+                                  .route(web::put().to_async(svc::option::router::put)),
+                          )
+                          .service(
+                              web::resource("/option_groups")
+                                  .route(web::put().to_async(svc::option_group::router::put))
+                                  .route(web::post().to_async(svc::option_group::router::post)),
+                          ),
+                          */
             )
             .service(index)
             .service(no_params)

@@ -8,7 +8,6 @@ use actix_web::{error, Error};
 use bcrypt::verify;
 use diesel;
 use diesel::prelude::*;
-use diesel::prelude::*;
 use uuid::Uuid;
 impl Handler<New> for DbExecutor {
     type Result = Result<Product, ServiceError>;
