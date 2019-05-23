@@ -16,14 +16,14 @@ use uuid::Uuid;
 pub fn put(
     json: Json<InpNew>,
     auth_user: AuthUser,
-    shop_id: Path<String>,
+    info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
         .and_then(move |_| {
             let j = json.into_inner();
-            db.send(j.new(shop_id.into_inner(), j.option_group.clone()))
+            db.send(j.new(info.into_inner().shop_id.unwrap(), j.option_group.clone()))
                 .from_err()
         })
         .and_then(|res| match res {
@@ -32,69 +32,36 @@ pub fn put(
         })
 }
 use crate::svc::auth::model::Ceo;
+/*
+pub fn check_path(
+    auth_user: AuthUser,
+    path_info: Path<Info>,
+    db: Data<Addr<DbExecutor>>,
+) -> impl Future<Item = i32, Error = Error> {
+    let mut info = path_info.into_inner();
+    info.auth_user = Some(auth_user);
+    Ok(db.send(info))
+}
+*/
 pub fn post(
     json: Json<InpUpdate>,
     auth_user: AuthUser,
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    println!("path_info:{:?}", path_info);
-    // result(json.validate())
-    //     .from_err()
-    db.send(path_info.into_inner())
-           .from_err()
-        /*
-        .and_then(move |res| {
-            // println!("ceo.user ==>{:?}", ceo.user);
-            // println!("ceo.shop ==>{:?}", ceo.shop);
-            // println!("ceo.product ==>{:?}", ceo.product);
-            match res {
-                Err(e) => print!("errr"),
-                Ok(ceo) => {
-                    println!("ceo.user ==>{:?}", ceo.user);
-                    println!("ceo.shop ==>{:?}", ceo.shop);
-                    println!("ceo.product ==>{:?}", ceo.product);
-                    Ok(ceo)
-                    //   let j = json.into_inner();
-                    //   db.send(j.new(j.option_group.clone())).from_err()
-                }
-            }
-        })
-        */
-        //.and_then(move |res| res)
-        // .from_err()
-        .and_then(move |res| {
-            match res {
-                Ok(ceo)=>{
-                    println!("ceo.user ==>{:?}", ceo.user);
-                    println!("ceo.shop ==>{:?}", ceo.shop);
-                    println!("ceo.product ==>{:?}", ceo.product);
-                }
-                Err(e)=>{println!("ceo.eeeeeeeeee ==>{:?}", e);}
-            };
-           
+    let mut info = path_info.into_inner();
+    info.auth_user = Some(auth_user);
+    let j = json.into_inner();
+    let db2 = db.clone();
 
-            let j = json.into_inner();
-            db.send(j.new(j.option_group.clone())).from_err()
-        })
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
-        })
-    /*
-
-     db.send(path_info.into_inner())
+    result(j.validate())
+        .and_then(move |_| db.send(info).from_err())
+        .and_then(move |_| db2.send(j.new(j.option_group.clone())).from_err())
         .from_err()
-        .and_then(move |res| {
-            let j = json.into_inner();
-            db.send(j.new(j.option_group.clone())).from_err()
-        })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
-
-    */
 }
 pub fn get(
     json: Json<Get>,

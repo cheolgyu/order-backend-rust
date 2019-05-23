@@ -101,49 +101,34 @@ impl Handler<QueryUser> for DbExecutor {
 }
 
 impl Handler<Info> for DbExecutor {
-    type Result = Result<Ceo, ServiceError>;
+    type Result = Result<usize, ServiceError>;
 
     fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
-        println!("==========================================================================================");
-        use crate::schema::user::dsl::*;
-        use uuid::Uuid;
-        let conn = &self.0.get().expect(" 커넥션 오류 ");
-        let uid = Uuid::parse_str(&msg.user_id).unwrap();
-        let query_user = user
-            .filter(&id.eq(&uid))
-            .get_result::<User>(conn)
-            .expect(" 조회 오류 ");
-        let mut ceo = Ceo {
-            user: query_user,
-            shop: None,
-            product: None,
-        };
+        let conn = &self.0.get()?;
 
-        match msg.shop_id {
-            None => {}
-            Some(sid_str) => {
-                let sid = Uuid::parse_str(&sid_str)?;
-                use crate::schema::shop::dsl::{id, shop as tb};
-                use crate::svc::shop::model::Shop;
-                //shop id 의 소유확인
-                let query_shop = tb.filter(&id.eq(&sid)).get_result::<Shop>(conn)?;
-                ceo.shop = Some(query_shop);
-                match msg.product_id {
-                    None => {}
-                    Some(pid) => {
-                        //product_id 의 소유확인
-                        use crate::schema::product::dsl::{id, product as tb};
-                        use crate::svc::product::model::Product;
-                        let n: i32 = std::str::FromStr::from_str(&pid).unwrap();
-                        let query_product = tb.filter(&id.eq(&n)).get_result::<Product>(conn)?;
-                        ceo.product = Some(query_product);
+        match msg.auth_user {
+            None => Err(ServiceError::Unauthorized),
+            Some(u) => {
+                if u.role == "ceo" {
+                    let q = "select * from ceo_info('".to_string()
+                        + &u.id.to_string()
+                        + "','"
+                        + &msg.shop_id.unwrap()
+                        + "',"
+                        + &msg.product_id.unwrap().to_string()
+                        + ")";
+                    let res = sql_query(q).execute(conn)?;
+                    if res == 1 {
+                        Ok(res)
+                    } else {
+                        Err(ServiceError::Unauthorized)
                     }
+                } else if u.role == "super" {
+                    Ok(1)
+                } else {
+                    Err(ServiceError::BadRequest("누구냐".into()))
                 }
             }
         }
-
-        println!("{:?}", ceo);
-        println!("==========================================================================================");
-        Ok(ceo)
     }
 }

@@ -101,7 +101,7 @@ fn main() -> std::io::Result<()> {
                                                             ),
                                                         ))
                                                         .service(
-                                                            web::scope("/{products_id}").service(
+                                                            web::scope("/{product_id}").service(
                                                                 web::resource("")
                                                                     .route(web::post().to_async(
                                                                         svc::product::router::post,

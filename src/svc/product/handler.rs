@@ -40,7 +40,6 @@ impl Handler<Update> for DbExecutor {
         let conn = &self.0.get()?;
 
         let old_item = tb.filter(&id.eq(&msg.id)).get_result::<Product>(conn)?;
-
         let item_update = diesel::update(&old_item)
             .set(&msg)
             .get_result::<Product>(conn)?;

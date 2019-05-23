@@ -98,46 +98,46 @@ impl FromRequest for AuthUser {
                 ///
                 /// /*
                 /**
-                                                                 * db.send(path_info).then(|res| match res {
-                                                                    Ok(user) => user,
-                                                                    Err(e) => panic!("aaaa"),
-                                                                });
+                                                                                                                                                 * db.send(path_info).then(|res| match res {
+                                                                                                                                                    Ok(user) => user,
+                                                                                                                                                    Err(e) => panic!("aaaa"),
+                                                                                                                                                });
 
-                                                                use crate::schema::product::dsl::{id, name, product as tb};
-                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
-                                                                use diesel;
-                                                                use diesel::prelude::*;
-                                                                let conn = &db.0.get().unwrap();
-                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
+                                                                                                                                                use crate::schema::product::dsl::{id, name, product as tb};
+                                                                                                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
+                                                                                                                                                use diesel;
+                                                                                                                                                use diesel::prelude::*;
+                                                                                                                                                let conn = &db.0.get().unwrap();
+                                                                                                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
 
-                                                                let payload = serde_json::json!({
-                                                                    "item": item,
-                                                                });
-                                                                println!("{:?}", payload);
+                                                                                                                                                let payload = serde_json::json!({
+                                                                                                                                                    "item": item,
+                                                                                                                                                });
+                                                                                                                                                println!("{:?}", payload);
 
-                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
-                                                                 */
+                                                                                                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
+                                                                                                                                                 */
                 /**
-                                                                *
-                                                                 let mut cc;
-                                                                let f = match db.send(path_info) {
-                                                                    Ok(file) => file,
-                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
-                                                                };
+                                                                                                                                                *
+                                                                                                                                                 let mut cc;
+                                                                                                                                                let f = match db.send(path_info) {
+                                                                                                                                                    Ok(file) => file,
+                                                                                                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
+                                                                                                                                                };
 
-                                                                let aa = db
-                                                                    .send(path_info)
-                                                                    .from_err()
-                                                                    .and_then(|db_response| match db_response {
-                                                                        Ok(invitation) => {
-                                                                            println!("aa:{:?}", invitation);
-                                                                            cc = invitation;
-                                                                            Ok("bbbb okd")
-                                                                        }
-                                                                        Err(err) => Ok("errrr"),
-                                                                    });
+                                                                                                                                                let aa = db
+                                                                                                                                                    .send(path_info)
+                                                                                                                                                    .from_err()
+                                                                                                                                                    .and_then(|db_response| match db_response {
+                                                                                                                                                        Ok(invitation) => {
+                                                                                                                                                            println!("aa:{:?}", invitation);
+                                                                                                                                                            cc = invitation;
+                                                                                                                                                            Ok("bbbb okd")
+                                                                                                                                                        }
+                                                                                                                                                        Err(err) => Ok("errrr"),
+                                                                                                                                                    });
 
-                                                                */
+                                                                                                                                                */
                 // let mut bb;
                 // let aa = db.send(path).from_err().then(|res| bb = res);
                 //        let aa = result();
@@ -292,16 +292,16 @@ pub struct QueryUser {
 }
 
 #[derive(Deserialize, Serialize, Debug, Message)]
-#[rtype(result = "Result<Ceo, ServiceError>")]
+#[rtype(result = "Result<usize, ServiceError>")]
 pub struct Info {
     pub user_id: String,
     pub shop_id: Option<String>,
-    pub product_id: Option<String>,
-    //pub auth_user: AuthUser,
+    pub product_id: Option<i32>,
+    pub auth_user: Option<AuthUser>,
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Ceo {
-    pub user: User,
+    pub user: Option<User>,
     pub shop: Option<Shop>,
     pub product: Option<Product>,
 }
