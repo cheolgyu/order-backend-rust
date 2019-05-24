@@ -19,7 +19,9 @@ mod schema;
 mod svc;
 mod utils;
 use crate::models::DbExecutor;
-use actix_web::{get, middleware as actix_middleware, web, App, HttpRequest, HttpServer};
+use actix_web::{
+    get, http::header, middleware as actix_middleware, web, App, HttpRequest, HttpServer,
+};
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
 use std::env;
@@ -63,9 +65,15 @@ fn main() -> std::io::Result<()> {
         App::new()
             .data(address.clone())
             .data(pool2.clone())
-            .wrap(actix_middleware::DefaultHeaders::new().header("X-Version", "0.2"))
-            .wrap(actix_middleware::Compress::default())
             .wrap(actix_middleware::Logger::default())
+            .wrap(
+                actix_middleware::cors::Cors::new()
+                    .allowed_origin("http://localhost:3334")
+                    .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
+                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+                    .allowed_header(header::CONTENT_TYPE)
+                    .max_age(3600),
+            )
             .service(
                 web::scope("/api/v1")
                     .service(

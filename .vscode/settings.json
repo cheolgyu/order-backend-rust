@@ -2,4 +2,8 @@
     "editor.defaultFormatter": "rust-lang.rust",
     "editor.formatOnSave": true,
     "editor.fontSize": 16,
+    "files.watcherExclude": {
+        ".vue": true,
+        "*.vue": true
+    },
 }
