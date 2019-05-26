@@ -74,6 +74,7 @@ fn main() -> std::io::Result<()> {
                     .allowed_header(header::CONTENT_TYPE)
                     .max_age(3600),
             )
+            .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
             .service(
                 web::scope("/api/v1")
                     .service(

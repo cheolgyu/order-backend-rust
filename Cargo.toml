@@ -12,6 +12,7 @@ actix-web = "1.0.0-rc"
 actix_derive = "0.4.0"
 actix-service = "0.4.0"
 actix-http = "0.2.0"
+actix-web-actors = "1.0.0-beta.4"
 diesel = { version = "1.4.2", features = ["postgres","r2d2","chrono","serde_json","uuid"] }
 diesel_derives = "1.4.0"
 dotenv = "0.9.0"

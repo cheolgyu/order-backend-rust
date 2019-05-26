@@ -1,4 +1,5 @@
 pub mod msg;
+pub mod ws;
 
 use actix::{Actor, SyncContext};
 use diesel::pg::PgConnection;
