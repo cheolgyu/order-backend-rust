@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::AuthUser;
+use crate::svc::auth::model::{AuthUser, Info};
 use crate::svc::shop::model::{InpNew, NewShop, ShopID};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
@@ -40,11 +40,14 @@ pub fn put(
 }
 
 pub fn get(
-    path_shop_id: Path<String>,
+    path_info: Path<Info>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let uuid_shop_id = Uuid::parse_str(&path_shop_id).unwrap();
+    println!("shop ---g et ");
+    let mut info = path_info.into_inner();
+    let sid = info.shop_id.unwrap();
+    let uuid_shop_id = Uuid::parse_str(&sid).unwrap();
     db.send(ShopID { id: uuid_shop_id })
         .from_err()
         .and_then(|res| match res {

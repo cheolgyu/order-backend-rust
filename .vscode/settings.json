@@ -10,4 +10,5 @@
         "toolchain": "stable-x86_64-unknown-linux-gnu"
     },
     "rust.mode": null,
+    "eslint.enable": false,
 }
