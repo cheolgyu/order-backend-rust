@@ -45,6 +45,8 @@ fn main() -> std::io::Result<()> {
     dotenv().ok();
     let domain: String = env::var("DOMAIN").expect("DOMAIN must be set");
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let url_frontend_ceo: String =
+        env::var("URL_FRONTEND_CEO").expect("URL_FRONTEND_CEO must be set");
     env_logger::init();
 
     let sys = actix_rt::System::new("mybackend");
@@ -68,7 +70,7 @@ fn main() -> std::io::Result<()> {
             .wrap(actix_middleware::Logger::default())
             .wrap(
                 actix_middleware::cors::Cors::new()
-                    .allowed_origin("http://localhost:3334")
+                    .allowed_origin(&url_frontend_ceo)
                     .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
                     .allowed_header(header::CONTENT_TYPE)

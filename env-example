@@ -1,4 +1,6 @@
 DATABASE_URL=postgres://dlacjfrb:dlacjfrb@coffee-dbinstance.czunxjjslnrd.ap-northeast-2.rds.amazonaws.com/dev
+URL_FRONTEND_CEO=https://ceo.cheolgyu.com
+URL_FRONTEND_USER=https://ceo.cheolgyu.com
 DOMAIN=0.0.0.0:3000
 HASH_ROUNDS=dlacjfrbWkd
 JWT_SECRET=dlacjfrbWkd
