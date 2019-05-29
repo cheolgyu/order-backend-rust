@@ -1,12 +1,28 @@
 -- Your SQL goes here
 create extension pgcrypto;
 
+CREATE TABLE "valid" (
+
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL,
+  kind VARCHAR NOT NULL,
+  kind_value VARCHAR NOT NULL,
+  code VARCHAR  NOT NULL,
+  req VARCHAR ,
+  res VARCHAR ,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
 CREATE TABLE "user" (
 
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   account_id VARCHAR NOT NULL,
   account_password text NOT NULL,
   email VARCHAR NOT NULL,
+  phone VARCHAR  NULL,
   name VARCHAR NOT NULL ,
   role VARCHAR NOT NULL DEFAULT 'ceo' ,
 

@@ -29,8 +29,24 @@ table! {
         account_id -> Varchar,
         account_password -> Text,
         email -> Varchar,
+        phone -> Nullable<Varchar>,
         name -> Varchar,
         role -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    valid (id) {
+        id -> Uuid,
+        user_id -> Uuid,
+        kind -> Varchar,
+        kind_value -> Varchar,
+        code -> Varchar,
+        req -> Nullable<Varchar>,
+        res -> Nullable<Varchar>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -41,4 +57,5 @@ allow_tables_to_appear_in_same_query!(
     product,
     shop,
     user,
+    valid,
 );

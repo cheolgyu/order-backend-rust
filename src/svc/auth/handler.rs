@@ -105,17 +105,59 @@ impl Handler<Info> for DbExecutor {
 
     fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
-
+        println!(" path info start ");
         match msg.auth_user {
             None => Err(ServiceError::Unauthorized),
             Some(u) => {
+                use diesel::sql_types::Nullable;
+                println!(" path info start match ");
+                if u.role == "ceo" {
+                    let q = sql_query("select * from ceo_info($1,$2,$3) ");
+                    let res = q
+                        .bind::<Text, _>(u.id.to_string())
+                        .bind::<Nullable<Text>, _>(msg.shop_id)
+                        .bind::<Nullable<Integer>, _>(msg.product_id)
+                        .execute(conn)?;
+                    let res2 = res;
+                    println!("=====path info==>{:?}", res2);
+
+                    if res2 == 1 {
+                        let res3 = res2 as usize;
+                        Ok(res3)
+                    } else {
+                        Err(ServiceError::Unauthorized)
+                    }
+                } else if u.role == "super" {
+                    Ok(1)
+                } else {
+                    Err(ServiceError::BadRequest("누구냐".into()))
+                }
+            }
+        }
+    }
+}
+
+/*
+impl Handler<Info> for DbExecutor {
+    type Result = Result<usize, ServiceError>;
+
+    fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
+        let conn = &self.0.get()?;
+        println!(" path info start ");
+        match msg.auth_user {
+            None => Err(ServiceError::Unauthorized),
+            Some(u) => {
+                println!(" path info start match ");
                 if u.role == "ceo" {
                     let q = "select * from ceo_info('".to_string()
                         + &u.id.to_string()
                         + "','"
                         + &msg.shop_id.unwrap()
                         + "',"
-                        + &msg.product_id.unwrap().to_string()
+                        + match &msg.product_id {
+                            Some(res) => &res.to_string(),
+                            None() => "",
+                        }
                         + ")";
                     let res = sql_query(q).execute(conn)?;
                     if res == 1 {
@@ -132,3 +174,4 @@ impl Handler<Info> for DbExecutor {
         }
     }
 }
+*/

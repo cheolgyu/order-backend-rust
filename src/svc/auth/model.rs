@@ -39,6 +39,7 @@ pub struct User {
     pub account_id: String,
     pub account_password: String,
     pub email: String,
+    pub phone: Option<String>,
     pub name: String,
     pub role: String,
     pub created_at: NaiveDateTime,
@@ -98,46 +99,46 @@ impl FromRequest for AuthUser {
                 ///
                 /// /*
                 /**
-                                                                                                                                                 * db.send(path_info).then(|res| match res {
-                                                                                                                                                    Ok(user) => user,
-                                                                                                                                                    Err(e) => panic!("aaaa"),
-                                                                                                                                                });
+                                                                                                                                                                                                                                 * db.send(path_info).then(|res| match res {
+                                                                                                                                                                                                                                    Ok(user) => user,
+                                                                                                                                                                                                                                    Err(e) => panic!("aaaa"),
+                                                                                                                                                                                                                                });
 
-                                                                                                                                                use crate::schema::product::dsl::{id, name, product as tb};
-                                                                                                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
-                                                                                                                                                use diesel;
-                                                                                                                                                use diesel::prelude::*;
-                                                                                                                                                let conn = &db.0.get().unwrap();
-                                                                                                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
+                                                                                                                                                                                                                                use crate::schema::product::dsl::{id, name, product as tb};
+                                                                                                                                                                                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
+                                                                                                                                                                                                                                use diesel;
+                                                                                                                                                                                                                                use diesel::prelude::*;
+                                                                                                                                                                                                                                let conn = &db.0.get().unwrap();
+                                                                                                                                                                                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
 
-                                                                                                                                                let payload = serde_json::json!({
-                                                                                                                                                    "item": item,
-                                                                                                                                                });
-                                                                                                                                                println!("{:?}", payload);
+                                                                                                                                                                                                                                let payload = serde_json::json!({
+                                                                                                                                                                                                                                    "item": item,
+                                                                                                                                                                                                                                });
+                                                                                                                                                                                                                                println!("{:?}", payload);
 
-                                                                                                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
-                                                                                                                                                 */
+                                                                                                                                                                                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
+                                                                                                                                                                                                                                 */
                 /**
-                                                                                                                                                *
-                                                                                                                                                 let mut cc;
-                                                                                                                                                let f = match db.send(path_info) {
-                                                                                                                                                    Ok(file) => file,
-                                                                                                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
-                                                                                                                                                };
+                                                                                                                                                                                                                                *
+                                                                                                                                                                                                                                 let mut cc;
+                                                                                                                                                                                                                                let f = match db.send(path_info) {
+                                                                                                                                                                                                                                    Ok(file) => file,
+                                                                                                                                                                                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
+                                                                                                                                                                                                                                };
 
-                                                                                                                                                let aa = db
-                                                                                                                                                    .send(path_info)
-                                                                                                                                                    .from_err()
-                                                                                                                                                    .and_then(|db_response| match db_response {
-                                                                                                                                                        Ok(invitation) => {
-                                                                                                                                                            println!("aa:{:?}", invitation);
-                                                                                                                                                            cc = invitation;
-                                                                                                                                                            Ok("bbbb okd")
-                                                                                                                                                        }
-                                                                                                                                                        Err(err) => Ok("errrr"),
-                                                                                                                                                    });
+                                                                                                                                                                                                                                let aa = db
+                                                                                                                                                                                                                                    .send(path_info)
+                                                                                                                                                                                                                                    .from_err()
+                                                                                                                                                                                                                                    .and_then(|db_response| match db_response {
+                                                                                                                                                                                                                                        Ok(invitation) => {
+                                                                                                                                                                                                                                            println!("aa:{:?}", invitation);
+                                                                                                                                                                                                                                            cc = invitation;
+                                                                                                                                                                                                                                            Ok("bbbb okd")
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                        Err(err) => Ok("errrr"),
+                                                                                                                                                                                                                                    });
 
-                                                                                                                                                */
+                                                                                                                                                                                                                                */
                 // let mut bb;
                 // let aa = db.send(path).from_err().then(|res| bb = res);
                 //        let aa = result();
@@ -285,7 +286,7 @@ impl Validate for InpNew {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Message)]
+#[derive(Deserialize, Serialize, Debug, Clone, Message, Queryable)]
 #[rtype(result = "Result<SlimUser, ServiceError>")]
 pub struct QueryUser {
     pub id: Uuid,

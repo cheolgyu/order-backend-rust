@@ -84,12 +84,6 @@ fn main() -> std::io::Result<()> {
                             .route(web::put().to_async(svc::auth::router::signup))
                             .route(web::post().to_async(svc::auth::router::signin))
                             .route(web::get().to_async(svc::auth::router::getme)),
-                    ).service(
-                        web::resource("/send_email")
-                            .route(web::put().to_async(svc::auth::router::signup)),
-                    ).service(
-                        web::resource("/valid_email")
-                            .route(web::get().to_async(svc::auth::router::getme)),
                     )
                     .service(
                         web::scope("/users").service(
@@ -97,6 +91,13 @@ fn main() -> std::io::Result<()> {
                                 .service(
                                     web::resource("")
                                         .route(web::get().to_async(svc::auth::router::getme)),
+                                )
+                                .service(
+                                    web::resource("/valid_email")
+                                        .route(web::put().to_async(svc::valid::router::valid_email)),
+                                ) .service(
+                                    web::resource("/valid_phone")
+                                        .route(web::put().to_async(svc::valid::router::valid_phone)),
                                 )
                                 .service(
                                     web::scope("/shops")
