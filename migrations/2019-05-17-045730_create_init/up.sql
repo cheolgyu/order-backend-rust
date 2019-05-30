@@ -101,7 +101,7 @@ $$ LANGUAGE plpgsql;
 INSERT INTO "user" ("id", "account_id", "account_password", "email", "name", "role", "created_at", "updated_at", "deleted_at") VALUES
 ('0290a0ad-9851-461b-af42-0313f15c9702',	'dlacjfrb123',	
 crypt('dlacjfrb123!@#',gen_salt('bf'))
-,	'abc@abc.com',	'',	'ceo',	'2019-05-18 12:44:02.647759',	'2019-05-18 12:44:02.647759',	NULL);
+,	'cjfrb119@hanmail.net',	'',	'ceo',	'2019-05-18 12:44:02.647759',	'2019-05-18 12:44:02.647759',	NULL);
 INSERT INTO "shop" ("id", "ceo_id", "name", "products", "created_at", "updated_at", "deleted_at") VALUES
 ('109b7b41-f8eb-4702-abdb-6bfb95f57072',	'0290a0ad-9851-461b-af42-0313f15c9702',	'hello coffee',	NULL,	'2019-05-18 12:44:41.184624',	'2019-05-18 12:44:41.184624',	NULL);
 
