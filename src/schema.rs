@@ -48,6 +48,7 @@ table! {
         req -> Nullable<Varchar>,
         res -> Nullable<Varchar>,
         created_at -> Timestamp,
+        valid_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
     }

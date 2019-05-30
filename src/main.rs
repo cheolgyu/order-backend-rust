@@ -20,7 +20,8 @@ mod svc;
 mod utils;
 use crate::models::DbExecutor;
 use actix_web::{
-    get, http::header, middleware as actix_middleware, web, App, HttpRequest, HttpServer,
+    client::Client, get, http::header, middleware as actix_middleware, web, App, HttpRequest,
+    HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
@@ -47,6 +48,7 @@ fn main() -> std::io::Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let url_frontend_ceo: String =
         env::var("URL_FRONTEND_CEO").expect("URL_FRONTEND_CEO must be set");
+    let valid_email: String = env::var("VALID_EMAIL").expect("VALID_EMAIL must be set");
     env_logger::init();
 
     let sys = actix_rt::System::new("mybackend");
@@ -67,6 +69,8 @@ fn main() -> std::io::Result<()> {
         App::new()
             .data(address.clone())
             .data(pool2.clone())
+            .data(Client::default())
+            .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(
                 actix_middleware::cors::Cors::new()

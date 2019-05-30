@@ -8,7 +8,7 @@ edition = "2018"
 futures = "0.1.27"
 actix = "0.8.2"
 actix-rt = "0.2.2"
-actix-web = "1.0.0-rc"
+actix-web = {version="1.0.0-rc",features=["ssl"]}
 actix_derive = "0.4.0"
 actix-service = "0.4.0"
 actix-http = "0.2.0"

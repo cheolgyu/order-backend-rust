@@ -43,6 +43,7 @@ pub struct Valid {
     pub req: Option<String>,
     pub res: Option<String>,
     pub created_at: NaiveDateTime,
+    pub valid_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -54,5 +55,20 @@ pub struct New {
     pub user_id: Uuid,
     pub kind: String,
     pub kind_value: String,
+    pub code: String,
+    pub valid_at: NaiveDateTime,
+    pub req: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct InpNew {
+    pub user_id: Uuid,
+    pub kind: String,
+    pub kind_value: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ChkValid {
+    pub v: InpNew,
     pub code: String,
 }
