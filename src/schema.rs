@@ -29,6 +29,7 @@ table! {
         account_id -> Varchar,
         account_password -> Text,
         email -> Varchar,
+        valid_email -> Bool,
         phone -> Nullable<Varchar>,
         name -> Varchar,
         role -> Varchar,

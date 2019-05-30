@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::svc::valid::model::{New, Valid};
+use crate::svc::valid::model::{ChkValid, New, Valid};
 use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
@@ -44,6 +44,53 @@ impl Handler<New> for DbExecutor {
                     data: payload,
                 })
             }
+        }
+    }
+}
+
+impl Handler<ChkValid> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: ChkValid, _: &mut Self::Context) -> Self::Result {
+        println!("2222222{:?}", msg);
+        use crate::schema::valid::dsl::{code, kind, kind_value, res, user_id, valid as tb};
+        let conn = &self.0.get()?;
+        let mut check = None;
+        let m2 = msg.clone();
+
+        check = tb
+            .filter(&kind_value.eq(&msg.v.kind_value))
+            .filter(&kind.eq(&msg.v.kind))
+            .filter(&user_id.eq(&msg.v.user_id))
+            .filter(&code.eq(&msg.code))
+            .load::<Valid>(conn)?
+            .pop();
+
+        println!("3333333333{:?}", msg);
+        match check {
+            Some(target) => {
+                use crate::schema::user::dsl::{id, user as u_tb, valid_email};
+                diesel::update(u_tb)
+                    .filter(&id.eq(&msg.v.user_id))
+                    .set(valid_email.eq(true))
+                    .execute(conn)?;
+
+                let update: Valid = diesel::update(tb)
+                    .filter(&kind_value.eq(&msg.v.kind_value))
+                    .filter(&kind.eq(&msg.v.kind))
+                    .filter(&user_id.eq(&msg.v.user_id))
+                    .filter(&code.eq(&msg.code))
+                    .set(res.eq("true"))
+                    .get_result::<Valid>(conn)?;
+
+                let payload = json!({ "valid": update });
+
+                Ok(Msg {
+                    status: 200,
+                    data: payload,
+                })
+            }
+            None => Err(ServiceError::BadRequest("인증 확인하세요.".into())),
         }
     }
 }

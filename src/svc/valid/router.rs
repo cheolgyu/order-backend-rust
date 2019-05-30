@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::{AuthUser, Info};
-use crate::svc::valid::model::{InpNew, New};
+use crate::svc::valid::model::{ChkValid, InpNew, New};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -92,57 +92,17 @@ pub fn valid_email(
 pub fn chk_valid_email(
     auth_user: AuthUser,
     path_info: Path<Info>,
-    client: Data<Client>,
-    url_valid_email: Data<String>,
-    json: Json<New>,
+    json: Json<ChkValid>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
-    println!("1111111111{:?}", info);
-    println!("1111111111{:?}", json);
-    //인증코드 만들기
-    let code = format!("{}", uuid::Uuid::new_v4());
-    let valid_at = Local::now().naive_local() + Duration::hours(24);
-    let mut j = json.into_inner();
-    let api = url_valid_email.to_string();
-    j.code = code;
-    j.valid_at = valid_at;
-    let jj = j.clone();
 
     db.send(info)
         .from_err()
         .and_then(move |_| {
-            println!("00000000000000000000");
-            let url = format!(
-                "{}?mail_to={}&token={}&valid_at={}",
-                api,
-                j.kind_value,
-                j.code,
-                valid_at.to_string()
-            );
-            client
-                .get(url)
-                .header("User-Agent", "Actix-web")
-                .send()
-                .map_err(Error::from)
-        })
-        .and_then(|resp| {
-            println!("1111111111111111");
-            resp.from_err()
-                .fold(BytesMut::new(), |mut acc, chunk| {
-                    acc.extend_from_slice(&chunk);
-                    Ok::<_, Error>(acc)
-                })
-                .map(|body| {
-                    let body: HttpBinResponse = serde_json::from_slice(&body).unwrap();
-                    body.status
-                })
-        })
-        .and_then(move |status| {
-            //인증코드도 저장
             println!("999999999999999");
-            let res = db.send(jj).from_err();
+            let res = db.send(json.into_inner()).from_err();
             println!("888888888888");
             res
         })

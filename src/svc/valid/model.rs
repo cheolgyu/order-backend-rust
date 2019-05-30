@@ -67,7 +67,8 @@ pub struct InpNew {
     pub kind_value: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Message)]
+#[rtype(result = "Result<Msg, ServiceError>")]
 pub struct ChkValid {
     pub v: InpNew,
     pub code: String,

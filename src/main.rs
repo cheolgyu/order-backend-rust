@@ -98,7 +98,8 @@ fn main() -> std::io::Result<()> {
                                 )
                                 .service(
                                     web::resource("/valid_email")
-                                        .route(web::put().to_async(svc::valid::router::valid_email)),
+                                        .route(web::put().to_async(svc::valid::router::valid_email))
+                                        .route(web::post().to_async(svc::valid::router::chk_valid_email)),
                                 ) .service(
                                     web::resource("/valid_phone")
                                         .route(web::put().to_async(svc::valid::router::valid_phone)),

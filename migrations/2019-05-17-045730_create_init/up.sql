@@ -23,6 +23,7 @@ CREATE TABLE "user" (
   account_id VARCHAR NOT NULL,
   account_password text NOT NULL,
   email VARCHAR NOT NULL,
+  valid_email bool NOT NULL DEFAULT 'false' ,
   phone VARCHAR  NULL,
   name VARCHAR NOT NULL ,
   role VARCHAR NOT NULL DEFAULT 'ceo' ,
