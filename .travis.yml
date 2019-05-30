@@ -7,7 +7,8 @@ notifications: # 성공 실패 여부 알림
     recipients:
       - rb7480@naver.com
 cache: cargo
-
+os:
+  - linux
 script:
   - cargo build --release
   - cargo test --verbose --all
