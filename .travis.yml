@@ -8,9 +8,9 @@ notifications: # 성공 실패 여부 알림
       - rb7480@naver.com
 cache: cargo
 
-#script:
-#  - cargo build --release
-#  - cargo test --verbose --all
+script:
+  - cargo build --release
+  - cargo test --verbose --all
 before_deploy: # 배포하기전 하는 작업들
   - ls -al
   - mkdir -p zip
