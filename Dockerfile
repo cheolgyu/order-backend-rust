@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
 FROM ${BASE_IMAGE} AS builder
 ADD . ./
-RUN sudo chown -R rust:rust /home/order-backend-rust
+RUN sudo chown -R rust:rust /home/rust
 RUN cargo build --release
 
 # Now, we need to build our _real_ Docker container, copying in `using-diesel`.
