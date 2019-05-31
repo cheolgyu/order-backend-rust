@@ -4,7 +4,7 @@ services:
   - docker
 env:
   global:
-    - DOCKER_REPO=myorg/veryimportantimage
+    - DOCKER_REPO=order
     - EB_REGION="ap-northeast-2"
     - secure: $AWS_ACCOUNT_ID
     - secure: $AWS_ACCESS_KEY_ID
