@@ -1,4 +1,7 @@
 #!/bin/bash -e
+echo $AWS_ACCOUNT_ID
+echo $AWS_SECRET_ACCESS_KEY
+echo $AWS_SECRET_KEY
 
 # the registry should have been created already
 # you could just paste a given url from AWS but I'm
