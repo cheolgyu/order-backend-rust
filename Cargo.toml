@@ -1,5 +1,5 @@
 [package]
-name = "order-back-rust"
+name = "order-backend-rust"
 version = "0.1.0"
 authors = ["cg <rb7480@naver.com>"]
 edition = "2018"

@@ -1,13 +1,13 @@
-FROM rust:1.34.2-stretch as builder
+ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
+FROM ${BASE_IMAGE} AS builder
+ADD . ./
+RUN sudo chown -R rust:rust /home/order-backend-rust
+RUN cargo build --release
 
-RUN export RUSTC_WRAPPER=sccache 
-RUN export RUST_BACKTRACE=1
-WORKDIR /usr/src/app
-RUN cargo install sccache
-RUN sccache --start-server
-RUN cargo install cargo-watch
-RUN ls -al
-
-COPY . .
-RUN cargo install diesel_cli --no-default-features --features postgres
-#CMD ["cargo watch -x run"]
+# Now, we need to build our _real_ Docker container, copying in `using-diesel`.
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+COPY --from=builder \
+    /home/rust/src/target/x86_64-unknown-linux-musl/release/order-backend-rust \
+    /usr/local/bin/
+CMD /usr/local/bin/order-backend-rust
