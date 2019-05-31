@@ -1,6 +1,6 @@
 ARG BASE_IMAGE=ekidd/rust-musl-builder:stable-openssl11
 FROM ${BASE_IMAGE} AS builder
-
+RUN export RUSTC_WRAPPER=sccache
 RUN cargo install sccache
 RUN sccache --start-server
 RUN cargo install diesel_cli --no-default-features --features "postgres"
