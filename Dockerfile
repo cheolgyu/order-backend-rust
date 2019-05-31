@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ekidd/rust-musl-builder:latest
+ARG BASE_IMAGE=ekidd/rust-musl-builder:stable-openssl11
 FROM ${BASE_IMAGE} AS builder
 ADD . ./
 RUN sudo chown -R rust:rust /home/rust
