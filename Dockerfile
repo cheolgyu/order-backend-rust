@@ -3,7 +3,7 @@ FROM ${BASE_IMAGE} AS builder
 
 RUN cargo install sccache
 RUN sccache --start-server
-RUN cargo install diesel_cli
+RUN cargo install diesel_cli --no-default-features --features "postgres"
 ADD . ./
 RUN sudo chown -R rust:rust /home/rust
 RUN cargo build --release
