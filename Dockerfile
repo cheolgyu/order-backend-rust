@@ -5,6 +5,13 @@ ADD . ./
 RUN sudo chown -R rust:rust /home/rust
 RUN cargo build --release
 
+RUN mkdir -p /build-out
+
+RUN cp target/x86_64-unknown-linux-musl/release/order-backen-rust /build-out/
+
+RUN ls /build-out/
+
+
 # Now, we need to build our _real_ Docker container, copying in `using-diesel`.
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
