@@ -2,6 +2,7 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
+use crate::svc::shop::model::Shop;
 use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
@@ -88,15 +89,25 @@ impl Handler<Login> for DbExecutor {
 }
 
 impl Handler<QueryUser> for DbExecutor {
-    type Result = Result<SlimUser, ServiceError>;
+    type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, uid: QueryUser, _: &mut Self::Context) -> Self::Result {
         use crate::schema::user::dsl::*;
+         use crate::schema::shop::dsl::{shop as s_tb ,ceo_id };
         let conn = &self.0.get()?;
 
         let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
+        let query_shop = s_tb.filter(&ceo_id.eq(&uid.id)).get_result::<Shop>(conn)?;
 
-        Ok(query_user.into())
+        let payload = json!({
+                   "user": query_user,
+                   "shop": query_shop,
+                });
+
+                Ok(Msg {
+                    status: 200,
+                    data: payload,
+                })
     }
 }
 

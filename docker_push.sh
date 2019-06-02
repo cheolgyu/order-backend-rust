@@ -2,15 +2,16 @@
 echo $AWS_ACCOUNT_ID
 echo $AWS_SECRET_ACCESS_KEY
 echo $AWS_SECRET_KEY
+docker images
 
 # the registry should have been created already
 # you could just paste a given url from AWS but I'm
 # parameterising it to make it more obvious how its constructed
 REGISTRY_URL=${AWS_ACCOUNT_ID}.dkr.ecr.${EB_REGION}.amazonaws.com
 # this is most likely namespaced repo name like myorg/veryimportantimage
-SOURCE_IMAGE="${DOCKER_REPO}"
+SOURCE_IMAGE="builder"
 # using it as there will be 2 versions published
-TARGET_IMAGE="${REGISTRY_URL}/${DOCKER_REPO}"
+TARGET_IMAGE="${REGISTRY_URL}/${SOURCE_IMAGE}"
 # lets make sure we always have access to latest image
 TARGET_IMAGE_LATEST="${TARGET_IMAGE}:latest"
 TIMESTAMP=$(date '+%Y%m%d%H%M%S')
@@ -39,3 +40,6 @@ docker push ${TARGET_IMAGE_LATEST}
 # push new version
 docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE_VERSIONED}
 docker push ${TARGET_IMAGE_VERSIONED}
+
+docker save order | gzip -c  > order.tar.gz
+ls -sh order.tar.gz

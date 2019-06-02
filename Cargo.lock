@@ -1013,7 +1013,7 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "order-back-rust"
+name = "order-backend-rust"
 version = "0.1.0"
 dependencies = [
  "actix 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",

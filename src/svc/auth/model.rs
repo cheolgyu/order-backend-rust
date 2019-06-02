@@ -290,7 +290,7 @@ impl Validate for InpNew {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Message, Queryable)]
-#[rtype(result = "Result<SlimUser, ServiceError>")]
+#[rtype(result = "Result<Msg, ServiceError>")]
 pub struct QueryUser {
     pub id: Uuid,
 }

@@ -1,9 +1,8 @@
-
 version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/deploy/api/
+    destination: /home/ec2-user/deploy-image
     overwrite: true
 hooks:
   BeforeInstall:

@@ -1,0 +1,15 @@
+version: "3.0"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.3.builder
+
+    volumes:
+      - cargo:/home/rust/.cargo
+      - target:/home/rust/src/target
+
+volumes:
+  cargo: {}
+  target: {}
