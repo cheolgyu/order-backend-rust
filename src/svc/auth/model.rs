@@ -82,102 +82,20 @@ impl AuthUser {
     }
 }
 use futures::{future::result, Future};
-
+#[warn(unused_variables)] 
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
-
+    
     fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
         let path_info = Path::<Info>::extract(req)?.into_inner();
-        let db = req.app_data::<Addr<DbExecutor>>().unwrap();
         println!("auth_user-from_request-path_info:{:?}", path_info);
         if let Some(auth_token) = req.headers().get("authorization") {
             println!("auth_user-from_request-path_info: 11111111111111111");
             if let Ok(auth) = auth_token.to_str() {
                 println!("auth_user-from_request-path_info: 2222222222222");
                 let token: AuthUser = decode_token(auth)?;
-                /////////////////////////////////////////////////////////////
-                ///
-                /// /*
-                /**
-                                                                                                                                                                                                                                                                                 * db.send(path_info).then(|res| match res {
-                                                                                                                                                                                                                                                                                    Ok(user) => user,
-                                                                                                                                                                                                                                                                                    Err(e) => panic!("aaaa"),
-                                                                                                                                                                                                                                                                                });
-
-                                                                                                                                                                                                                                                                                use crate::schema::product::dsl::{id, name, product as tb};
-                                                                                                                                                                                                                                                                                use crate::svc::product::model::{Get, InpNew, New, Product, Update};
-                                                                                                                                                                                                                                                                                use diesel;
-                                                                                                                                                                                                                                                                                use diesel::prelude::*;
-                                                                                                                                                                                                                                                                                let conn = &db.0.get().unwrap();
-                                                                                                                                                                                                                                                                                let item = tb.filter(&id.eq(1)).get_result::<Product>(&conn).unwrap();
-
-                                                                                                                                                                                                                                                                                let payload = serde_json::json!({
-                                                                                                                                                                                                                                                                                    "item": item,
-                                                                                                                                                                                                                                                                                });
-                                                                                                                                                                                                                                                                                println!("{:?}", payload);
-
-                                                                                                                                                                                                                                                                                println!("auth_user-from_request-path_info: 33333333333333333       ");
-                                                                                                                                                                                                                                                                                 */
-                /**
-                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                 let mut cc;
-                                                                                                                                                                                                                                                                                let f = match db.send(path_info) {
-                                                                                                                                                                                                                                                                                    Ok(file) => file,
-                                                                                                                                                                                                                                                                                    Err(error) => panic!("There was a problem opening the file: {:?}", error),
-                                                                                                                                                                                                                                                                                };
-
-                                                                                                                                                                                                                                                                                let aa = db
-                                                                                                                                                                                                                                                                                    .send(path_info)
-                                                                                                                                                                                                                                                                                    .from_err()
-                                                                                                                                                                                                                                                                                    .and_then(|db_response| match db_response {
-                                                                                                                                                                                                                                                                                        Ok(invitation) => {
-                                                                                                                                                                                                                                                                                            println!("aa:{:?}", invitation);
-                                                                                                                                                                                                                                                                                            cc = invitation;
-                                                                                                                                                                                                                                                                                            Ok("bbbb okd")
-                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                        Err(err) => Ok("errrr"),
-                                                                                                                                                                                                                                                                                    });
-
-                                                                                                                                                                                                                                                                                */
-                // let mut bb;
-                // let aa = db.send(path).from_err().then(|res| bb = res);
-                //        let aa = result();
-
-                // let aa = db.send(path).map(|res| res);
-                //println!("cc:{:?}", cc);
-
-                //let res = db.send(path).map_err(|e| println!("err: {:?}",e););
-                //println!("ceo: {:?}", res);
-                /*
-                                db.send(path)?.and_then(move |res| match res {
-                                    Ok(ceo) => {
-                                        println!("ceo: {:?}", ceo);
-                                    }
-                                    Err(err) => println!("err: {:?}", err);,
-                                });
-                */
-                /*
-                                if token.role == "ceo" && token.id.to_string() == path.user_id {
-                                    match path.shop_id {
-                                        None => {}
-                                        Some(sid) => {
-                                            //shop id 의 소유확인
-                                            match path.product_id {
-                                                None => {}
-                                                Some(pid) => {
-                                                    //product_id 의 소유확인
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else if token.role == "super" {
-
-                                } else {
-                                    return Err(ServiceError::Unauthorized.into());
-                                }
-                */
                 return Ok(token);
             }
         }
@@ -296,12 +214,18 @@ pub struct QueryUser {
 }
 
 #[derive(Deserialize, Serialize, Debug, Message)]
-#[rtype(result = "Result<usize, ServiceError>")]
+#[rtype(result = "Result<Info, ServiceError>")]
 pub struct Info {
     pub user_id: String,
     pub shop_id: Option<String>,
     pub product_id: Option<i32>,
     pub auth_user: Option<AuthUser>,
+}
+impl Info {
+    pub fn get_shop_id(&self)->Uuid{
+        let id = &self.shop_id.expect("샵아이디 없다.");
+        Uuid::parse_str(&id).unwrap()
+    }
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Ceo {

@@ -13,7 +13,6 @@ use futures::{future::result, Future};
 use uuid::Uuid;
 
 pub fn signup(
-    req: HttpRequest,
     json: Json<InpNew>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
@@ -27,7 +26,6 @@ pub fn signup(
 }
 
 pub fn signin(
-    req: HttpRequest,
     json: Json<Login>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {

@@ -1,39 +1,51 @@
-sudo: required
-language: python
-services:
-  - docker
-env:
-  global:
-    - DOCKER_REPO=order
-    - EB_REGION="ap-northeast-2"
-    - AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
-    - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-before_install:
-  - pip install awscli
-  - export PATH=$PATH:$HOME/.local/bin
+language: rust
+
+rust:
+  - 1.34.2
+notifications: # 성공 실패 여부 알림
+  email:
+    recipients:
+      - rb7480@naver.com
+cache: cargo
+os:
+  - linux
 script:
-  - docker build -t $DOCKER_REPO .
-deploy:
-  -  provider: script
-    script: bash docker_push.sh
-    on:
-      branch: master
+  - cargo build --release
+  - cargo test --verbose --all
+before_deploy: # 배포하기전 하는 작업들
+  - ls -al
+  - mkdir -p zip
+  - cd zip
+
+  - cp -r ../migrations ./
+  - cp -r ../scripts ./
+  - cp -r ../appspec.yml ./
+  - cp -r  ../env-example ./.env
+  - cp -r ../Dockerfile ./
+  - cp -r ../src ./
+  - cp -r ../Cargo.toml ./Cargo.toml
+  - cp -r ../diesel.toml ./diesel.toml
+  - zip -r api.zip . # node-koa-server 라는 이름으로 zip 파일 생성
+  - ls -al
+  - cd ../
+  - mkdir -p deploy # deploy 라는 디렉터리를 만듬
+  - mv zip/api.zip deploy/api.zip # deploy 디렉터리로 node-koa-server.zip 파일을 이동
+deploy: # 배포
   - provider: s3 # AWS S3를 의미
     access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
     secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
     bucket: coffee-deploy-travis # S3에 생성한 버킷
     region: ap-northeast-2
     skip_cleanup: true
-    local_dir: order.tar.gz # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
+    local_dir: deploy # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
     wait-until-deployed: true
 
   - provider: codedeploy # AWS CodeDeploy를 의미
     access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
     secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
     bucket: coffee-deploy-travis # AWS CodeDeploy가 다운로드 받은 버킷
-    key: order.tar.gz # 해당 버킷에 저장되어 있는 파일 이름
-    bundle_type: gz # 버킷에 저장되어 있는 파일의 확장자
+    key: api.zip # 해당 버킷에 저장되어 있는 파일 이름
+    bundle_type: zip # 버킷에 저장되어 있는 파일의 확장자
     application: coffee # AWS 배포 애플리케이션
     deployment_group: coffee-deploy # AWS 배포 애플리케이션에 만들어져 있는 배포 그룹
     region: ap-northeast-2

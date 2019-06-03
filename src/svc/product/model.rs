@@ -144,3 +144,9 @@ impl InpUpdate {
 pub struct Get {
     pub id: i32,
 }
+
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+pub struct GetList {
+    pub shop_id: Uuid
+}

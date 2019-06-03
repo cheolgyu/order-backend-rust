@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::product::model::{Get, InpNew, New, Product, Update};
+use crate::svc::product::model::{Get,GetList, InpNew, New, Product, Update};
 use crate::utils::hash_password;
 use actix::Handler;
 use actix::Message;
@@ -71,3 +71,23 @@ impl Handler<Get> for DbExecutor {
         })
     }
 }
+
+impl Handler<GetList> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: GetList, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::product::dsl::{shop_id, name, product as tb};
+        let conn = &self.0.get()?;
+
+        let item = tb.filter(&shop_id.eq(&msg.shop_id)).get_result::<Product>(conn)?;
+
+        let payload = serde_json::json!({
+            "items": item,
+        });
+        Ok(Msg {
+            status: 201,
+            data: payload,
+        })
+    }
+}
+

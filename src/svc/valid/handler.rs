@@ -56,7 +56,7 @@ impl Handler<ChkValid> for DbExecutor {
         use crate::schema::valid::dsl::{code, kind, kind_value, res, user_id, valid as tb};
         let conn = &self.0.get()?;
         let mut check = None;
-        let m2 = msg.clone();
+        //let m2 = msg.clone();
 
         check = tb
             .filter(&kind_value.eq(&msg.v.kind_value))
@@ -68,7 +68,7 @@ impl Handler<ChkValid> for DbExecutor {
 
         println!("3333333333{:?}", msg);
         match check {
-            Some(target) => {
+            Some(_target) => {
                 use crate::schema::user::dsl::{id, user as u_tb, valid_email};
                 diesel::update(u_tb)
                     .filter(&id.eq(&msg.v.user_id))

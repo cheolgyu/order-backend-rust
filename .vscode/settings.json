@@ -11,7 +11,5 @@
   },
   "rust.mode": null,
   "eslint.enable": false,
-  "settings": {
-    "editor.defaultFormatter": "rust-lang.rust"
-  }
+  
 }
