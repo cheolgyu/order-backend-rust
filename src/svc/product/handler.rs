@@ -81,7 +81,7 @@ impl Handler<GetList> for DbExecutor {
 
         let item = tb
             .filter(&shop_id.eq(&msg.shop_id))
-            .get_result::<Product>(conn)?;
+            .load::<Product>(conn)?;
 
         let payload = serde_json::json!({
             "items": item,
