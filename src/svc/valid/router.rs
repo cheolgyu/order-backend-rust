@@ -115,7 +115,7 @@ pub fn chk_valid_email(
 pub fn valid_phone(
     auth_user: AuthUser,
     path_info: Path<Info>,
-    
+
     json: Json<New>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {

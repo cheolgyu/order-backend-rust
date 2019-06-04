@@ -45,7 +45,7 @@ pub fn get(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     println!("shop ---g et ");
-    let  info = path_info.into_inner();
+    let info = path_info.into_inner();
     let sid = info.shop_id.unwrap();
     let uuid_shop_id = Uuid::parse_str(&sid).unwrap();
     db.send(ShopID { id: uuid_shop_id })

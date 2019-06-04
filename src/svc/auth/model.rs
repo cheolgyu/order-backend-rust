@@ -57,7 +57,7 @@ pub struct SlimUser {
     pub role: String,
 }
 
-#[derive(Debug, Serialize, Deserialize,Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthUser {
     pub id: Uuid,
     pub role: String,
@@ -82,12 +82,12 @@ impl AuthUser {
     }
 }
 use futures::{future::result, Future};
-#[warn(unused_variables)] 
+#[warn(unused_variables)]
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
-    
+
     fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
         let path_info = Path::<Info>::extract(req)?.into_inner();
         println!("auth_user-from_request-path_info:{:?}", path_info);
@@ -213,7 +213,7 @@ pub struct QueryUser {
     pub id: Uuid,
 }
 
-#[derive(Deserialize, Serialize, Debug, Message,Clone)]
+#[derive(Deserialize, Serialize, Debug, Message, Clone)]
 #[rtype(result = "Result<Info, ServiceError>")]
 pub struct Info {
     pub user_id: String,

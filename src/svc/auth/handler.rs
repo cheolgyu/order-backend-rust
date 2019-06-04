@@ -76,7 +76,7 @@ impl Handler<Login> for DbExecutor {
         use crate::schema::user::dsl::{account_id, user};
         let conn = &self.0.get()?;
 
-        let  s = r#"SELECT * FROM "user" WHERE  account_password =  "#;
+        let s = r#"SELECT * FROM "user" WHERE  account_password =  "#;
         let s2 = s.to_string() + "crypt(" + "'" + &msg.password + "'" + ", account_password)";
         let s2 = s2.to_string() + " AND account_id = " + "'" + &msg.id + "'";
         let res: Option<User> = sql_query(s2).load::<User>(conn)?.pop();
@@ -92,22 +92,22 @@ impl Handler<QueryUser> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, uid: QueryUser, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::shop::dsl::{ceo_id, shop as s_tb};
         use crate::schema::user::dsl::*;
-         use crate::schema::shop::dsl::{shop as s_tb ,ceo_id };
         let conn = &self.0.get()?;
 
         let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
         let query_shop = s_tb.filter(&ceo_id.eq(&uid.id)).get_result::<Shop>(conn)?;
 
         let payload = json!({
-                   "user": query_user,
-                   "shop": query_shop,
-                });
+           "user": query_user,
+           "shop": query_shop,
+        });
 
-                Ok(Msg {
-                    status: 200,
-                    data: payload,
-                })
+        Ok(Msg {
+            status: 200,
+            data: payload,
+        })
     }
 }
 

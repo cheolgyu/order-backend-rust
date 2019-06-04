@@ -148,5 +148,5 @@ pub struct Get {
 #[derive(Deserialize, Serialize, Debug, Message)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
-    pub shop_id: Uuid
+    pub shop_id: Uuid,
 }

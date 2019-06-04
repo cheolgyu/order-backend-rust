@@ -97,7 +97,7 @@ where
             "item": item,
         });
         println!("{:?}", payload);
-        
+
         Box::new(self.service.call(req).and_then(|res| {
             println!("Hi from response");
             Ok(res)

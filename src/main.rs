@@ -118,7 +118,7 @@ fn main() -> std::io::Result<()> {
                                                 ))
                                                 .service(
                                                     web::scope("/products")
-                                                        .service(web::resource("").route(
+                                                        .service(web::resource("").route( 
                                                             web::put().to_async(
                                                                 svc::product::router::put
                                                             ), 
