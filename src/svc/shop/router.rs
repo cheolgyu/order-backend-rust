@@ -41,7 +41,6 @@ pub fn put(
 
 pub fn get(
     path_info: Path<Info>,
-    auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     println!("shop ---g et ");

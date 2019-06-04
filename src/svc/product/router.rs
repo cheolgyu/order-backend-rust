@@ -89,7 +89,7 @@ pub fn get_list(
 
     db.send(info)
         .from_err()
-        .and_then(move |msg| db2.send(GetList { shop_id: uusid }))
+        .and_then(move |_| db2.send(GetList { shop_id: uusid }))
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),

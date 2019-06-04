@@ -135,7 +135,6 @@ impl Handler<Info> for DbExecutor {
                     println!("=====path info==>{:?}", res2);
 
                     if res2 == 1 {
-                        let res3 = res2 as usize;
                         Ok(msg2)
                     } else {
                         Err(ServiceError::Unauthorized)

@@ -36,7 +36,6 @@ pub fn signin(
             Ok(_user) => {
                 let token = create_token(&_user)?;
                 let t = token.to_string();
-                let slim_json = serde_json::to_string(&_user).unwrap();
                 #[derive(Debug, Serialize, Deserialize)]
                 struct Msg {
                     pub user: SlimUser,

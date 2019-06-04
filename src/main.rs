@@ -127,10 +127,10 @@ fn main() -> std::io::Result<()> {
                                                             web::scope("/{product_id}").service(
                                                                 web::resource("")
                                                                     .route(web::post().to_async(
-                                                                        svc::product::router::post,
+                                                                        svc::product::router::post
                                                                     ))
                                                                     .route(web::get().to_async(
-                                                                        svc::product::router::get,
+                                                                        svc::product::router::get
                                                                     )),
                                                             ),
                                                         ),
