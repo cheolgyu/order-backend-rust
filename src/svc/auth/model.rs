@@ -57,7 +57,7 @@ pub struct SlimUser {
     pub role: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct AuthUser {
     pub id: Uuid,
     pub role: String,
@@ -213,7 +213,7 @@ pub struct QueryUser {
     pub id: Uuid,
 }
 
-#[derive(Deserialize, Serialize, Debug, Message)]
+#[derive(Deserialize, Serialize, Debug, Message,Clone)]
 #[rtype(result = "Result<Info, ServiceError>")]
 pub struct Info {
     pub user_id: String,
@@ -221,12 +221,7 @@ pub struct Info {
     pub product_id: Option<i32>,
     pub auth_user: Option<AuthUser>,
 }
-impl Info {
-    pub fn get_shop_id(&self)->Uuid{
-        let id = &self.shop_id.expect("샵아이디 없다.");
-        Uuid::parse_str(&id).unwrap()
-    }
-}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Ceo {
     pub user: Option<User>,

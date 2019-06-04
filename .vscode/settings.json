@@ -1,15 +1,9 @@
 {
-  "editor.defaultFormatter": "rust-lang.rust",
   "editor.formatOnSave": true,
-  "editor.fontSize": 16,
+  "editor.fontSize": 10,
   "files.watcherExclude": {
     ".vue": true,
     "*.vue": true
   },
-  "rust.rustup": {
-    "toolchain": "stable-x86_64-unknown-linux-gnu"
-  },
-  "rust.mode": null,
-  "eslint.enable": false,
   
 }

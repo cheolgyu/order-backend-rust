@@ -120,8 +120,8 @@ fn main() -> std::io::Result<()> {
                                                     web::scope("/products")
                                                         .service(web::resource("").route(
                                                             web::put().to_async(
-                                                                svc::product::router::put,
-                                                            ),
+                                                                svc::product::router::put
+                                                            ), 
                                                         ).route(web::get().to_async(svc::product::router::get_list)),)
                                                         .service(
                                                             web::scope("/{product_id}").service(

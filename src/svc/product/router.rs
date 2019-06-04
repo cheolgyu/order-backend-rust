@@ -80,24 +80,15 @@ pub fn get_list(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     println!("path_info:{:?}", path_info);
-    let  info = path_info.into_inner();
+    let  mut info = path_info.into_inner();
+    let info2= info.clone();
+    let sid = info2.shop_id.unwrap();
+    let uusid = Uuid::parse_str(&sid).unwrap();
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
  
     db.send(info).from_err()
-    /*
-    .and_then(|msg| match msg  {
-        Ok(m)=>m,
-        Err(e)=>{
-            println!("{:?}",e);
-        }
-    })
-    */
-    .and_then(|msg| match msg {
-        Ok(m)=>{
-             db2.send(GetList{shop_id: m.get_shop_id()})
-        },Err(e) => println!("errrr"), 
-    } )
+    .and_then(move |msg|db2.send(GetList{shop_id: uusid}))
     .from_err()
     .and_then(|res| match res {
         Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
