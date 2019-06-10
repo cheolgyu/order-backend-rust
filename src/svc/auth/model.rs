@@ -76,9 +76,6 @@ impl AuthUser {
             Err(error::ErrorUnauthorized("ceo가 아닌계정이군"))
         }
     }
-    pub fn role_user(&self, path_id: String) -> bool {
-        !(&self.role == "ceo" && path_id == self.id.to_string())
-    }
 }
 use futures::{future::result, Future};
 

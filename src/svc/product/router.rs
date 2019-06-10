@@ -16,7 +16,7 @@ use uuid::Uuid;
 
 pub fn put(
     json: Json<InpNew>,
-    auth_user: AuthUser,
+    _auth_user: AuthUser,
     info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
@@ -97,6 +97,3 @@ pub fn get_list(
         })
 }
 
-fn delete() -> &'static str {
-    "Hello world! post\r\n"
-}

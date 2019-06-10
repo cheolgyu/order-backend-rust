@@ -113,7 +113,7 @@ impl Handler<QueryUser> for DbExecutor {
 impl Handler<Info> for DbExecutor {
     type Result = Result<Info, ServiceError>;
 
-    fn handle(&mut self, mut msg: Info, _: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
         println!(" path info start ");
         let msg2 = msg.clone();

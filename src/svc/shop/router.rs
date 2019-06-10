@@ -16,7 +16,7 @@ use uuid::Uuid;
 pub fn put(
     json: Json<InpNew>,
     auth_user: AuthUser,
-    path_info: Path<String>,
+    _path_info: Path<String>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())

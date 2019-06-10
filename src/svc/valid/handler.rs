@@ -54,10 +54,8 @@ impl Handler<ChkValid> for DbExecutor {
         println!("2222222{:?}", msg);
         use crate::schema::valid::dsl::{code, kind, kind_value, res, user_id, valid as tb};
         let conn = &self.0.get()?;
-        let mut check = None;
-        //let m2 = msg.clone();
 
-        check = tb
+        let check = tb
             .filter(&kind_value.eq(&msg.v.kind_value))
             .filter(&kind.eq(&msg.v.kind))
             .filter(&user_id.eq(&msg.v.user_id))

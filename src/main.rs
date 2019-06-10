@@ -124,7 +124,7 @@ fn main() -> std::io::Result<()> {
                                                                     .route(web::get().to_async( svc::product::router::get)),
                                                             ),
                                                         ),
-                                                ) .service(
+                                                ) .service(  
                                                         web::scope("/option_group")
                                                             .service(web::resource("").route( web::put().to_async( svc::option_group::router::put)  ).route(web::get().to_async(svc::option_group::router::get_list)))
                                                             .service(
