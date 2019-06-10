@@ -96,4 +96,3 @@ pub fn get_list(
             Err(e) => Ok(e.error_response()),
         })
 }
-

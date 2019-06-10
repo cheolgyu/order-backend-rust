@@ -22,13 +22,15 @@ pub fn put(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
+    let info2 = info.clone();
     let j = json.into_inner();
     let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
 
     result(j.validate())
         .from_err()
         .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new()).from_err())
+        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
@@ -43,12 +45,14 @@ pub fn post(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
+    let info2 = info.clone();
     let j = json.into_inner();
     let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
 
     result(j.validate())
         .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new()).from_err())
+        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -83,12 +87,18 @@ pub fn get_list(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     println!("path_info:{:?}", path_info);
     let mut info = path_info.into_inner();
+    let info2 = info.clone();
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
 
     db.send(info)
         .from_err()
-        .and_then(move |_| db2.send(GetList {}))
+        .and_then(move |_| {
+            db2.send(GetList {
+                shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            })
+        })
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),

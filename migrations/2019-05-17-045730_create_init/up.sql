@@ -61,7 +61,7 @@ CREATE TABLE "product" (
 CREATE TABLE "option" (
 
   id  SERIAL PRIMARY KEY,
-  option_group_id INTEGER NOT NULL ,
+  shop_id UUID NOT NULL,
   name VARCHAR NOT NULL,
   price float8 NOT NULL,
 
@@ -73,6 +73,7 @@ CREATE TABLE "option" (
 CREATE TABLE "option_group" (
 
   id  SERIAL PRIMARY KEY,
+  shop_id UUID NOT NULL,
   name VARCHAR NOT NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,

@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::schema::option_group::dsl::{id, name, option_group as tb};
-use crate::svc::option_group::model::{Get, GetList, InpNew, New, OptionGroup as object, Update};
+use crate::schema::option_group::dsl::{id, name, option_group as tb, shop_id};
+use crate::svc::option_group::model::{Get, GetList, InpNew, New, OptionGroup as Object, Update};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -15,14 +15,18 @@ impl Handler<New> for DbExecutor {
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
-        let check = tb.filter(&name.eq(&msg.name)).load::<object>(conn)?.pop();
+        let check = tb
+            .filter(&shop_id.eq(&msg.shop_id))
+            .filter(&name.eq(&msg.name))
+            .load::<Object>(conn)?
+            .pop();
 
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
-                let insert: object = diesel::insert_into(tb)
+                let insert: Object = diesel::insert_into(tb)
                     .values(&msg)
-                    .get_result::<object>(conn)?;
+                    .get_result::<Object>(conn)?;
 
                 let payload = serde_json::json!({
                     "item": insert,
@@ -42,10 +46,13 @@ impl Handler<Update> for DbExecutor {
     fn handle(&mut self, msg: Update, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let old_item = tb.filter(&id.eq(&msg.id)).get_result::<object>(conn)?;
+        let old_item = tb
+            .filter(&id.eq(&msg.id))
+            .filter(&shop_id.eq(&msg.shop_id))
+            .get_result::<Object>(conn)?;
         let item_update = diesel::update(&old_item)
             .set(&msg)
-            .get_result::<object>(conn)?;
+            .get_result::<Object>(conn)?;
         let payload = serde_json::json!({
             "item_update": item_update,
         });
@@ -62,7 +69,7 @@ impl Handler<Get> for DbExecutor {
     fn handle(&mut self, msg: Get, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let item = tb.filter(&id.eq(&msg.id)).get_result::<object>(conn)?;
+        let item = tb.filter(&id.eq(&msg.id)).get_result::<Object>(conn)?;
 
         let payload = serde_json::json!({
             "item": item,
@@ -80,7 +87,7 @@ impl Handler<GetList> for DbExecutor {
     fn handle(&mut self, _msg: GetList, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let item = tb.load::<object>(conn)?;
+        let item = tb.filter(&shop_id.eq(&_msg.shop_id)).load::<Object>(conn)?;
 
         let payload = serde_json::json!({
             "items": item,

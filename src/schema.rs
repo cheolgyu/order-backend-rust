@@ -1,7 +1,7 @@
 table! {
     option (id) {
         id -> Int4,
-        option_group_id -> Int4,
+        shop_id -> Uuid,
         name -> Varchar,
         price -> Float8,
         created_at -> Timestamp,
@@ -13,6 +13,7 @@ table! {
 table! {
     option_group (id) {
         id -> Int4,
+        shop_id -> Uuid,
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

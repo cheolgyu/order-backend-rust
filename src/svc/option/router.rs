@@ -2,7 +2,7 @@ use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::Ceo;
 use crate::svc::auth::model::{AuthUser, Info};
-use crate::svc::product::model::{Get, GetList, InpNew, InpUpdate, New};
+use crate::svc::option::model::{Get, GetList, InpNew, InpUpdate, New};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -17,16 +17,20 @@ use uuid::Uuid;
 pub fn put(
     json: Json<InpNew>,
     auth_user: AuthUser,
-    info: Path<Info>,
+    path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    result(json.validate())
+    let mut info = path_info.into_inner();
+    info.auth_user = Some(auth_user);
+    let info2 = info.clone();
+    let j = json.into_inner();
+    let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
+
+    result(j.validate())
         .from_err()
-        .and_then(move |_| {
-            let j = json.into_inner();
-            db.send(j.new(info.into_inner().shop_id.unwrap(), j.option_group.clone()))
-                .from_err()
-        })
+        .and_then(move |_| db.send(info).from_err())
+        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
@@ -41,12 +45,14 @@ pub fn post(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
+    let info2 = info.clone();
     let j = json.into_inner();
     let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
 
     result(j.validate())
         .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new(j.option_group.clone())).from_err())
+        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -79,24 +85,22 @@ pub fn get_list(
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    println!("path_info:{:?}", path_info);
     let mut info = path_info.into_inner();
     let info2 = info.clone();
-    let sid = info2.shop_id.unwrap();
-    let uusid = Uuid::parse_str(&sid).unwrap();
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
 
     db.send(info)
         .from_err()
-        .and_then(move |_| db2.send(GetList { shop_id: uusid }))
+        .and_then(move |_| {
+            db2.send(GetList {
+                shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            })
+        })
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
-}
-
-fn delete() -> &'static str {
-    "Hello world! post\r\n"
 }

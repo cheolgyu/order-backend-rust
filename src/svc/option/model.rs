@@ -1,9 +1,7 @@
 use crate::errors::ServiceError;
-use crate::schema::{option};
-use crate::svc::auth::model::AuthUser;
-//use crate::svc::option::model::Opt;
-//use crate::svc::option_group::model::OptGroup;
 use crate::models::msg::Msg;
+use crate::schema::option;
+use crate::svc::auth::model::AuthUser;
 use crate::svc::shop::model::Shop;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
@@ -29,26 +27,29 @@ use uuid::Uuid;
     Associations,
 )]
 #[table_name = "option"]
-pub struct Option {
+pub struct Opt {
     pub id: i32,
-    pub option_group_id: i32,
+    pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "option"]
 pub struct New {
-    pub option_group_id: i32,
     pub name: String,
+    pub shop_id: Uuid,
     pub price: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
-    pub price: f64,
+    pub price: String,
 }
 
 impl Validate for InpNew {
@@ -65,11 +66,11 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, option_group_id: i32) -> New {
+    pub fn new(&self, shop_id: String) -> New {
         New {
-            option_group_id: option_group_id,
             name: self.name.to_string(),
-            price: self.price,
+            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            price: self.price.parse().unwrap(),
         }
     }
 }
@@ -79,6 +80,7 @@ impl InpNew {
 #[table_name = "option"]
 pub struct Update {
     pub id: i32,
+    pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
 }
@@ -86,7 +88,7 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: f64,
+    pub price: String,
 }
 
 impl Validate for InpUpdate {
@@ -103,11 +105,12 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn new(&self) -> Update {
+    pub fn new(&self, shop_id: String) -> Update {
         Update {
             id: self.id,
+            shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
-            price: self.price,
+            price: self.price.parse().unwrap(),
         }
     }
 }
@@ -117,10 +120,11 @@ impl InpUpdate {
 #[table_name = "option"]
 pub struct Get {
     pub id: i32,
+    pub shop_id: Uuid,
 }
 
 #[derive(Deserialize, Serialize, Debug, Message)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
-    pub  id: i32,
+    pub shop_id: Uuid,
 }
