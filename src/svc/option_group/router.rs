@@ -17,16 +17,18 @@ use uuid::Uuid;
 pub fn put(
     json: Json<InpNew>,
     auth_user: AuthUser,
-    info: Path<Info>,
+    path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    result(json.validate())
+    let mut info = path_info.into_inner();
+    info.auth_user = Some(auth_user);
+    let j = json.into_inner();
+    let db2 = db.clone();
+
+    result(j.validate())
         .from_err()
-        .and_then(move |_| {
-            let j = json.into_inner();
-            db.send(j.new(info.into_inner().product_id.unwrap()))
-                .from_err()
-        })
+        .and_then(move |_| db.send(info).from_err())
+        .and_then(move |_| db2.send(j.new()).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
@@ -88,11 +90,10 @@ pub fn get_list(
 
     db.send(info)
         .from_err()
-        .and_then(move |_| db2.send(GetList { product_id: pid }))
+        .and_then(move |_| db2.send(GetList {}))
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
 }
-

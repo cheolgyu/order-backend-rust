@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::schema::option_group::dsl::{id, name, option_group as tb, product_id};
+use crate::schema::option_group::dsl::{id, name, option_group as tb};
 use crate::svc::option_group::model::{Get, GetList, InpNew, New, OptionGroup as object, Update};
 use actix::Handler;
 use actix::Message;
@@ -10,19 +10,16 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-
 impl Handler<New> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
-
         let conn = &self.0.get()?;
         let check = tb.filter(&name.eq(&msg.name)).load::<object>(conn)?.pop();
 
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
-
                 let insert: object = diesel::insert_into(tb)
                     .values(&msg)
                     .get_result::<object>(conn)?;
@@ -81,12 +78,9 @@ impl Handler<GetList> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: GetList, _: &mut Self::Context) -> Self::Result {
-
         let conn = &self.0.get()?;
 
-        let item = tb
-            .filter(&product_id.eq(&msg.product_id))
-            .load::<object>(conn)?;
+        let item = tb.load::<object>(conn)?;
 
         let payload = serde_json::json!({
             "items": item,

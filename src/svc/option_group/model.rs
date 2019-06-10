@@ -31,7 +31,6 @@ use uuid::Uuid;
 #[table_name = "option_group"]
 pub struct OptionGroup {
     pub id: i32,
-    pub product_id: i32,
     pub name: String,
 
     pub created_at: NaiveDateTime,
@@ -43,7 +42,6 @@ pub struct OptionGroup {
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "option_group"]
 pub struct New {
-    pub product_id: i32,
     pub name: String,
 }
 
@@ -66,9 +64,8 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, product_id: i32) -> New {
+    pub fn new(&self) -> New {
         New {
-            product_id: product_id,
             name: self.name.to_string(),
         }
     }
@@ -118,6 +115,4 @@ pub struct Get {
 
 #[derive(Deserialize, Serialize, Debug, Message)]
 #[rtype(result = "Result<Msg, ServiceError>")]
-pub struct GetList {
-    pub product_id: i32,
-}
+pub struct GetList {}

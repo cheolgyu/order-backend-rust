@@ -73,7 +73,6 @@ CREATE TABLE "option" (
 CREATE TABLE "option_group" (
 
   id  SERIAL PRIMARY KEY,
-  product_id INTEGER NOT NULL ,
   name VARCHAR NOT NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,

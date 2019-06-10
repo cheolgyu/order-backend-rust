@@ -13,7 +13,6 @@ table! {
 table! {
     option_group (id) {
         id -> Int4,
-        product_id -> Int4,
         name -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
@@ -78,11 +77,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    option,
-    option_group,
-    product,
-    shop,
-    user,
-    valid,
-);
+allow_tables_to_appear_in_same_query!(option, option_group, product, shop, user, valid,);

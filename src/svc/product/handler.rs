@@ -78,9 +78,7 @@ impl Handler<GetList> for DbExecutor {
         use crate::schema::product::dsl::{name, product as tb, shop_id};
         let conn = &self.0.get()?;
 
-        let item = tb
-            .filter(&shop_id.eq(&msg.shop_id))
-            .load::<Product>(conn)?;
+        let item = tb.filter(&shop_id.eq(&msg.shop_id)).load::<Product>(conn)?;
 
         let payload = serde_json::json!({
             "items": item,

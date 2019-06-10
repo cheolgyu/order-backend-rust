@@ -7,7 +7,7 @@ use crate::svc::shop::model::{NewShop, Shop, ShopID};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
-use bcrypt::verify; 
+use bcrypt::verify;
 use diesel;
 use diesel::prelude::*;
 use diesel::prelude::*;

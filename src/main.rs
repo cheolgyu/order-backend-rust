@@ -122,53 +122,23 @@ fn main() -> std::io::Result<()> {
                                                                 web::resource("")
                                                                     .route(web::post().to_async( svc::product::router::post ))
                                                                     .route(web::get().to_async( svc::product::router::get)),
-                                                            ),    
-                                                        ) .service(
-                                                                web::scope("/option_group")
-                                                                    .service(web::resource("").route( web::put().to_async( svc::option_group::router::put)  ).route(web::get().to_async(svc::option_group::router::get_list)))
-                                                                    .service(
-                                                                        web::scope("/{option_group_id}").service(
-                                                                            web::resource("")
-                                                                                .route(web::post().to_async( svc::option_group::router::post ))
-                                                                                .route(web::get().to_async( svc::option_group::router::get)),
-                                                                        ),
-                                                                    ),
-                                                            ), 
-                                                ),
+                                                            ),
+                                                        ),
+                                                ) .service(
+                                                        web::scope("/option_group")
+                                                            .service(web::resource("").route( web::put().to_async( svc::option_group::router::put)  ).route(web::get().to_async(svc::option_group::router::get_list)))
+                                                            .service(
+                                                                web::scope("/{option_group_id}").service(
+                                                                    web::resource("")
+                                                                        .route(web::post().to_async( svc::option_group::router::post ))
+                                                                        .route(web::get().to_async( svc::option_group::router::get)),
+                                                                ),
+                                                            ),
+                                                    ),
                                         ),
                                 ),
-                        )// .wrap(middleware::auth::Auth),
-                    ), /*
-                       .service(
-                           web::resource("/users/{user_id}/shops")
-                               .route(web::put().to_async(svc::shop::router::put))
-                               .route(web::post().to(svc::shop::router::post)),
-                       )
-                       .service(
-                           web::resource("/users/{user_id}/shops/{shop_id}")
-                               .route(web::get().to_async(svc::shop::router::get)),
-                       )
-                       .service(
-                           web::resource("/users/{user_id}/shops/{shop_id}/products")
-                               .route(web::put().to_async(svc::product::router::put)),
-                       )
-                       .service(
-                           web::resource("/users/{user_id}/shops/{shop_id}/products/{product_id}")
-                               .route(web::post().to_async(svc::product::router::post))
-                               .route(web::get().to_async(svc::product::router::get)),
-                       ),
-                       */
-                       /*
-                          .service(
-                              web::resource("/options")
-                                  .route(web::put().to_async(svc::option::router::put)),
-                          )
-                          .service(
-                              web::resource("/option_groups")
-                                  .route(web::put().to_async(svc::option_group::router::put))
-                                  .route(web::post().to_async(svc::option_group::router::post)),
-                          ),
-                          */
+                        )
+                    )
             )
             .service(index)
             .service(no_params)
