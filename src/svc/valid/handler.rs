@@ -2,7 +2,6 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::svc::valid::model::{ChkValid, New, Valid};
-use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
 use diesel;

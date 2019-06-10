@@ -113,27 +113,27 @@ fn main() -> std::io::Result<()> {
                                         )
                                         .service(
                                             web::scope("/{shop_id}")
-                                                .service(web::resource("").route(
-                                                    web::get().to_async(svc::shop::router::get),
-                                                ))
+                                                .service(web::resource("").route(web::get().to_async(svc::shop::router::get), ))
                                                 .service(
                                                     web::scope("/products")
-                                                        .service(web::resource("").route( 
-                                                            web::put().to_async(
-                                                                svc::product::router::put
-                                                            ), 
-                                                        ).route(web::get().to_async(svc::product::router::get_list)),)
+                                                        .service(web::resource("").route( web::put().to_async( svc::product::router::put) ).route(web::get().to_async(svc::product::router::get_list)))
                                                         .service(
                                                             web::scope("/{product_id}").service(
                                                                 web::resource("")
-                                                                    .route(web::post().to_async(
-                                                                        svc::product::router::post
-                                                                    ))
-                                                                    .route(web::get().to_async(
-                                                                        svc::product::router::get
-                                                                    )),
-                                                            ),
-                                                        ),
+                                                                    .route(web::post().to_async( svc::product::router::post ))
+                                                                    .route(web::get().to_async( svc::product::router::get)),
+                                                            ),    
+                                                        ) .service(
+                                                                web::scope("/option_group")
+                                                                    .service(web::resource("").route( web::put().to_async( svc::option_group::router::put)  ).route(web::get().to_async(svc::option_group::router::get_list)))
+                                                                    .service(
+                                                                        web::scope("/{option_group_id}").service(
+                                                                            web::resource("")
+                                                                                .route(web::post().to_async( svc::option_group::router::post ))
+                                                                                .route(web::get().to_async( svc::option_group::router::get)),
+                                                                        ),
+                                                                    ),
+                                                            ), 
                                                 ),
                                         ),
                                 ),

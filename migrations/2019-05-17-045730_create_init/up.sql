@@ -58,6 +58,28 @@ CREATE TABLE "product" (
   deleted_at TIMESTAMP  
 );
 
+CREATE TABLE "option" (
+
+  id  SERIAL PRIMARY KEY,
+  option_group_id INTEGER NOT NULL ,
+  name VARCHAR NOT NULL,
+  price float8 NOT NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+CREATE TABLE "option_group" (
+
+  id  SERIAL PRIMARY KEY,
+  product_id INTEGER NOT NULL ,
+  name VARCHAR NOT NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
 -- 조회 프로시저
 CREATE FUNCTION ceo_info (u_id UUID,
                           s_id UUID,

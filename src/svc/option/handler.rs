@@ -1,6 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::product::model::{Get, GetList, InpNew, New, Product, Update};
+use crate::svc::option::model::{Get, GetList, InpNew, New, Option, Update};
+
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -9,7 +10,7 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 impl Handler<New> for DbExecutor {
-    type Result = Result<Product, ServiceError>;
+    type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
         use crate::schema::product::dsl::{name, product as tb};

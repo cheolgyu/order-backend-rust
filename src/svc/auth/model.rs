@@ -4,7 +4,6 @@ use crate::models::DbExecutor;
 use crate::schema::user;
 use crate::svc::product::model::Product;
 use crate::svc::shop::model::Shop;
-use crate::utils::hash_password;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
@@ -82,12 +81,12 @@ impl AuthUser {
     }
 }
 use futures::{future::result, Future};
-#[warn(unused_variables)]
+
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
-
+    #[warn(unused_variables)]
     fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
         let path_info = Path::<Info>::extract(req)?.into_inner();
         println!("auth_user-from_request-path_info:{:?}", path_info);

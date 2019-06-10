@@ -7,7 +7,7 @@ use bcrypt::{hash, DEFAULT_COST};
 lazy_static! {
     static ref HASH_ROUNDS: String = std::env::var("HASH_ROUNDS").unwrap();
 }
-
+/*
 pub fn hash_password(plain: &str) -> Result<String, ServiceError> {
     // get the hashing cost from the env variable or use default
     /*
@@ -20,3 +20,4 @@ pub fn hash_password(plain: &str) -> Result<String, ServiceError> {
     println!("{}", &hashing_cost);
     hash(plain, hashing_cost).map_err(|_| ServiceError::InternalServerError)
 }
+*/

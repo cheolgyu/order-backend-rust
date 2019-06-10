@@ -1,4 +1,27 @@
 table! {
+    option (id) {
+        id -> Int4,
+        option_group_id -> Int4,
+        name -> Varchar,
+        price -> Float8,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    option_group (id) {
+        id -> Int4,
+        product_id -> Int4,
+        name -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     product (id) {
         id -> Int4,
         shop_id -> Uuid,
@@ -55,4 +78,11 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(product, shop, user, valid,);
+allow_tables_to_appear_in_same_query!(
+    option,
+    option_group,
+    product,
+    shop,
+    user,
+    valid,
+);

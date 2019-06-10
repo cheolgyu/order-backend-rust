@@ -3,11 +3,11 @@ use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::svc::product::model::Product;
 use crate::svc::shop::model::{NewShop, Shop, ShopID};
-use crate::utils::hash_password;
+
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
-use bcrypt::verify;
+use bcrypt::verify; 
 use diesel;
 use diesel::prelude::*;
 use diesel::prelude::*;

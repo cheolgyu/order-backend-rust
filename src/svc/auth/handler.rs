@@ -3,7 +3,6 @@ use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
 use crate::svc::shop::model::Shop;
-use crate::utils::hash_password;
 use actix::Handler;
 use bcrypt::verify;
 use diesel;
