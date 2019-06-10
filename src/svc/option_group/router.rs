@@ -84,7 +84,6 @@ pub fn get_list(
     println!("path_info:{:?}", path_info);
     let mut info = path_info.into_inner();
     let info2 = info.clone();
-    let pid = info2.product_id.unwrap();
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
 
