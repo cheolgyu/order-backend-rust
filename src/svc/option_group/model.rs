@@ -31,6 +31,7 @@ pub struct OptionGroup {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
+    pub options : Vec<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -42,11 +43,13 @@ pub struct OptionGroup {
 pub struct New {
     pub name: String,
     pub shop_id: Uuid,
+    pub options: Vec<i32>
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
+    pub options: Vec<i32>
 }
 
 impl Validate for InpNew {
@@ -67,6 +70,7 @@ impl InpNew {
         New {
             name: self.name.to_string(),
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            options: self.options.clone()
         }
     }
 }
@@ -78,11 +82,13 @@ pub struct Update {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
+    pub options: Vec<i32>
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
+    pub options: Vec<i32>
 }
 
 impl Validate for InpUpdate {
@@ -104,6 +110,7 @@ impl InpUpdate {
             id: self.id,
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
+            options: self.options.clone()
         }
     }
 }

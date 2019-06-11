@@ -75,11 +75,13 @@ CREATE TABLE "option_group" (
   id  SERIAL PRIMARY KEY,
   shop_id UUID NOT NULL,
   name VARCHAR NOT NULL,
+  options INTEGER[] NOT NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  
 );
+
 -- 조회 프로시저
 CREATE FUNCTION ceo_info (u_id UUID,
                           s_id UUID,
