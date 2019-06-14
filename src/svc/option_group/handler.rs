@@ -1,7 +1,9 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::schema::option_group::dsl::{id, name, option_group as tb, shop_id};
-use crate::svc::option_group::model::{Get, GetList, InpNew, New, OptionGroup as Object, Update};
+use crate::svc::option_group::model::{
+    Get, GetList, InpNew, New, OptionGroup as Object, SimpleOptionGroup, Update,
+};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -87,10 +89,27 @@ impl Handler<GetList> for DbExecutor {
     fn handle(&mut self, _msg: GetList, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let item = tb.filter(&shop_id.eq(&_msg.shop_id)).load::<Object>(conn)?;
+        // let item = tb.filter(&shop_id.eq(&_msg.shop_id)).load::<Object>(conn)?;
+        /*
+        select optg.* , array_to_json(array_agg(opt.*)) as option_list from option_group as optg
+        JOIN option as opt ON opt.id = ANY( optg.options)
+        where optg.shop_id = '109b7b41-f8eb-4702-abdb-6bfb95f57072'
+        group by optg.id
+        */
+        use diesel::sql_query;
+
+        let s = r#"select optg.* , array_to_json(array_agg(opt.*)) as option_list from option_group as optg JOIN option as opt ON opt.id = ANY( optg.options)  "#;
+        let s2 = s.to_string()
+            + "where optg.shop_id = "
+            + "'"
+            + &_msg.shop_id.to_string()
+            + "'"
+            + " group by optg.id";
+        println!("{:?}", s2);
+        let res = sql_query(s2).execute(conn)?;
 
         let payload = serde_json::json!({
-            "items": item,
+            "items": res,
         });
         Ok(Msg {
             status: 201,

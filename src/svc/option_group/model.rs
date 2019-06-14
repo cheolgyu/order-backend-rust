@@ -2,8 +2,9 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::option_group;
 use crate::svc::auth::model::AuthUser;
+
+use crate::svc::option::model::Opt;
 use crate::svc::shop::model::Shop;
-use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_name, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
@@ -31,7 +32,7 @@ pub struct OptionGroup {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
-    pub options : Vec<i32>,
+    pub options: Vec<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -43,13 +44,13 @@ pub struct OptionGroup {
 pub struct New {
     pub name: String,
     pub shop_id: Uuid,
-    pub options: Vec<i32>
+    pub options: Vec<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
-    pub options: Vec<i32>
+    pub options: Vec<i32>,
 }
 
 impl Validate for InpNew {
@@ -70,7 +71,7 @@ impl InpNew {
         New {
             name: self.name.to_string(),
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
-            options: self.options.clone()
+            options: self.options.clone(),
         }
     }
 }
@@ -82,13 +83,13 @@ pub struct Update {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
-    pub options: Vec<i32>
+    pub options: Vec<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub options: Vec<i32>
+    pub options: Vec<i32>,
 }
 
 impl Validate for InpUpdate {
@@ -110,7 +111,7 @@ impl InpUpdate {
             id: self.id,
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
-            options: self.options.clone()
+            options: self.options.clone(),
         }
     }
 }
@@ -127,4 +128,16 @@ pub struct Get {
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
     pub shop_id: Uuid,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SimpleOptionGroup {
+    pub id: i32,
+    pub shop_id: Uuid,
+    pub name: String,
+    pub options: Vec<i32>,
+    pub option_list: serde_json::Value,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
 }

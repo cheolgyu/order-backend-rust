@@ -129,6 +129,15 @@ crypt('dlacjfrb123!@#',gen_salt('bf'))
 INSERT INTO "shop" ("id", "ceo_id", "name", "products", "created_at", "updated_at", "deleted_at") VALUES
 ('109b7b41-f8eb-4702-abdb-6bfb95f57072',	'0290a0ad-9851-461b-af42-0313f15c9702',	'hello coffee',	NULL,	'2019-05-18 12:44:41.184624',	'2019-05-18 12:44:41.184624',	NULL);
 
+INSERT INTO "option_group" ("id", "shop_id", "name", "options", "created_at", "updated_at", "deleted_at") VALUES
+(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'2121',	'{1,2,3,4,5}',	'2019-06-11 04:22:30.942314',	'2019-06-11 04:22:30.942314',	NULL),
+(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'sdafasdf',	'{1,2,3,4,5}',	'2019-06-11 04:41:18.949586',	'2019-06-11 04:41:18.949586',	NULL);
+INSERT INTO "option" ("id", "shop_id", "name", "price", "created_at", "updated_at", "deleted_at") VALUES
+(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'1',	1,	'2019-06-11 04:22:55.019004',	'2019-06-11 04:22:55.019004',	NULL),
+(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'2',	2,	'2019-06-11 04:22:59.547769',	'2019-06-11 04:22:59.547769',	NULL),
+(3,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'3',	3,	'2019-06-11 04:23:03.244713',	'2019-06-11 04:23:03.244713',	NULL),
+(4,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'4',	4,	'2019-06-11 04:23:06.768563',	'2019-06-11 04:23:06.768563',	NULL),
+(5,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'5',	5,	'2019-06-11 04:23:10.453339',	'2019-06-11 04:23:10.453339',	NULL);
 
 
 SELECT  p.prosrc
