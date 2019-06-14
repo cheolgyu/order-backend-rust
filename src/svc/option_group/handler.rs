@@ -97,17 +97,18 @@ impl Handler<GetList> for DbExecutor {
         group by optg.id
         */
         use diesel::sql_query;
+    use diesel::sql_types::Uuid;
+    //let s_id =  Uuid::parse_str(&_msg.shop_id.as_str()).unwrap();
 
-        let s = r#"select optg.* , array_to_json(array_agg(opt.*)) as option_list from option_group as optg JOIN option as opt ON opt.id = ANY( optg.options)  "#;
+        let s = r#"select optg.id as id, optg.shop_id as shop_id ,optg.name as name , array_to_json(array_agg(opt.*)) as option_list from option_group as optg JOIN option as opt ON opt.id = ANY( optg.options)  "#;
         let s2 = s.to_string()
-            + "where optg.shop_id = "
-            + "'"
-            + &_msg.shop_id.to_string()
-            + "'"
-            + " group by optg.id";
-        println!("{:?}", s2);
-        let res = sql_query(s2).execute(conn)?;
-
+            + "where optg.shop_id ='109b7b41-f8eb-4702-abdb-6bfb95f57072' "
+            + " group by optg.id ";
+        println!("{:?}",s2);
+        //let res = sql_query(s2).bind::<Uuid, _>(&_msg.shop_id).execute(conn)?;
+        //SimpleOptionGroup
+        //Object
+        let res  = sql_query(s2).load::<SimpleOptionGroup>(conn)?; 
         let payload = serde_json::json!({
             "items": res,
         });

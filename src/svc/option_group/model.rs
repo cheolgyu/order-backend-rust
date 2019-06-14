@@ -26,6 +26,7 @@ use uuid::Uuid;
     Queryable,
     Insertable,
     Associations,
+    QueryableByName
 )]
 #[table_name = "option_group"]
 pub struct OptionGroup {
@@ -129,15 +130,24 @@ pub struct Get {
 pub struct GetList {
     pub shop_id: Uuid,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
+use diesel::sql_types::{Integer, Text,Uuid as uu,Json};
+#[derive( Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+    QueryableByName)]
 pub struct SimpleOptionGroup {
+     #[sql_type="Integer"]
     pub id: i32,
+     #[sql_type="uu"]
     pub shop_id: Uuid,
+    #[sql_type="Text"]
     pub name: String,
-    pub options: Vec<i32>,
+    //pub options: Vec<i32>,
+    //#[diesel(embed)]
+    #[sql_type="Json"]
     pub option_list: serde_json::Value,
-    pub created_at: NaiveDateTime,
-    pub updated_at: Option<NaiveDateTime>,
-    pub deleted_at: Option<NaiveDateTime>,
+    //pub created_at: NaiveDateTime,
+    //pub updated_at: Option<NaiveDateTime>,
+    //pub deleted_at: Option<NaiveDateTime>,
 }
