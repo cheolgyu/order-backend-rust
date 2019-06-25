@@ -95,7 +95,7 @@ impl Handler<GetList> for DbExecutor {
         SELECT optg.id                      AS id, 
             optg.shop_id                    AS shop_id, 
             optg.name                       AS name, 
-            Array_to_json(Array_agg(opt.*)) AS option_list 
+            case when count(opt.id) = 0 then '[]' else Array_to_json(Array_agg(opt.*))  end as option_list 
         FROM   option_group AS optg 
             LEFT JOIN OPTION AS opt 
                 ON opt.id = Any(optg.options) 
