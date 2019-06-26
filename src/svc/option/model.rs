@@ -49,7 +49,7 @@ pub struct New {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
-    pub price: f64,
+    pub price: String,
 }
 
 impl Validate for InpNew {
@@ -70,7 +70,7 @@ impl InpNew {
         New {
             name: self.name.to_string(),
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
-            price: self.price,
+            price: self.price.parse().unwrap(),
         }
     }
 }
@@ -88,7 +88,7 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: f64,
+    pub price: String,
 }
 
 impl Validate for InpUpdate {
@@ -110,7 +110,7 @@ impl InpUpdate {
             id: self.id,
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
-            price: self.price,
+            price: self.price.parse().unwrap(),
         }
     }
 }
