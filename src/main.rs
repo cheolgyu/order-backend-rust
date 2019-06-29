@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
             .wrap(
                 actix_middleware::cors::Cors::new()
                     .allowed_origin(&url_frontend_ceo)
-                    .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
+                    .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
                     .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
                     .allowed_header(header::CONTENT_TYPE)
                     .max_age(3600),
@@ -130,11 +130,13 @@ fn main() -> std::io::Result<()> {
                                                             .route( web::put().to_async( svc::option_group::router::put)  )
                                                             .route(web::get().to_async(svc::option_group::router::get_list))
                                                             .route(web::post().to_async( svc::option_group::router::post ))
+                                                            
                                                             )
                                                             .service(
                                                                 web::scope("/{option_group_id}").service(
                                                                     web::resource("")
-                                                                        .route(web::get().to_async( svc::option_group::router::get)),
+                                                                        .route(web::get().to_async( svc::option_group::router::get))
+                                                                        .route( web::delete().to_async( svc::option_group::router::delete)  )
                                                                 ),
                                                             ),
                                                 )

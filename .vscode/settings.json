@@ -1,6 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.fontSize": 10,
   "files.watcherExclude": {
     ".vue": true,
     "*.vue": true

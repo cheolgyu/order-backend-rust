@@ -125,6 +125,34 @@ pub struct Get {
     pub shop_id: Uuid,
 }
 
+#[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "option_group"]
+pub struct Delete {
+    pub id: i32,
+    pub shop_id: Uuid,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct InpDelete {
+    pub id: i32,
+}
+
+impl Validate for InpDelete {
+    fn validate(&self) -> Result<(), Error> {
+         Ok(())
+    }
+}
+
+impl InpDelete {
+    pub fn new(&self, shop_id: String) -> Delete {
+        Delete {
+            id: self.id,
+            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+        }
+    }
+}
+
 #[derive(Deserialize, Serialize, Debug, Message)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
