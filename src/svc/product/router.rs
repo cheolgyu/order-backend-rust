@@ -24,7 +24,7 @@ pub fn put(
         .from_err()
         .and_then(move |_| {
             let j = json.into_inner();
-            db.send(j.new(info.into_inner().shop_id.unwrap(), j.option_group.clone()))
+            db.send(j.new(info.into_inner().shop_id.unwrap()))
                 .from_err()
         })
         .and_then(|res| match res {
@@ -46,7 +46,7 @@ pub fn post(
 
     result(j.validate())
         .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new(j.option_group.clone())).from_err())
+        .and_then(move |_| db2.send(j.new()).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),

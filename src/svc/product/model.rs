@@ -34,43 +34,49 @@ pub struct Product {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
-    pub price: Option<f64>,
-    pub option_group: serde_json::Value,
+    pub price: f64,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
 }
 
+#[derive(
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Identifiable,
+    Queryable,
+    Insertable,
+    Associations,
+)]
+#[table_name = "map_product_opt_group"]
+pub struct MapProduct {
+    pub id: i32,
+    pub shop_id: Uuid,
+    pub product_id: i32,
+    pub opt_group: Vec<i32>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: Option<NaiveDateTime>,
+    pub deleted_at: Option<NaiveDateTime>,
+}
+
+
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Product, ServiceError>")]
-#[table_name = "product"]
 pub struct New {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
-    pub option_group: serde_json::Value,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Opt {
-    pub name: String,
-    pub price: f64,
-    pub soft: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct OptGroup {
-    pub name: String,
-    pub opt: Vec<Opt>,
-    pub kind: String,
-    pub soft: i32,
+    pub opt_group: Vec<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
     pub price: f64,
-    pub option_group: Option<Vec<OptGroup>>,
+    pub opt_group: Vec<i32>,
 }
 
 impl Validate for InpNew {
@@ -87,31 +93,30 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, shop_id: String, opts: Option<Vec<OptGroup>>) -> New {
+    pub fn new(&self, shop_id: String) -> New {
         New {
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
             price: self.price,
-            option_group: serde_json::to_value(opts).unwrap(),
+            opt_group: self.opt_group,
         }
     }
 }
 
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
-#[table_name = "product"]
 pub struct Update {
     pub id: i32,
     pub name: String,
     pub price: f64,
-    pub option_group: serde_json::Value,
+    pub opt_group: Vec<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
     pub price: f64,
-    pub option_group: Option<Vec<OptGroup>>,
+    pub opt_group: Vec<i32>,
 }
 
 impl Validate for InpUpdate {
@@ -128,12 +133,12 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn new(&self, opts: Option<Vec<OptGroup>>) -> Update {
+    pub fn new(&self) -> Update {
         Update {
             id: self.id,
             name: self.name.to_string(),
             price: self.price,
-            option_group: serde_json::to_value(opts).unwrap(),
+            opt_group: self.opt_group,
         }
     }
 }

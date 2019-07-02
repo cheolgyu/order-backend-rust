@@ -50,8 +50,18 @@ CREATE TABLE "product" (
   id  SERIAL PRIMARY KEY,
   shop_id UUID NOT NULL ,
   name VARCHAR NOT NULL,
-  price float8,
-  option_group Jsonb NOT NULL ,
+  price float8 NOT NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+CREATE TABLE "map_product_opt_group" (
+  id  SERIAL PRIMARY KEY, 
+  shop_id UUID NOT NULL ,
+  product_id INTEGER NOT NULL,
+  opt_group INTEGER[]  NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,

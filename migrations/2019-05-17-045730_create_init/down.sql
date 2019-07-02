@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS "product";
 DROP TABLE IF EXISTS  "valid";
 DROP TABLE IF EXISTS  "option";
 DROP TABLE IF EXISTS  "option_group";
+DROP TABLE IF EXISTS  "map_product_opt_group";
+
 DROP EXTENSION pgcrypto;
 DROP FUNCTION IF EXISTS ceo_info (u_id UUID,
                           s_id UUID,
