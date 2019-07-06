@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::product::model::{Get, GetList, InpNew, New, Product, Update};
+use crate::svc::product::model::{Get, GetList, InpNew, New, Product, SimpleProduct, Update};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -20,7 +20,6 @@ impl Handler<New> for DbExecutor {
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
-                println!("{:?}", &msg.option_group);
                 let insert: Product = diesel::insert_into(tb)
                     .values(&msg)
                     .get_result::<Product>(conn)?;
@@ -75,13 +74,26 @@ impl Handler<GetList> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: GetList, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::product::dsl::{name, product as tb, shop_id};
         let conn = &self.0.get()?;
+        use diesel::sql_query;
+        use diesel::sql_types::Uuid;
 
-        let item = tb.filter(&shop_id.eq(&msg.shop_id)).load::<Product>(conn)?;
+        let res = sql_query("
+        SELECT p.id                      AS id, 
+            p.shop_id                    AS shop_id, 
+            p.name                       AS name, 
+            p.price                      AS price, 
+            case when array_length(p.opt_group,1) is null then '[]' else Array_to_json(Array_agg(optg.*))  end as option_group_list 
+        FROM   PRODUCT AS p 
+            LEFT JOIN OPTION_GROUP AS optg 
+                ON optg.id = Any(p.opt_group) 
+        WHERE  p.shop_id = $1 AND p.deleted_at is null
+        GROUP  BY p.id 
+        ").bind::<Uuid, _>(&msg.shop_id)
+        .get_results::<SimpleProduct>(conn)?;
 
         let payload = serde_json::json!({
-            "items": item,
+            "items": res,
         });
         Ok(Msg {
             status: 201,

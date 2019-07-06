@@ -8,7 +8,7 @@ use actix_service::{Service, Transform};
 use actix_web::web::{self, Data, Json, Path};
 use actix_web::{dev::Payload, Error, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use actix_web::{error, middleware::identity::Identity, FromRequest};
+use actix_web::{error,  FromRequest};
 use futures::future::{ok, FutureResult};
 use futures::{Future, Poll};
 use regex::Regex;

@@ -1,9 +1,7 @@
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::schema::{product, shop as tb_shop};
 use crate::svc::auth::model::AuthUser;
-//use crate::svc::option::model::Opt;
-//use crate::svc::option_group::model::OptGroup;
-use crate::models::msg::Msg;
 use crate::svc::shop::model::Shop;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
@@ -12,7 +10,7 @@ use crate::utils::validator::{
 };
 use actix::Message;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error, middleware::identity::Identity, FromRequest};
+use actix_web::{error, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
@@ -35,36 +33,15 @@ pub struct Product {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
-    pub created_at: NaiveDateTime,
-    pub updated_at: Option<NaiveDateTime>,
-    pub deleted_at: Option<NaiveDateTime>,
-}
-
-#[derive(
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-    PartialEq,
-    Identifiable,
-    Queryable,
-    Insertable,
-    Associations,
-)]
-#[table_name = "map_product_opt_group"]
-pub struct MapProduct {
-    pub id: i32,
-    pub shop_id: Uuid,
-    pub product_id: i32,
     pub opt_group: Vec<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
 }
 
-
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Product, ServiceError>")]
+#[table_name = "product"]
 pub struct New {
     pub shop_id: Uuid,
     pub name: String,
@@ -75,7 +52,7 @@ pub struct New {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
-    pub price: f64,
+    pub price: String,
     pub opt_group: Vec<i32>,
 }
 
@@ -97,14 +74,15 @@ impl InpNew {
         New {
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
-            price: self.price,
-            opt_group: self.opt_group,
+            price: self.price.parse().expect("상품가격 파서 오류"),
+            opt_group: self.opt_group.clone(),
         }
     }
 }
 
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "product"]
 pub struct Update {
     pub id: i32,
     pub name: String,
@@ -115,7 +93,7 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: f64,
+    pub price: String,
     pub opt_group: Vec<i32>,
 }
 
@@ -137,8 +115,8 @@ impl InpUpdate {
         Update {
             id: self.id,
             name: self.name.to_string(),
-            price: self.price,
-            opt_group: self.opt_group,
+            price: self.price.parse().unwrap(),
+            opt_group: self.opt_group.clone(),
         }
     }
 }
@@ -154,4 +132,19 @@ pub struct Get {
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
     pub shop_id: Uuid,
+}
+use diesel::sql_types::{Integer, Json, Text, Uuid as uu, Double};
+
+#[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
+pub struct SimpleProduct { 
+    #[sql_type = "Integer"]
+    pub id: i32,
+    #[sql_type = "uu"]
+    pub shop_id: Uuid,
+    #[sql_type = "Text"]
+    pub name: String,
+    #[sql_type = "Double"]
+    pub price: f64,
+    #[sql_type = "Json"]
+    pub option_group_list: serde_json::Value,
 }

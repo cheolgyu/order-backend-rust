@@ -18,9 +18,10 @@ mod models;
 mod schema;
 mod svc;
 mod utils;
+use actix_cors::Cors;
 use crate::models::DbExecutor;
 use actix_web::{
-    client::Client, get, http::header, middleware as actix_middleware, web, App, HttpRequest,
+    http,client::Client, get, http::header, middleware as actix_middleware, web, App, HttpRequest,
     HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};
@@ -73,12 +74,12 @@ fn main() -> std::io::Result<()> {
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(
-                actix_middleware::cors::Cors::new()
-                    .allowed_origin(&url_frontend_ceo)
-                    .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
-                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-                    .allowed_header(header::CONTENT_TYPE)
-                    .max_age(3600),
+                Cors::new() // <- Construct CORS middleware builder
+              .allowed_origin(&url_frontend_ceo)
+              .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
+              .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+              .allowed_header(http::header::CONTENT_TYPE)
+              .max_age(3600)
             )
             .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
             .service(
@@ -114,7 +115,7 @@ fn main() -> std::io::Result<()> {
                                         .service(
                                             web::scope("/{shop_id}")
                                                 .service(web::resource("").route(web::get().to_async(svc::shop::router::get), ))
-                                                .service(
+                                                .service( 
                                                     web::scope("/products")
                                                         .service(web::resource("").route( web::put().to_async( svc::product::router::put) ).route(web::get().to_async(svc::product::router::get_list)))
                                                         .service(
