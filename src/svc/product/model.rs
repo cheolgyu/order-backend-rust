@@ -93,7 +93,7 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: String,
+    pub price: f64,
     pub opt_group: Vec<i32>,
 }
 
@@ -115,7 +115,7 @@ impl InpUpdate {
         Update {
             id: self.id,
             name: self.name.to_string(),
-            price: self.price.parse().unwrap(),
+            price: self.price, //.parse().unwrap(),
             opt_group: self.opt_group.clone(),
         }
     }
@@ -133,10 +133,10 @@ pub struct Get {
 pub struct GetList {
     pub shop_id: Uuid,
 }
-use diesel::sql_types::{Integer, Json, Text, Uuid as uu, Double};
+use diesel::sql_types::{Double, Integer, Json, Text, Uuid as uu};
 
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
-pub struct SimpleProduct { 
+pub struct SimpleProduct {
     #[sql_type = "Integer"]
     pub id: i32,
     #[sql_type = "uu"]
