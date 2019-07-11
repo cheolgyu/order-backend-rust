@@ -93,7 +93,7 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: f64,
+    pub price: String,
     pub opt_group: Vec<i32>,
 }
 
@@ -115,7 +115,7 @@ impl InpUpdate {
         Update {
             id: self.id,
             name: self.name.to_string(),
-            price: self.price, //.parse().unwrap(),
+            price: self.price.parse().expect("상품가격 파서 오류"),
             opt_group: self.opt_group.clone(),
         }
     }
