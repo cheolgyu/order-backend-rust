@@ -155,7 +155,9 @@ fn main() -> std::io::Result<()> {
                                                         .service(
                                                             web::scope("/{option_id}").service(
                                                                 web::resource("")
-                                                                    .route(web::get().to_async( svc::option::router::get)),
+                                                                    .route(web::get().to_async( svc::option::router::get))
+                                                                    .route( web::delete().to_async( svc::option::router::delete)  )
+                                                                    ,
                                                             ),
                                                         ),
                                                 ),
