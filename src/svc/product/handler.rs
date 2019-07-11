@@ -1,6 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::product::model::{Get, GetList, InpNew, New, Product, SimpleProduct, Update};
+use crate::svc::product::model::{Get, GetList, InpNew, New, Product as Object, SimpleProduct, Update,Delete};
+use crate::schema::product::dsl::{shop_id,deleted_at,id,name, product as tb};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -9,20 +10,20 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 impl Handler<New> for DbExecutor {
-    type Result = Result<Product, ServiceError>;
+    type Result = Result<Object, ServiceError>;
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::product::dsl::{name, product as tb};
+        
         let conn = &self.0.get()?;
 
-        let check = tb.filter(&name.eq(&msg.name)).load::<Product>(conn)?.pop();
+        let check = tb.filter(&name.eq(&msg.name)).load::<Object>(conn)?.pop();
 
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
-                let insert: Product = diesel::insert_into(tb)
+                let insert: Object = diesel::insert_into(tb)
                     .values(&msg)
-                    .get_result::<Product>(conn)?;
+                    .get_result::<Object>(conn)?;
 
                 Ok(insert)
             }
@@ -34,13 +35,12 @@ impl Handler<Update> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: Update, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::product::dsl::{id, name, product as tb};
         let conn = &self.0.get()?;
 
-        let old_item = tb.filter(&id.eq(&msg.id)).get_result::<Product>(conn)?;
+        let old_item = tb.filter(&id.eq(&msg.id)).get_result::<Object>(conn)?;
         let item_update = diesel::update(&old_item)
             .set(&msg)
-            .get_result::<Product>(conn)?;
+            .get_result::<Object>(conn)?;
         let payload = serde_json::json!({
             "item_update": item_update,
         });
@@ -55,10 +55,9 @@ impl Handler<Get> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: Get, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::product::dsl::{id, name, product as tb};
         let conn = &self.0.get()?;
 
-        let item = tb.filter(&id.eq(&msg.id)).get_result::<Product>(conn)?;
+        let item = tb.filter(&id.eq(&msg.id)).get_result::<Object>(conn)?;
 
         let payload = serde_json::json!({
             "item": item,
@@ -94,6 +93,31 @@ impl Handler<GetList> for DbExecutor {
 
         let payload = serde_json::json!({
             "items": res,
+        });
+        Ok(Msg {
+            status: 201,
+            data: payload,
+        })
+    }
+}
+
+
+impl Handler<Delete> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: Delete, _: &mut Self::Context) -> Self::Result {
+        let conn = &self.0.get()?;
+        use chrono::{NaiveDate, NaiveDateTime};
+        let old_item = tb
+            .filter(&id.eq(&msg.id))
+            .filter(&shop_id.eq(&msg.shop_id))
+            .get_result::<Object>(conn)?;
+        let item_delete = diesel::update(&old_item)
+            .set(deleted_at.eq(diesel::dsl::now))
+            .get_result::<Object>(conn)?;
+        //deleted_at
+        let payload = serde_json::json!({
+            "item_delete": item_delete,
         });
         Ok(Msg {
             status: 201,

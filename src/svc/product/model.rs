@@ -148,3 +148,34 @@ pub struct SimpleProduct {
     #[sql_type = "Json"]
     pub option_group_list: serde_json::Value,
 }
+
+
+
+
+#[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "product"]
+pub struct Delete {
+    pub id: i32,
+    pub shop_id: Uuid,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct InpDelete {
+    pub id: i32,
+}
+
+impl Validate for InpDelete {
+    fn validate(&self) -> Result<(), Error> {
+         Ok(())
+    }
+}
+
+impl InpDelete {
+    pub fn new(&self, shop_id: String) -> Delete {
+        Delete {
+            id: self.id,
+            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+        }
+    }
+}

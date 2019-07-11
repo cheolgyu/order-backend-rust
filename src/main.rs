@@ -125,7 +125,8 @@ fn main() -> std::io::Result<()> {
                                                             web::scope("/{product_id}").service(
                                                                 web::resource("")
                                                                     .route(web::post().to_async( svc::product::router::post ))
-                                                                    .route(web::get().to_async( svc::product::router::get)),
+                                                                    .route(web::get().to_async( svc::product::router::get))
+                                                                    .route( web::delete().to_async( svc::product::router::delete) ),
                                                             ),
                                                         ),
                                                 ).service(

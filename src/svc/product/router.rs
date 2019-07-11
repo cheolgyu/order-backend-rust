@@ -2,7 +2,7 @@ use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::svc::auth::model::Ceo;
 use crate::svc::auth::model::{AuthUser, Info};
-use crate::svc::product::model::{Get, GetList, InpNew, InpUpdate, New};
+use crate::svc::product::model::{Get, GetList, InpNew, InpUpdate, New,InpDelete};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -90,6 +90,29 @@ pub fn get_list(
     db.send(info)
         .from_err()
         .and_then(move |_| db2.send(GetList { shop_id: uusid }))
+        .from_err()
+        .and_then(|res| match res {
+            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+            Err(e) => Ok(e.error_response()),
+        })
+}
+
+pub fn delete(
+    auth_user: AuthUser,
+    path_info: Path<Info>,
+    pinfo: Path<(String, String, i32)>,
+    db: Data<Addr<DbExecutor>>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+    let mut j = InpDelete { id: pinfo.2 };
+    let mut info = path_info.into_inner();
+    info.auth_user = Some(auth_user);
+    let info2 = info.clone();
+    let db2 = db.clone();
+    let shop_id = info2.shop_id.unwrap();
+
+    result(j.validate())
+        .and_then(move |_| db.send(info).from_err())
+        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
