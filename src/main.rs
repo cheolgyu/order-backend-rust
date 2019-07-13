@@ -18,10 +18,10 @@ mod models;
 mod schema;
 mod svc;
 mod utils;
-use actix_cors::Cors;
 use crate::models::DbExecutor;
+use actix_cors::Cors;
 use actix_web::{
-    http,client::Client, get, http::header, middleware as actix_middleware, web, App, HttpRequest,
+    client::Client, get, http, http::header, middleware as actix_middleware, web, App, HttpRequest,
     HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};
@@ -115,7 +115,7 @@ fn main() -> std::io::Result<()> {
                                         .service(
                                             web::scope("/{shop_id}")
                                                 .service(web::resource("").route(web::get().to_async(svc::shop::router::get), ))
-                                                .service( 
+                                                .service(
                                                     web::scope("/products")
                                                         .service(
                                                             web::resource("")
@@ -135,7 +135,6 @@ fn main() -> std::io::Result<()> {
                                                             .route( web::put().to_async( svc::option_group::router::put)  )
                                                             .route(web::get().to_async(svc::option_group::router::get_list))
                                                             .route(web::post().to_async( svc::option_group::router::post ))
-                                                            
                                                             )
                                                             .service(
                                                                 web::scope("/{option_group_id}").service(

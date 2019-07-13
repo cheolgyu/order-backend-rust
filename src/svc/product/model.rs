@@ -149,9 +149,6 @@ pub struct SimpleProduct {
     pub option_group_list: serde_json::Value,
 }
 
-
-
-
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "product"]
@@ -167,7 +164,7 @@ pub struct InpDelete {
 
 impl Validate for InpDelete {
     fn validate(&self) -> Result<(), Error> {
-         Ok(())
+        Ok(())
     }
 }
 

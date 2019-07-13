@@ -16,7 +16,7 @@ use actix_web::{
     web::{self, Data, Json, Path},
     Error, HttpRequest,
 };
-use actix_web::{error,FromRequest};
+use actix_web::{error, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;

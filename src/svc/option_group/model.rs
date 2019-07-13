@@ -11,7 +11,7 @@ use crate::utils::validator::{
 };
 use actix::Message;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error,  FromRequest};
+use actix_web::{error, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
@@ -140,7 +140,7 @@ pub struct InpDelete {
 
 impl Validate for InpDelete {
     fn validate(&self) -> Result<(), Error> {
-         Ok(())
+        Ok(())
     }
 }
 

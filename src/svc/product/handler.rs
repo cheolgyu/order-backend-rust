@@ -1,7 +1,9 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::product::model::{Get, GetList, InpNew, New, Product as Object, SimpleProduct, Update,Delete};
-use crate::schema::product::dsl::{shop_id,deleted_at,id,name, product as tb};
+use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
+use crate::svc::product::model::{
+    Delete, Get, GetList, InpNew, New, Product as Object, SimpleProduct, Update,
+};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};
@@ -13,7 +15,6 @@ impl Handler<New> for DbExecutor {
     type Result = Result<Object, ServiceError>;
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
-        
         let conn = &self.0.get()?;
 
         let check = tb.filter(&name.eq(&msg.name)).load::<Object>(conn)?.pop();
@@ -100,7 +101,6 @@ impl Handler<GetList> for DbExecutor {
         })
     }
 }
-
 
 impl Handler<Delete> for DbExecutor {
     type Result = Result<Msg, ServiceError>;

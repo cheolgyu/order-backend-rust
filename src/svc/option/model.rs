@@ -8,9 +8,9 @@ use crate::utils::validator::{
     re_test_email, re_test_id, re_test_name, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
-use actix::Message; 
+use actix::Message;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error,  FromRequest};
+use actix_web::{error, FromRequest};
 use bcrypt::{hash, DEFAULT_COST};
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 use diesel;
@@ -129,7 +129,6 @@ pub struct GetList {
     pub shop_id: Uuid,
 }
 
-
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "option"]
@@ -145,7 +144,7 @@ pub struct InpDelete {
 
 impl Validate for InpDelete {
     fn validate(&self) -> Result<(), Error> {
-         Ok(())
+        Ok(())
     }
 }
 
