@@ -212,7 +212,7 @@ pub struct QueryUser {
 #[derive(Deserialize, Serialize, Debug, Message, Clone)]
 #[rtype(result = "Result<Info, ServiceError>")]
 pub struct Info {
-    pub user_id: String,
+    pub ceo_id: String,
     pub shop_id: Option<String>,
     pub product_id: Option<i32>,
     pub auth_user: Option<AuthUser>,

@@ -91,8 +91,8 @@ fn main() -> std::io::Result<()> {
                             .route(web::get().to_async(svc::auth::router::getme)),
                     )
                     .service(
-                        web::scope("/users").service(
-                            web::scope("/{user_id}")
+                        web::scope("ceo").service(
+                            web::scope("/{ceo_id}")
                                 .service(
                                     web::resource("")
                                         .route(web::get().to_async(svc::auth::router::getme)),

@@ -4,5 +4,7 @@
     ".vue": true,
     "*.vue": true
   },
-  
+  "files.exclude": {
+    "target": true,
+  }
 }
