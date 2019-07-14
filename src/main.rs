@@ -81,7 +81,7 @@ fn main() -> std::io::Result<()> {
               .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
               .allowed_headers(vec![AUTHORIZATION, ACCEPT])
               .allowed_header(CONTENT_TYPE)
-              .max_age(3600) 
+              .max_age(3600)
             )
             .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
             .service(
