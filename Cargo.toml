@@ -4,31 +4,31 @@ version = "0.1.0"
 authors = ["cg <rb7480@naver.com>"]
 edition = "2018"
 [dependencies]
-futures = "0.1.27"
-actix = "0.8.2"
-actix-rt = "0.2.2"
+futures = "0.1.28"
+actix = "0.8.3"
+actix-rt = "0.2.3"
 actix-web = "1.0.3"
 actix_derive = "0.4.0"
-actix-service = "0.4.0"
-actix-http = "0.2.0"
-actix-web-actors = "1.0.0-beta.4"
+actix-service = "0.4.1"
+actix-http = "0.2.5"
+actix-web-actors = "1.0.1"
 actix-cors = "0.1.0"
 diesel = { version = "1.4.2", features = ["postgres","r2d2","chrono","serde_json","uuid"] }
 diesel_derives = "1.4.0"
-dotenv = "0.9.0"
-env_logger = "0.6.1"
-r2d2 = "0.8.4"
-uuid = { version = "0.6.5", features = ["serde", "v4"] }
+dotenv = "0.14.1"
+env_logger = "0.6.2"
+r2d2 = "0.8.5"
+uuid = { version = "0.6", features = ["serde", "v4"] }
 
 jsonwebtoken = "6.0.1" 
 
-serde_derive="1.0.91"
-serde_json="1.0.39"
-serde="1.0.91"
+serde_derive="1.0.94"
+serde_json="1.0.40"
+serde="1.0.94"
 
-regex = "1.1.6"
+regex = "1.1.9"
 lazy_static = "1.3.0"
 
-derive_more = "0.14.0"
-chrono = { version = "0.4.6", features = ["serde"] }
-bcrypt = "0.4.0"
+derive_more = "0.15.0"
+chrono = { version = "0.4.7", features = ["serde"] }
+bcrypt = "0.5.0"
