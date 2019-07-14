@@ -19,7 +19,7 @@ mod utils;
 use crate::models::DbExecutor;
 use actix_cors::Cors;
 use actix_web::{
-    client::Client, get, http, middleware as actix_middleware, web, App, HttpRequest,
+    client::Client, get, http::header::{AUTHORIZATION,ACCEPT,CONTENT_TYPE}, middleware as actix_middleware, web, App, HttpRequest,
     HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};
@@ -75,9 +75,9 @@ fn main() -> std::io::Result<()> {
                 Cors::new() // <- Construct CORS middleware builder
               .allowed_origin(&url_frontend_ceo)
               .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
-              .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-              .allowed_header(http::header::CONTENT_TYPE)
-              .max_age(3600)
+              .allowed_headers(vec![AUTHORIZATION, ACCEPT])
+              .allowed_header(CONTENT_TYPE)
+              .max_age(3600) 
             )
             .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
             .service(
