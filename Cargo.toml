@@ -2,7 +2,6 @@
 name = "order-backend-rust"
 version = "0.1.0"
 authors = ["cg <rb7480@naver.com>"]
-edition = "2018"
 
 [dependencies]
 futures = "0.1.27"
