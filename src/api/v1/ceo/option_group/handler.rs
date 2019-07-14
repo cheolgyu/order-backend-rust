@@ -1,9 +1,9 @@
-use crate::errors::ServiceError;
-use crate::models::DbExecutor;
-use crate::schema::option_group::dsl::{self, deleted_at, id, name, option_group as tb, shop_id};
 use crate::api::v1::ceo::option_group::model::{
     Delete, Get, GetList, InpNew, New, OptionGroup as Object, SimpleOptionGroup, Update,
 };
+use crate::errors::ServiceError;
+use crate::models::DbExecutor;
+use crate::schema::option_group::dsl::{self, deleted_at, id, name, option_group as tb, shop_id};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};

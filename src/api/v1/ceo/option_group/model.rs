@@ -1,10 +1,10 @@
+use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::option_group;
-use crate::api::v1::ceo::auth::model::AuthUser;
 
 use crate::api::v1::ceo::option::model::Opt;
-use crate::api::v1::ceo::shop::model::Shop;
+use crate::models::shop::Shop;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_name, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,

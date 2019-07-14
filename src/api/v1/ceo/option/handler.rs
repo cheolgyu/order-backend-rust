@@ -1,7 +1,9 @@
+use crate::api::v1::ceo::option::model::{
+    Delete, Get, GetList, InpNew, New, Opt as Object, Update,
+};
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::schema::option::dsl::{deleted_at, id, name, option as tb, shop_id};
-use crate::api::v1::ceo::option::model::{Delete, Get, GetList, InpNew, New, Opt as Object, Update};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};

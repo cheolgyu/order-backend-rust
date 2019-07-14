@@ -1,8 +1,9 @@
+use crate::api::v1::ceo::product::model::Product;
+use crate::api::v1::ceo::shop::model::{NewShop, ShopID};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::api::v1::ceo::product::model::Product;
-use crate::api::v1::ceo::shop::model::{NewShop, Shop, ShopID};
+use crate::models::shop::Shop;
 
 use actix::Handler;
 use actix::Message;
@@ -15,7 +16,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 impl Handler<NewShop> for DbExecutor {
-    type Result = Result<Shop, ServiceError>;
+    type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: NewShop, _: &mut Self::Context) -> Self::Result {
         use crate::schema::shop;
@@ -34,7 +35,13 @@ impl Handler<NewShop> for DbExecutor {
                     .values(&msg)
                     .get_result::<Shop>(conn)?;
 
-                Ok(insert)
+                let payload = serde_json::json!({
+                    "item": insert,
+                });
+                Ok(Msg {
+                    status: 201,
+                    data: payload,
+                })
             }
         }
     }

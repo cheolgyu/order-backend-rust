@@ -1,9 +1,9 @@
-use crate::errors::ServiceError;
-use crate::models::DbExecutor;
-use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
 use crate::api::v1::ceo::product::model::{
     Delete, Get, GetList, InpNew, New, Product as Object, SimpleProduct, Update,
 };
+use crate::errors::ServiceError;
+use crate::models::DbExecutor;
+use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
 use actix::Handler;
 use actix::Message;
 use actix_web::{error, Error};

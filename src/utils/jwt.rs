@@ -1,5 +1,5 @@
-use crate::errors::ServiceError;
 use crate::api::v1::ceo::auth::model::{AuthUser, SlimUser};
+use crate::errors::ServiceError;
 use chrono::{Duration, Local};
 use jsonwebtoken::{decode, encode, Header, Validation};
 use uuid::Uuid;

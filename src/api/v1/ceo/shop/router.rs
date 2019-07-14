@@ -1,7 +1,7 @@
-use crate::errors::ServiceError;
-use crate::models::DbExecutor;
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::shop::model::{InpNew, NewShop, ShopID};
+use crate::errors::ServiceError;
+use crate::models::DbExecutor;
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;

@@ -1,7 +1,7 @@
-use crate::errors::ServiceError;
-use crate::models::DbExecutor;
 use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::api::v1::ceo::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
+use crate::errors::ServiceError;
+use crate::models::DbExecutor;
 use crate::utils::jwt::decode_token;
 use actix::Addr;
 use actix_service::{Service, Transform};
@@ -88,8 +88,8 @@ where
             .get()
             .expect("pool err1111111111");
 
-        use crate::schema::product::dsl::{id, name, product as tb};
         use crate::api::v1::ceo::product::model::{Get, InpNew, New, Product, Update};
+        use crate::schema::product::dsl::{id, name, product as tb};
 
         let item = tb.filter(&id.eq(1)).load::<Product>(&pool).unwrap();
 
