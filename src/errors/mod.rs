@@ -6,7 +6,6 @@ use diesel::r2d2::PoolError;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::convert::From;
 use uuid::ParseError;
-
 #[derive(Debug, Display)]
 pub enum ServiceError {
     // 400
