@@ -3,12 +3,12 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use actix::Handler;
-use bcrypt::verify;
+
 use diesel;
-use diesel::expression::sql_literal::sql;
+
 use diesel::prelude::*;
-use diesel::sql_query;
-use diesel::sql_types::{Bool, Integer, Text};
+
+
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup

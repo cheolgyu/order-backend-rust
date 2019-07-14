@@ -1,9 +1,9 @@
-use crate::api::v1::ceo::auth::model::Ceo;
+
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::option::model::{Get, GetList, InpDelete, InpNew, InpUpdate, New};
-use crate::errors::ServiceError;
+use crate::api::v1::ceo::option::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
+
 use crate::models::DbExecutor;
-use crate::utils::jwt::{create_token, decode_token};
+
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -111,7 +111,7 @@ pub fn delete(
     pinfo: Path<(String, String, i32)>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let mut j = InpDelete { id: pinfo.2 };
+    let j = InpDelete { id: pinfo.2 };
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
     let info2 = info.clone();

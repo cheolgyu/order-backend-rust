@@ -1,16 +1,16 @@
 use crate::api::v1::ceo::product::model::{
-    Delete, Get, GetList, InpNew, New, Product as Object, SimpleProduct, Update,
+    Delete, Get, GetList, New, Product as Object, SimpleProduct, Update,
 };
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
 use actix::Handler;
-use actix::Message;
-use actix_web::{error, Error};
-use bcrypt::verify;
+
+
+
 use diesel;
 use diesel::prelude::*;
-use uuid::Uuid;
+
 impl Handler<New> for DbExecutor {
     type Result = Result<Object, ServiceError>;
 
@@ -107,7 +107,7 @@ impl Handler<Delete> for DbExecutor {
 
     fn handle(&mut self, msg: Delete, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
-        use chrono::{NaiveDate, NaiveDateTime};
+        
         let old_item = tb
             .filter(&id.eq(&msg.id))
             .filter(&shop_id.eq(&msg.shop_id))

@@ -1,15 +1,15 @@
-use crate::api::v1::ceo::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
+use crate::api::v1::ceo::auth::model::{Info, Login, New, QueryUser, SlimUser, User};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
 use crate::models::DbExecutor;
 use actix::Handler;
-use bcrypt::verify;
+
 use diesel;
-use diesel::expression::sql_literal::sql;
+
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Bool, Integer, Text};
+use diesel::sql_types::{Integer, Text};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
@@ -72,7 +72,7 @@ impl Handler<Login> for DbExecutor {
     type Result = Result<SlimUser, ServiceError>;
 
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::user::dsl::{account_id, user};
+        
         let conn = &self.0.get()?;
 
         let s = r#"SELECT * FROM "user" WHERE  account_password =  "#;

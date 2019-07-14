@@ -19,7 +19,7 @@ mod utils;
 use crate::models::DbExecutor;
 use actix_cors::Cors;
 use actix_web::{
-    client::Client, get, http, http::header, middleware as actix_middleware, web, App, HttpRequest,
+    client::Client, get, http, middleware as actix_middleware, web, App, HttpRequest,
     HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};

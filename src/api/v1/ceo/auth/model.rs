@@ -2,24 +2,24 @@ use crate::api::v1::ceo::product::model::Product;
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
-use crate::models::DbExecutor;
+
 use crate::schema::user;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
-use actix::Addr;
+
 use actix::Message;
 use actix_web::{
     dev::Payload,
-    web::{self, Data, Json, Path},
+    web::{Path},
     Error, HttpRequest,
 };
 use actix_web::{error, FromRequest};
-use bcrypt::{hash, DEFAULT_COST};
+
 use chrono::{Duration, Local, NaiveDateTime, Utc};
-use diesel;
+
 use uuid::Uuid;
 #[derive(
     Clone,
@@ -77,14 +77,14 @@ impl AuthUser {
         }
     }
 }
-use futures::{future::result, Future};
+use futures::{Future};
 
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
     #[warn(unused_variables)]
-    fn from_request(req: &HttpRequest, pl: &mut Payload) -> Self::Future {
+    fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
         let path_info = Path::<Info>::extract(req)?.into_inner();
         println!("auth_user-from_request-path_info:{:?}", path_info);
         if let Some(auth_token) = req.headers().get("authorization") {

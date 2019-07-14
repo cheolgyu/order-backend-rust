@@ -1,19 +1,19 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
+
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::shop::Shop;
+
 use crate::schema::option;
-use crate::utils::jwt::decode_token;
+
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_name, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
 };
 use actix::Message;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error, FromRequest};
-use bcrypt::{hash, DEFAULT_COST};
+use actix_web::{error};
+
 use chrono::{Duration, Local, NaiveDateTime, Utc};
-use diesel;
+
 use uuid::Uuid;
 #[derive(
     Clone,

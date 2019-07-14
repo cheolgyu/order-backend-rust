@@ -1,17 +1,17 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
-use crate::api::v1::ceo::auth::model::{Ceo, Info, Login, New, QueryUser, SlimUser, User};
-use crate::errors::ServiceError;
-use crate::models::DbExecutor;
-use crate::utils::jwt::decode_token;
-use actix::Addr;
+
+
+
+
+
+
 use actix_service::{Service, Transform};
-use actix_web::web::{self, Data, Json, Path};
+
 use actix_web::{dev::Payload, Error, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use actix_web::{error, FromRequest};
+
 use futures::future::{ok, FutureResult};
 use futures::{Future, Poll};
-use regex::Regex;
+
 // There are two step in middleware processing.
 // 1. Middleware initialization, middleware factory get called with
 //    next service in chain as parameter.
@@ -80,7 +80,7 @@ where
         println!("Hi from start. You requested: {}", req.path());
         use diesel;
         use diesel::prelude::*;
-        use diesel::r2d2::{ConnectionManager, Pool};
+        
         let pool = req
             .app_data::<r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>>()
             .expect("get app_data err 222222222")
@@ -89,7 +89,7 @@ where
             .expect("pool err1111111111");
 
         use crate::api::v1::ceo::product::model::{Get, InpNew, New, Product, Update};
-        use crate::schema::product::dsl::{id, name, product as tb};
+        use crate::schema::product::dsl::{id, product as tb};
 
         let item = tb.filter(&id.eq(1)).load::<Product>(&pool).unwrap();
 

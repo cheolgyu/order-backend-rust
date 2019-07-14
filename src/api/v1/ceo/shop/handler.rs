@@ -6,20 +6,20 @@ use crate::models::shop::Shop;
 use crate::models::DbExecutor;
 
 use actix::Handler;
-use actix::Message;
-use actix_web::{error, Error};
-use bcrypt::verify;
+
+
+
 use diesel;
 use diesel::prelude::*;
-use diesel::prelude::*;
+
 use serde_json::json;
-use uuid::Uuid;
+
 
 impl Handler<NewShop> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: NewShop, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::shop;
+        
         use crate::schema::shop::dsl::*;
         let conn = &self.0.get()?;
 

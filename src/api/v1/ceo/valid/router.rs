@@ -1,9 +1,9 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::valid::model::{ChkValid, InpNew, New};
-use crate::errors::ServiceError;
+
 use crate::models::DbExecutor;
-use crate::utils::jwt::{create_token, decode_token};
-use crate::utils::validator::Validate;
+
+
 use actix::Addr;
 use actix_web::client::Client;
 use actix_web::web::BytesMut;
@@ -14,10 +14,10 @@ use actix_web::{
 };
 use chrono::format::strftime::StrftimeItems;
 use chrono::{Duration, Local};
-use futures::{future::result, Future, Stream};
-use std::collections::HashMap;
-use std::io;
-use uuid::Uuid;
+use futures::{Future, Stream};
+
+
+
 #[derive(Debug, Deserialize)]
 struct HttpBinResponse {
     status: bool,
