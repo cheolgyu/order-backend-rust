@@ -1,11 +1,11 @@
 #[macro_use]
 extern crate diesel;
-extern crate actix_derive;
+
 #[macro_use]
 extern crate diesel_derives;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde_json;
+
 
 #[macro_use]
 extern crate lazy_static;
