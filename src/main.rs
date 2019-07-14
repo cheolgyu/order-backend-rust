@@ -12,11 +12,11 @@ extern crate serde_json;
 #[macro_use]
 extern crate lazy_static;
 use actix::prelude::*;
+mod api;
 mod errors;
 mod middleware;
 mod models;
 mod schema;
-mod api;
 mod utils;
 use crate::models::DbExecutor;
 use actix_cors::Cors;
@@ -85,13 +85,14 @@ fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/api/v1")
                     .service(
-                        web::resource("/auth")
+                        web::scope("ceo")
+                        .service(
+                            web::resource("/auth")
                             .route(web::put().to_async(api::v1::ceo::auth::router::signup))
                             .route(web::post().to_async(api::v1::ceo::auth::router::signin))
-                            .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
-                    )
-                    .service(
-                        web::scope("ceo").service(
+                            .route(web::get().to_async(api::v1::ceo::auth::router::getme))
+                        )
+                        .service(
                             web::scope("/{ceo_id}")
                                 .service(
                                     web::resource("")
