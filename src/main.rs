@@ -9,7 +9,6 @@ extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
 
-
 #[macro_use]
 extern crate lazy_static;
 use actix::prelude::*;
@@ -22,8 +21,10 @@ mod utils;
 use crate::models::DbExecutor;
 use actix_cors::Cors;
 use actix_web::{
-    client::Client, get, http::header::{AUTHORIZATION,ACCEPT,CONTENT_TYPE}, middleware as actix_middleware, web, App, HttpRequest,
-    HttpServer,
+    client::Client,
+    get,
+    http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
+    middleware as actix_middleware, web, App, HttpRequest, HttpServer,
 };
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;

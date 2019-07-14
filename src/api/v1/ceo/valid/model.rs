@@ -1,15 +1,9 @@
-
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 
-
 use crate::schema::valid;
 
-
-
 use actix::Message;
-
-
 
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 

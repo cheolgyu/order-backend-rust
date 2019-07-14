@@ -8,7 +8,6 @@ use diesel;
 
 use diesel::prelude::*;
 
-
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup

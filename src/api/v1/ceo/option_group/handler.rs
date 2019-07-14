@@ -6,11 +6,8 @@ use crate::models::DbExecutor;
 use crate::schema::option_group::dsl::{deleted_at, id, name, option_group as tb, shop_id};
 use actix::Handler;
 
-
-
 use diesel;
 use diesel::prelude::*;
-
 
 impl Handler<New> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
@@ -70,7 +67,7 @@ impl Handler<Delete> for DbExecutor {
 
     fn handle(&mut self, msg: Delete, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
-        
+
         let old_item = tb
             .filter(&id.eq(&msg.id))
             .filter(&shop_id.eq(&msg.shop_id))

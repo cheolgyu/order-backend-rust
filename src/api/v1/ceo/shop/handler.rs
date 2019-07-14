@@ -7,19 +7,15 @@ use crate::models::DbExecutor;
 
 use actix::Handler;
 
-
-
 use diesel;
 use diesel::prelude::*;
 
 use serde_json::json;
 
-
 impl Handler<NewShop> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: NewShop, _: &mut Self::Context) -> Self::Result {
-        
         use crate::schema::shop::dsl::*;
         let conn = &self.0.get()?;
 

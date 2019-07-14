@@ -1,4 +1,3 @@
-
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::option::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
 

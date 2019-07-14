@@ -3,7 +3,6 @@ use crate::api::v1::ceo::valid::model::{ChkValid, InpNew, New};
 
 use crate::models::DbExecutor;
 
-
 use actix::Addr;
 use actix_web::client::Client;
 use actix_web::web::BytesMut;
@@ -15,8 +14,6 @@ use actix_web::{
 use chrono::format::strftime::StrftimeItems;
 use chrono::{Duration, Local};
 use futures::{Future, Stream};
-
-
 
 #[derive(Debug, Deserialize)]
 struct HttpBinResponse {

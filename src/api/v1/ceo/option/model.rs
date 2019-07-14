@@ -1,4 +1,3 @@
-
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 
@@ -9,8 +8,8 @@ use crate::utils::validator::{
     re_test_password_contain_special, Validate,
 };
 use actix::Message;
+use actix_web::error;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error};
 
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 

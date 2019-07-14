@@ -1,7 +1,7 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, InpNew, Login, QueryUser, SlimUser};
 
 use crate::models::DbExecutor;
-use crate::utils::jwt::{create_token};
+use crate::utils::jwt::create_token;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -10,7 +10,6 @@ use actix_web::{
     Error, HttpRequest, HttpResponse, Responder, ResponseError,
 };
 use futures::{future::result, Future};
-
 
 pub fn signup(
     json: Json<InpNew>,

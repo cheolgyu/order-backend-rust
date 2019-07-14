@@ -1,13 +1,4 @@
-
-
-
-
 use crate::schema::shop;
-
-
-
-
-
 
 use chrono::{Duration, Local, NaiveDateTime, Utc};
 

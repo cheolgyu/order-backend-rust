@@ -1,9 +1,3 @@
-
-
-
-
-
-
 use actix_service::{Service, Transform};
 
 use actix_web::{dev::Payload, Error, HttpRequest};
@@ -80,7 +74,7 @@ where
         println!("Hi from start. You requested: {}", req.path());
         use diesel;
         use diesel::prelude::*;
-        
+
         let pool = req
             .app_data::<r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>>()
             .expect("get app_data err 222222222")

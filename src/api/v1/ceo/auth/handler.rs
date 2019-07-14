@@ -72,7 +72,6 @@ impl Handler<Login> for DbExecutor {
     type Result = Result<SlimUser, ServiceError>;
 
     fn handle(&mut self, msg: Login, _: &mut Self::Context) -> Self::Result {
-        
         let conn = &self.0.get()?;
 
         let s = r#"SELECT * FROM "user" WHERE  account_password =  "#;
