@@ -2,8 +2,8 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::schema::valid;
-use crate::svc::product::model::Product;
-use crate::svc::shop::model::Shop;
+use crate::api::v1::ceo::product::model::Product;
+use crate::api::v1::ceo::shop::model::Shop;
 use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,

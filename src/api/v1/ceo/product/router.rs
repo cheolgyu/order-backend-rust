@@ -1,8 +1,8 @@
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
-use crate::svc::auth::model::Ceo;
-use crate::svc::auth::model::{AuthUser, Info};
-use crate::svc::product::model::{Get, GetList, InpDelete, InpNew, InpUpdate, New};
+use crate::api::v1::ceo::auth::model::Ceo;
+use crate::api::v1::ceo::auth::model::{AuthUser, Info};
+use crate::api::v1::ceo::product::model::{Get, GetList, InpDelete, InpNew, InpUpdate, New};
 use crate::utils::jwt::{create_token, decode_token};
 use crate::utils::validator::Validate;
 use actix::Addr;

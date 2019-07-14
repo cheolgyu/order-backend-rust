@@ -16,7 +16,7 @@ mod errors;
 mod middleware;
 mod models;
 mod schema;
-mod svc;
+mod api;
 mod utils;
 use crate::models::DbExecutor;
 use actix_cors::Cors;
@@ -86,76 +86,76 @@ fn main() -> std::io::Result<()> {
                 web::scope("/api/v1")
                     .service(
                         web::resource("/auth")
-                            .route(web::put().to_async(svc::auth::router::signup))
-                            .route(web::post().to_async(svc::auth::router::signin))
-                            .route(web::get().to_async(svc::auth::router::getme)),
+                            .route(web::put().to_async(api::v1::ceo::auth::router::signup))
+                            .route(web::post().to_async(api::v1::ceo::auth::router::signin))
+                            .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
                     )
                     .service(
                         web::scope("ceo").service(
                             web::scope("/{ceo_id}")
                                 .service(
                                     web::resource("")
-                                        .route(web::get().to_async(svc::auth::router::getme)),
+                                        .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
                                 )
                                 .service(
                                     web::resource("/valid_email")
-                                        .route(web::put().to_async(svc::valid::router::valid_email))
-                                        .route(web::post().to_async(svc::valid::router::chk_valid_email)),
+                                        .route(web::put().to_async(api::v1::ceo::valid::router::valid_email))
+                                        .route(web::post().to_async(api::v1::ceo::valid::router::chk_valid_email)),
                                 ) .service(
                                     web::resource("/valid_phone")
-                                        .route(web::put().to_async(svc::valid::router::valid_phone)),
+                                        .route(web::put().to_async(api::v1::ceo::valid::router::valid_phone)),
                                 )
                                 .service(
                                     web::scope("/shops")
                                         .service(
                                             web::resource("")
-                                                .route(web::put().to_async(svc::shop::router::put))
-                                                .route(web::post().to(svc::shop::router::post)),
+                                                .route(web::put().to_async(api::v1::ceo::shop::router::put))
+                                                .route(web::post().to(api::v1::ceo::shop::router::post)),
                                         )
                                         .service(
                                             web::scope("/{shop_id}")
-                                                .service(web::resource("").route(web::get().to_async(svc::shop::router::get), ))
+                                                .service(web::resource("").route(web::get().to_async(api::v1::ceo::shop::router::get), ))
                                                 .service(
                                                     web::scope("/products")
                                                         .service(
                                                             web::resource("")
-                                                                .route( web::put().to_async( svc::product::router::put) )
-                                                                .route(web::get().to_async(svc::product::router::get_list)))
+                                                                .route( web::put().to_async( api::v1::ceo::product::router::put) )
+                                                                .route(web::get().to_async(api::v1::ceo::product::router::get_list)))
                                                         .service(
                                                             web::scope("/{product_id}").service(
                                                                 web::resource("")
-                                                                    .route(web::post().to_async( svc::product::router::post ))
-                                                                    .route(web::get().to_async( svc::product::router::get))
-                                                                    .route( web::delete().to_async( svc::product::router::delete) ),
+                                                                    .route(web::post().to_async( api::v1::ceo::product::router::post ))
+                                                                    .route(web::get().to_async( api::v1::ceo::product::router::get))
+                                                                    .route( web::delete().to_async( api::v1::ceo::product::router::delete) ),
                                                             ),
                                                         ),
                                                 ).service(
                                                         web::scope("/option_group")
                                                             .service(web::resource("")
-                                                            .route( web::put().to_async( svc::option_group::router::put)  )
-                                                            .route(web::get().to_async(svc::option_group::router::get_list))
-                                                            .route(web::post().to_async( svc::option_group::router::post ))
+                                                            .route( web::put().to_async( api::v1::ceo::option_group::router::put)  )
+                                                            .route(web::get().to_async(api::v1::ceo::option_group::router::get_list))
+                                                            .route(web::post().to_async( api::v1::ceo::option_group::router::post ))
                                                             )
                                                             .service(
                                                                 web::scope("/{option_group_id}").service(
                                                                     web::resource("")
-                                                                        .route(web::get().to_async( svc::option_group::router::get))
-                                                                        .route( web::delete().to_async( svc::option_group::router::delete)  )
+                                                                        .route(web::get().to_async( api::v1::ceo::option_group::router::get))
+                                                                        .route( web::delete().to_async( api::v1::ceo::option_group::router::delete)  )
                                                                 ),
                                                             ),
                                                 )
                                                 .service(
                                                     web::scope("/option")
                                                         .service(web::resource("")
-                                                        .route( web::put().to_async( svc::option::router::put)  )
-                                                        .route(web::get().to_async(svc::option::router::get_list))
-                                                        .route(web::post().to_async( svc::option::router::post ))
+                                                        .route( web::put().to_async( api::v1::ceo::option::router::put)  )
+                                                        .route(web::get().to_async(api::v1::ceo::option::router::get_list))
+                                                        .route(web::post().to_async( api::v1::ceo::option::router::post ))
                                                         )
                                                         .service(
                                                             web::scope("/{option_id}").service(
                                                                 web::resource("")
-                                                                    .route(web::get().to_async( svc::option::router::get))
-                                                                    .route( web::delete().to_async( svc::option::router::delete)  )
+                                                                    .route(web::get().to_async( api::v1::ceo::option::router::get))
+                                                                    .route( web::delete().to_async( api::v1::ceo::option::router::delete)  )
                                                                     ,
                                                             ),
                                                         ),
