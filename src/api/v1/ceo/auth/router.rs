@@ -1,6 +1,6 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, InpNew, Login, QueryUser, SlimUser};
 
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 use crate::utils::jwt::create_token;
 use crate::utils::validator::Validate;
 use actix::Addr;

@@ -1,9 +1,9 @@
 use crate::api::v1::ceo::product::model::Product;
 use crate::api::v1::ceo::shop::model::{NewShop, ShopID};
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
-use crate::models::shop::Shop;
-use crate::models::DbExecutor;
+use crate::model::msg::Msg;
+use crate::model::shop::Shop;
+use crate::model::DbExecutor;
 
 use actix::Handler;
 

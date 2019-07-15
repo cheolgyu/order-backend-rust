@@ -1,7 +1,7 @@
 use crate::api::v1::ceo::valid::model::{ChkValid, New, Valid};
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
-use crate::models::DbExecutor;
+use crate::model::msg::Msg;
+use crate::model::DbExecutor;
 use actix::Handler;
 
 use diesel;

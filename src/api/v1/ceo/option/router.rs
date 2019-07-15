@@ -1,8 +1,8 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::option::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
 
-use crate::models::DbExecutor;
-
+use crate::model::DbExecutor;
+use crate::api::v1::ceo::option::service;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -12,6 +12,8 @@ use actix_web::{
 };
 use futures::{future::result, Future};
 use uuid::Uuid;
+
+use crate::model::db;
 
 pub fn put(
     json: Json<InpNew>,
@@ -80,6 +82,7 @@ pub fn get(
 }
 
 pub fn get_list(
+    pool: web::Data<db::PgPool>,
     auth_user: AuthUser,
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
@@ -90,17 +93,16 @@ pub fn get_list(
     let db2 = db.clone();
     let shop_id = info2.shop_id.unwrap();
 
-    db.send(info)
+
+    let ss = Uuid::parse_str(&shop_id).unwrap();
+
+   web::block(move || service::get_all(&ss,&pool))
         .from_err()
-        .and_then(move |_| {
-            db2.send(GetList {
-                shop_id: Uuid::parse_str(&shop_id).unwrap(),
-            })
-        })
-        .from_err()
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
+        .then(move |res| match res {
+            Ok(tasks) => {
+                Ok(HttpResponse::Ok().json(tasks))
+            }
+            Err(e) => Err(e),
         })
 }
 

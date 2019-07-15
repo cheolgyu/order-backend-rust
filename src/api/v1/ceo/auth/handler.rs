@@ -1,8 +1,8 @@
 use crate::api::v1::ceo::auth::model::{Info, Login, New, QueryUser, SlimUser, User};
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
-use crate::models::shop::Shop;
-use crate::models::DbExecutor;
+use crate::model::msg::Msg;
+use crate::model::shop::Shop;
+use crate::model::DbExecutor;
 use actix::Handler;
 
 use diesel;

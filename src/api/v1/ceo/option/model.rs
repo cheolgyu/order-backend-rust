@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
+use crate::model::msg::Msg;
 
 use crate::schema::option;
 

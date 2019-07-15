@@ -1,7 +1,7 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
+use crate::model::msg::Msg;
 use crate::schema::shop;
 
 use crate::utils::validator::{

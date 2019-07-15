@@ -1,6 +1,6 @@
 use crate::api::v1::ceo::option::model::{Delete, Get, GetList, New, Opt as Object, Update};
 use crate::errors::ServiceError;
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 use crate::schema::option::dsl::{deleted_at, id, name, option as tb, shop_id};
 use actix::Handler;
 
@@ -36,7 +36,7 @@ impl Handler<New> for DbExecutor {
         }
     }
 }
-use crate::models::msg::Msg;
+use crate::model::msg::Msg;
 impl Handler<Update> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 

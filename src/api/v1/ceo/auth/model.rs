@@ -1,7 +1,7 @@
 use crate::api::v1::ceo::product::model::Product;
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
-use crate::models::shop::Shop;
+use crate::model::msg::Msg;
+use crate::model::shop::Shop;
 
 use crate::schema::user;
 use crate::utils::jwt::decode_token;

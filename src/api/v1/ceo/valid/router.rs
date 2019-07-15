@@ -1,7 +1,7 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::valid::model::{ChkValid, InpNew, New};
 
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 
 use actix::Addr;
 use actix_web::client::Client;

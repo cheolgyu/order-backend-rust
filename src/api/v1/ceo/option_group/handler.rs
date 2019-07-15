@@ -2,7 +2,7 @@ use crate::api::v1::ceo::option_group::model::{
     Delete, Get, GetList, New, OptionGroup as Object, SimpleOptionGroup, Update,
 };
 use crate::errors::ServiceError;
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 use crate::schema::option_group::dsl::{deleted_at, id, name, option_group as tb, shop_id};
 use actix::Handler;
 
@@ -38,7 +38,7 @@ impl Handler<New> for DbExecutor {
         }
     }
 }
-use crate::models::msg::Msg;
+use crate::model::msg::Msg;
 impl Handler<Update> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 

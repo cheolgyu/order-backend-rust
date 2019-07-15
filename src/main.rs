@@ -1,3 +1,5 @@
+#[allow(unused_imports)]
+
 #[macro_use]
 extern crate diesel;
 #[macro_use]
@@ -15,10 +17,10 @@ use actix::prelude::*;
 mod api;
 mod errors;
 mod middleware;
-mod models;
+mod model;
 mod schema;
 mod utils;
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 use actix_cors::Cors;
 use actix_web::{
     client::Client,
@@ -68,8 +70,11 @@ fn main() -> std::io::Result<()> {
         .build(manager2)
         .expect("Failed to create pool.");
 
+    let pool3 = model::db::init_pool(&database_url.clone()).expect("Failed to create pool");
+
     HttpServer::new(move || {
         App::new()
+            .data(pool3.clone())
             .data(address.clone())
             .data(pool2.clone())
             .data(Client::default())
@@ -83,7 +88,7 @@ fn main() -> std::io::Result<()> {
               .allowed_header(CONTENT_TYPE)
               .max_age(3600)
             )
-            .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
+            .service(web::resource("/ws/").route(web::get().to(model::ws::ws_index)))
             .service(
                 web::scope("/api/v1")
                     .service(

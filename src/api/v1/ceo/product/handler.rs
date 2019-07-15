@@ -2,7 +2,7 @@ use crate::api::v1::ceo::product::model::{
     Delete, Get, GetList, New, Product as Object, SimpleProduct, Update,
 };
 use crate::errors::ServiceError;
-use crate::models::DbExecutor;
+use crate::model::DbExecutor;
 use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
 use actix::Handler;
 
@@ -29,7 +29,7 @@ impl Handler<New> for DbExecutor {
         }
     }
 }
-use crate::models::msg::Msg;
+use crate::model::msg::Msg;
 impl Handler<Update> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
