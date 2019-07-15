@@ -7,9 +7,8 @@ use actix::Addr;
 use actix_web::client::Client;
 use actix_web::web::BytesMut;
 use actix_web::{
-    get, post, put,
-    web::{self, Data, Json, Path},
-    Error, HttpRequest, HttpResponse, Responder, ResponseError,
+    web::{Data, Json, Path},
+    Error, HttpResponse, ResponseError,
 };
 use chrono::format::strftime::StrftimeItems;
 use chrono::{Duration, Local};

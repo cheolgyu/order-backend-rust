@@ -5,9 +5,8 @@ use crate::utils::jwt::create_token;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    get, post, put,
-    web::{self, Data, Json, Path},
-    Error, HttpRequest, HttpResponse, Responder, ResponseError,
+    web::{Data, Json, Path},
+    Error, HttpRequest, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 

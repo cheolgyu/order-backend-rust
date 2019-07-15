@@ -14,7 +14,7 @@ use actix::Message;
 use actix_web::{dev::Payload, web::Path, Error, HttpRequest};
 use actix_web::{error, FromRequest};
 
-use chrono::{Duration, Local, NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 
 use uuid::Uuid;
 #[derive(
@@ -73,7 +73,6 @@ impl AuthUser {
         }
     }
 }
-use futures::Future;
 
 impl FromRequest for AuthUser {
     type Config = ();

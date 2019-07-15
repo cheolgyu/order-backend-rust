@@ -6,9 +6,8 @@ use crate::models::DbExecutor;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    delete, get, post, put,
-    web::{self, Data, Json, Path, Query},
-    Error, HttpRequest, HttpResponse, Responder, ResponseError,
+    web::{Data, Json, Path},
+    Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 use uuid::Uuid;

@@ -1,6 +1,6 @@
 use crate::schema::shop;
 
-use chrono::{Duration, Local, NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 
 use uuid::Uuid;
 

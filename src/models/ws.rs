@@ -6,7 +6,7 @@
 use std::time::{Duration, Instant};
 
 use actix::prelude::*;
-use actix_web::{middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 
 /// How often heartbeat pings are sent
