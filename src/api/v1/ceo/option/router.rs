@@ -1,8 +1,8 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::option::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
 
-use crate::model::DbExecutor;
 use crate::api::v1::ceo::option::service;
+use crate::model::DbExecutor;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -93,15 +93,12 @@ pub fn get_list(
     let db2 = db.clone();
     let shop_id = info2.shop_id.unwrap();
 
-
     let ss = Uuid::parse_str(&shop_id).unwrap();
 
-   web::block(move || service::get_all(&ss,&pool))
+    web::block(move || service::get_all(&ss, &pool))
         .from_err()
         .then(move |res| match res {
-            Ok(tasks) => {
-                Ok(HttpResponse::Ok().json(tasks))
-            }
+            Ok(tasks) => Ok(HttpResponse::Ok().json(tasks)),
             Err(e) => Err(e),
         })
 }
