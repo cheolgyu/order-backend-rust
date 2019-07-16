@@ -49,6 +49,8 @@ fn main() -> std::io::Result<()> {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let url_frontend_ceo: String =
         env::var("URL_FRONTEND_CEO").expect("URL_FRONTEND_CEO must be set");
+    let url_frontend_user: String =
+        env::var("URL_FRONTEND_USER").expect("URL_FRONTEND_USER must be set");
     let valid_email: String = env::var("VALID_EMAIL").expect("VALID_EMAIL must be set");
     env_logger::init();
 
@@ -74,8 +76,9 @@ fn main() -> std::io::Result<()> {
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(
-                Cors::new() // <- Construct CORS middleware builder
+                Cors::new()
               .allowed_origin(&url_frontend_ceo)
+              .allowed_origin(&url_frontend_user)
               .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
               .allowed_headers(vec![AUTHORIZATION, ACCEPT])
               .allowed_header(CONTENT_TYPE)
@@ -163,6 +166,16 @@ fn main() -> std::io::Result<()> {
                                                 ),
                                         ),
                                 ),
+                        )
+                    )
+                     .service(
+                        web::scope("user")
+                        .service(
+                            web::scope("/{shop_id}")
+                                .service(
+                                    web::resource("")
+                                        .route(web::get().to_async(api::v1::user::shop::router::get)),
+                                )
                         )
                     )
             )

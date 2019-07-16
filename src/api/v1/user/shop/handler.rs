@@ -1,64 +1,61 @@
-use crate::api::v1::ceo::product::model::Product;
-use crate::api::v1::ceo::shop::model::{NewShop, ShopID};
+use crate::api::v1::ceo::product::model::SimpleProduct;
+use crate::api::v1::user::shop::model::GetWithId;
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
 use crate::models::DbExecutor;
-
+use crate::schema::shop::dsl::{id, shop as tb};
 use actix::Handler;
-
 use diesel;
 use diesel::prelude::*;
-
+use diesel::sql_query;
+use diesel::sql_types::Uuid;
 use serde_json::json;
 
-impl Handler<NewShop> for DbExecutor {
+impl Handler<GetWithId> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
-    fn handle(&mut self, msg: NewShop, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::shop::dsl::*;
-        let conn = &self.0.get()?;
-
-        let check_user = shop
-            .filter(&ceo_id.eq(&msg.ceo_id))
-            .load::<Shop>(conn)?
-            .pop();
-
-        match check_user {
-            Some(_) => Err(ServiceError::BadRequest("중복".into())),
-            None => {
-                let insert: Shop = diesel::insert_into(shop)
-                    .values(&msg)
-                    .get_result::<Shop>(conn)?;
-
-                let payload = serde_json::json!({
-                    "item": insert,
-                });
-                Ok(Msg {
-                    status: 201,
-                    data: payload,
-                })
-            }
-        }
-    }
-}
-impl Handler<ShopID> for DbExecutor {
-    type Result = Result<Msg, ServiceError>;
-
-    fn handle(&mut self, msg: ShopID, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::shop::dsl::{id, shop as tb};
+    fn handle(&mut self, msg: GetWithId, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
         let shop = tb.filter(&id.eq(&msg.id)).load::<Shop>(conn)?.pop();
-
         match shop {
             Some(_shop) => {
-                let shop_product = Product::belonging_to(&_shop)
-                    .get_results::<Product>(conn)
-                    .expect("Couldn't find associated posts");
+                let res = sql_query(
+                    "
+                    SELECT p.id AS id, 
+                        p.shop_id                    AS shop_id, 
+                        p.name                       AS name, 
+                        p.price                      AS price, 
+                        CASE 
+                            WHEN Array_length(p.opt_group, 1) IS NULL THEN '[]' 
+                            ELSE Array_to_json(Array_agg(optg.*)) 
+                        END  AS option_group_list 
+                    FROM   product AS p 
+                        left join (SELECT optg.id      AS id, 
+                                            optg.shop_id AS shop_id, 
+                                            optg.name    AS name, 
+                                            CASE 
+                                            WHEN Array_length(optg.options, 1) IS NULL THEN '[]' 
+                                            ELSE Array_to_json(Array_agg(opt.*)) 
+                                            END          AS option_list 
+                                    FROM   option_group AS optg 
+                                            left join OPTION AS opt 
+                                                    ON opt.id = ANY ( optg.options ) 
+                                    WHERE  optg.shop_id = $1
+                                            AND optg.deleted_at IS NULL 
+                                    GROUP  BY optg.id) AS optg 
+                                ON optg.id = ANY ( p.opt_group ) 
+                    WHERE  p.shop_id = $1
+                        AND p.deleted_at IS NULL 
+                    GROUP  BY p.id 
+                ",
+                )
+                .bind::<Uuid, _>(&msg.id)
+                .get_results::<SimpleProduct>(conn)?;
 
                 let payload = json!({
                     "shop": _shop,
-                    "product": shop_product,
+                    "product": res,
                 });
 
                 Ok(Msg {
