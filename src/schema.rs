@@ -15,6 +15,7 @@ table! {
         id -> Int4,
         shop_id -> Uuid,
         name -> Varchar,
+        default -> Int4,
         options -> Array<Int4>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
@@ -79,4 +80,11 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(option, option_group, product, shop, user, valid,);
+allow_tables_to_appear_in_same_query!(
+    option,
+    option_group,
+    product,
+    shop,
+    user,
+    valid,
+);

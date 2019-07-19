@@ -27,6 +27,7 @@ pub struct OptionGroup {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
+    pub default: i32,
     pub options: Vec<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
@@ -39,12 +40,14 @@ pub struct OptionGroup {
 pub struct New {
     pub name: String,
     pub shop_id: Uuid,
+    pub default: i32,
     pub options: Vec<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
+    pub default: i32,
     pub options: Vec<i32>,
 }
 
@@ -67,6 +70,7 @@ impl InpNew {
             name: self.name.to_string(),
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             options: self.options.clone(),
+            default: self.default.clone(),
         }
     }
 }
@@ -78,12 +82,14 @@ pub struct Update {
     pub id: i32,
     pub shop_id: Uuid,
     pub name: String,
+    pub default: i32,
     pub options: Vec<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
+    pub default: i32,
     pub options: Vec<i32>,
 }
 
@@ -107,6 +113,7 @@ impl InpUpdate {
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
             options: self.options.clone(),
+            default: self.default.clone(),
         }
     }
 }
@@ -161,6 +168,8 @@ pub struct SimpleOptionGroup {
     pub shop_id: Uuid,
     #[sql_type = "Text"]
     pub name: String,
+    #[sql_type = "Integer"]
+    pub default: i32,
     #[sql_type = "Json"]
     pub option_list: serde_json::Value,
 }
