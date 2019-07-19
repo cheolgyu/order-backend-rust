@@ -34,6 +34,7 @@ impl Handler<GetWithId> for DbExecutor {
                         left join (SELECT optg.id      AS id, 
                                             optg.shop_id AS shop_id, 
                                             optg.name    AS name, 
+                                            optg.default    AS default, 
                                             CASE 
                                             WHEN Array_length(optg.options, 1) IS NULL THEN '[]' 
                                             ELSE Array_to_json(Array_agg(opt.*)) 
