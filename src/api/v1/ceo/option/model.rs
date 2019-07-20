@@ -28,6 +28,7 @@ pub struct Opt {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
+    pub html_type: String,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -40,12 +41,14 @@ pub struct New {
     pub name: String,
     pub shop_id: Uuid,
     pub price: f64,
+    pub html_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
     pub price: String,
+    pub html_type: String,
 }
 
 impl Validate for InpNew {
@@ -67,6 +70,7 @@ impl InpNew {
             name: self.name.to_string(),
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             price: self.price.parse().unwrap(),
+            html_type: self.html_type.parse().unwrap(),
         }
     }
 }
@@ -79,12 +83,14 @@ pub struct Update {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
+    pub html_type: String,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
     pub price: String,
+    pub html_type: String,
 }
 
 impl Validate for InpUpdate {
@@ -107,6 +113,7 @@ impl InpUpdate {
             shop_id: Uuid::parse_str(&shop_id).unwrap(),
             name: self.name.to_string(),
             price: self.price.parse().unwrap(),
+            html_type: self.html_type.parse().unwrap(),
         }
     }
 }
