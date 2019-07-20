@@ -28,7 +28,7 @@ impl Handler<GetWithId> for DbExecutor {
                         p.price                      AS price, 
                         CASE 
                             WHEN Array_length(p.opt_group, 1) IS NULL THEN '[]' 
-                            ELSE Array_to_json(Array_agg(optg.*)) 
+                            ELSE Array_to_json(Array_agg(optg.*  ORDER BY  array_position(p.opt_Group, optg.id) )) 
                         END  AS option_group_list 
                     FROM   product AS p 
                         left join (SELECT optg.id      AS id, 
@@ -37,7 +37,7 @@ impl Handler<GetWithId> for DbExecutor {
                                             optg.default    AS default, 
                                             CASE 
                                             WHEN Array_length(optg.options, 1) IS NULL THEN '[]' 
-                                            ELSE Array_to_json(Array_agg(opt.*)) 
+                                            ELSE Array_to_json(Array_agg(opt.* ORDER BY  array_position(optg.options, opt.id) )) 
                                             END          AS option_list 
                                     FROM   option_group AS optg 
                                             left join OPTION AS opt 

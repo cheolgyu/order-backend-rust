@@ -81,7 +81,7 @@ impl Handler<GetList> for DbExecutor {
             p.shop_id                    AS shop_id, 
             p.name                       AS name, 
             p.price                      AS price, 
-            case when array_length(p.opt_group,1) is null then '[]' else Array_to_json(Array_agg(optg.*))  end as option_group_list 
+            case when array_length(p.opt_group,1) is null then '[]' else Array_to_json(Array_agg(optg.* ORDER BY  array_position(p.opt_Group, optg.id)   ))  end as option_group_list 
         FROM   PRODUCT AS p 
             LEFT JOIN OPTION_GROUP AS optg 
                 ON optg.id = Any(p.opt_group) 
