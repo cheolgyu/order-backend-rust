@@ -4,6 +4,7 @@ table! {
         shop_id -> Uuid,
         name -> Varchar,
         price -> Float8,
+        html_type -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
