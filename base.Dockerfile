@@ -18,16 +18,18 @@ RUN sccache --start-server
 #
 RUN cargo install diesel_cli --no-default-features --features postgres
 
-
-WORKDIR /usr/src/myapp
-COPY . .
-
-RUN rustup target add x86_64-unknown-linux-musl
 ENV PKG_CONFIG_ALLOW_CROSS=1
 ENV OPENSSL_DIR=/usr/include/openssl
-RUN cargo build --release
-#RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
 
+WORKDIR /usr/src/myapp
+COPY Cargo.toml Cargo.toml
+
+RUN rustup target add x86_64-unknown-linux-musl
+
+RUN rm -f target/x86_64-unknown-linux-musl/release/deps/order-backend-rust*
+COPY . .
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+# $(aws ecr get-login --no-include-email --region ap-northeast-2)
 # docker tag base:latest 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base:latest
 # docker push 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base:latest
+
