@@ -18,6 +18,7 @@ before_install:
   - cd zip
   - cp -r ../appspec.yml ./appspec.yml
   - cp -r ../scripts ./
+  - cd ../
   - mkdir -p deploy # deploy 라는 디렉터리를 만듬
   - mv zip/api.zip deploy/api.zip # deploy 디렉터리로 node-koa-server.zip 파일을 이동
 script:
