@@ -5,9 +5,6 @@ files:
     destination: /home/ec2-user/deploy/api
     overwrite: true
 hooks:
-  BeforeInstall:
-    - location: scripts/deploy-before-install.sh
-      runas: root
   AfterInstall:
-    - location: scripts/deploy-after-install.sh
+    - location: scripts/docker-run.sh
       runas: root
