@@ -1,0 +1,19 @@
+version: "3"
+
+
+services:
+  api:
+    container_name: api-blue
+    build:
+      image: 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust:latest
+    ports:
+      - 3001:3000
+    command: >
+      sh -c "
+            diesel migration run  
+            "
+    networks:
+      - blue-net
+
+networks:
+  blue-net
