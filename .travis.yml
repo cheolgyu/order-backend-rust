@@ -6,9 +6,9 @@ env:
   global:
     - DOCKER_REPO=order-backend-rust
     - EB_REGION="ap-northeast-2"
-    - AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
-    - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    - AWS_ACCOUNT_ID: 410450153592
+    - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY
+    - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_KEY
 before_install:
   - pip install awscli
   - export PATH=$PATH:$HOME/.local/bin

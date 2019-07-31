@@ -1,7 +1,5 @@
 #!/bin/bash -e
-echo $AWS_ACCOUNT_ID
-echo $AWS_SECRET_ACCESS_KEY
-echo $AWS_SECRET_KEY
+
 docker images
 
 # the registry should have been created already
