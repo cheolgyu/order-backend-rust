@@ -29,27 +29,9 @@ before_install:
   - mv zip/api.zip deploy/api.zip
 
 script:
-  - docker build -f "cargo-run.Dockerfile" -t ${DOCKER_REPO}:latest .
+  - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
 deploy:
   - provider: script
     script: bash docker_push.sh
 
-  - provider: s3 # AWS S3를 의미
-    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
-    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
-    bucket: coffee-deploy-travis # S3에 생성한 버킷
-    region: ap-northeast-2
-    skip_cleanup: true
-    local_dir: deploy # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
-    wait-until-deployed: true
-  - provider: codedeploy # AWS CodeDeploy를 의미
-    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
-    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
-    bucket: coffee-deploy-travis # AWS CodeDeploy가 다운로드 받은 버킷
-    key: api.zip # 해당 버킷에 저장되어 있는 파일 이름
-    bundle_type: zip # 버킷에 저장되어 있는 파일의 확장자
-    application: coffee # AWS 배포 애플리케이션
-    deployment_group: coffee-deploy # AWS 배포 애플리케이션에 만들어져 있는 배포 그룹
-    region: ap-northeast-2
-    wait-until-deployed: true 
   
