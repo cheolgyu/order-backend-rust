@@ -15,6 +15,7 @@ before_install:
   - aws configure set default.region ${EB_REGION}
   - $(aws ecr get-login --no-include-email)
   - mkdir -p zip
+  - cd zip
   - cp -r ../appspec.yml ./appspec.yml
   - cp -r ../scripts ./
   - mkdir -p deploy # deploy 라는 디렉터리를 만듬
