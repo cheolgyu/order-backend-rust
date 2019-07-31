@@ -12,6 +12,7 @@ env:
 before_install:
   - pip install awscli
   - export PATH=$PATH:$HOME/.local/bin
+  - aws configure set default.region ${EB_REGION}
   - $(aws ecr get-login --no-include-email)
 script:
   - docker build -f "cargo-run.Dockerfile" -t $DOCKER_REPO:latest .
