@@ -15,8 +15,19 @@ before_install:
   - aws configure set default.region ${EB_REGION}
   - $(aws ecr get-login --no-include-email)
 script:
-  - docker build -f "cargo-run.Dockerfile" -t $DOCKER_REPO:latest .
+  - docker build -f "cargo-run.Dockerfile" -t ${DOCKER_REPO}:latest .
 deploy:
-  provider: script
+  - provider: script
   script: bash docker_push.sh
+
+  - provider: codedeploy # AWS CodeDeploy를 의미
+  access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+  secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+  bucket: coffee-deploy-travis # AWS CodeDeploy가 다운로드 받은 버킷
+  key: api.zip # 해당 버킷에 저장되어 있는 파일 이름
+  bundle_type: zip # 버킷에 저장되어 있는 파일의 확장자
+  application: coffee # AWS 배포 애플리케이션
+  deployment_group: coffee-deploy # AWS 배포 애플리케이션에 만들어져 있는 배포 그룹
+  region: ap-northeast-2
+  wait-until-deployed: true
   
