@@ -9,15 +9,25 @@ env:
     - AWS_ACCOUNT_ID: 410450153592
     - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY
     - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_KEY
-    - NAME=myprojectname
     - CACHE_FOLDER=$HOME/docker-images
-    - CACHE_FILE=${CACHE_FOLDER}/${NAME}-${TRAVIS_COMMIT}.tgz
+    - CACHE_FILE=${CACHE_FOLDER}/${DOCKER_REPO}-${TRAVIS_COMMIT}.tgz
     - IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
 jobs:
   include:
-    - stage: build
+    - stage: code-deploy
       script:
-        - docker build -t ${IMAGE} ${PWD}
+        - mkdir -p zip
+        - cd zip
+        - cp -r ../scripts ./
+        - cp -r ../appspec.yml ./
+        - cp -r  ../env-example ./.env
+        - zip -r api.zip . # node-koa-server 라는 이름으로 zip 파일 생성
+        - cd ../
+        - mkdir -p deploy # deploy 라는 디렉터리를 만듬
+        - mv zip/api.zip deploy/api.zip
+    - stage: pull base
+      script:
+        - docker pull ${IMAGE}
         - mkdir -p ${CACHE_FOLDER}
         - docker save ${IMAGE} | gzip -c > ${CACHE_FILE}
     - stage: push
@@ -27,6 +37,7 @@ jobs:
         - docker images
         - echo "now you should see your image in the next stage, you can do what you wanted"
 cache:
+  pip
   bundler: true
   directories:
     - ${CACHE_FOLDER}
@@ -36,18 +47,7 @@ before_install:
   - aws configure set default.region ${EB_REGION}
   - $(aws ecr get-login --no-include-email)
 
-  - ls -al
-  - mkdir -p zip
-  - cd zip
-
-  - cp -r ../scripts ./
-  - cp -r ../appspec.yml ./
-  - cp -r  ../env-example ./.env
-  - zip -r api.zip . # node-koa-server 라는 이름으로 zip 파일 생성
-  - ls -al
-  - cd ../
-  - mkdir -p deploy # deploy 라는 디렉터리를 만듬
-  - mv zip/api.zip deploy/api.zip
+ 
 
 script:
   - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest  .
