@@ -31,7 +31,7 @@ before_install:
 script:
   - docker pull 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
   - docker pull 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust
-  - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
+  - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest  .
 deploy:
   - provider: script
     script: bash docker_push.sh
