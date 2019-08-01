@@ -34,7 +34,7 @@ jobs:
       script:
         - ls -la ${CACHE_FOLDER}
         - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
-        - docker images
+        - docker images 
         - echo "now you should see your image in the next stage, you can do what you wanted"
 cache:
   pip
