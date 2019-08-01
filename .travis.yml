@@ -29,7 +29,7 @@ before_install:
   - mv zip/api.zip deploy/api.zip
 
 script:
-  - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
+  - docker build --cache-from -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
 deploy:
   - provider: script
     script: bash docker_push.sh
