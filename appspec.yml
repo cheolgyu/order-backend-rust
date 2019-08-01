@@ -8,4 +8,6 @@ hooks:
   BeforeInstall:
     - location: scripts/docker-run.sh
       runas: root
-
+  AfterInstall:
+    - location: scripts/blue-green.sh
+      runas: root

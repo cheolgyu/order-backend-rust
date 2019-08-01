@@ -1,7 +1,6 @@
 #!/bin/bash
-
+echo "/home/ec2-user/deploy/api/scripts/blue-greend.sh"
 DOCKER_APP_NAME=api
-
 EXIST_BLUE=$(docker-compose -p ${DOCKER_APP_NAME}-blue -f docker-compose.blue.yml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
