@@ -29,7 +29,9 @@ before_install:
   - mv zip/api.zip deploy/api.zip
 
 script:
-  - docker build --cache-from -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
+  - docker pull --cache-from 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
+  - docker pull --cache-from 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust
+  - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest .
 deploy:
   - provider: script
     script: bash docker_push.sh
