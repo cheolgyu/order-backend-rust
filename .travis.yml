@@ -22,9 +22,6 @@ jobs:
         else
             echo "이미지 없음."; 
         fi'
-      script:
-        - if [[ -f ${CACHE_FILE} ]]; then echo "이미지 있음.";  docker load -i ${CACHE_FILE}; else   echo "이미지 없음.";  docker pull ${IMAGE}; mkdir -p ${CACHE_FOLDER}; docker save ${IMAGE} | gzip -c > ${CACHE_FILE} fi
-        - docker images 
     - stage: "build"
       script:
         - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest  .
