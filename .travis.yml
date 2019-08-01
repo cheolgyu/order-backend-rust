@@ -14,7 +14,7 @@ env:
     - IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
 jobs:
   include:
-    - stage: build
+    - stage: "build"
       script:
         - mkdir -p zip
         - cd zip
@@ -25,12 +25,12 @@ jobs:
         - cd ../
         - mkdir -p deploy # deploy 라는 디렉터리를 만듬
         - mv zip/api.zip deploy/api.zip
-    - stage: pull base
+    - stage: "pull base"
       script:
         - docker pull ${IMAGE}
         - mkdir -p ${CACHE_FOLDER}
         - docker save ${IMAGE} | gzip -c > ${CACHE_FILE}
-    - stage: push
+    - stage: "push"
       script:
         - ls -la ${CACHE_FOLDER}
         - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
