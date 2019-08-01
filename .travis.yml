@@ -37,10 +37,10 @@ jobs:
         - docker images 
         - echo "now you should see your image in the next stage, you can do what you wanted"
 cache:
-  pip
   bundler: true
   directories:
     - ${CACHE_FOLDER}
+    - $HOME/.cache/pip
 before_install:
   - pip install awscli
   - export PATH=$PATH:$HOME/.local/bin
