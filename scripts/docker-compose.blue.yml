@@ -7,4 +7,4 @@ services:
     image: 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust:latest
     ports:
       - 3001:3000
-    command: sh -c "diesel migration run"
+    #command: sh -c "diesel migration run"
