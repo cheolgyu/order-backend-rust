@@ -14,7 +14,7 @@ env:
     - IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
 jobs:
   include:
-    - stage: code-deploy
+    - stage: build
       script:
         - mkdir -p zip
         - cd zip
