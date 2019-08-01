@@ -9,6 +9,27 @@ env:
     - AWS_ACCOUNT_ID: 410450153592
     - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY
     - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_KEY
+    - NAME=myprojectname
+    - CACHE_FOLDER=$HOME/docker-images
+    - CACHE_FILE=${CACHE_FOLDER}/${NAME}-${TRAVIS_COMMIT}.tgz
+    - IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
+jobs:
+  include:
+    - stage: build
+      script:
+        - docker build -t ${IMAGE} ${PWD}
+        - mkdir -p ${CACHE_FOLDER}
+        - docker save ${IMAGE} | gzip -c > ${CACHE_FILE}
+    - stage: push
+      script:
+        - ls -la ${CACHE_FOLDER}
+        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
+        - docker images
+        - echo "now you should see your image in the next stage, you can do what you wanted"
+cache:
+  bundler: true
+  directories:
+    - ${CACHE_FOLDER}
 before_install:
   - pip install awscli
   - export PATH=$PATH:$HOME/.local/bin
@@ -29,8 +50,6 @@ before_install:
   - mv zip/api.zip deploy/api.zip
 
 script:
-  - docker pull 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
-  - docker pull 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust
   - docker build -f "cargo-run.Dockerfile" -t order-backend-rust:latest  .
 deploy:
   - provider: script
