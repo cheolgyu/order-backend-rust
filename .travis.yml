@@ -16,11 +16,7 @@ jobs:
   include:
     - stage: "pull image"
       script:
-        - docker images 
-        - docker pull ${IMAGE}
-        - mkdir -p ${CACHE_FOLDER}
-        - docker save ${IMAGE} | gzip -c > ${CACHE_FILE}
-        - if [[ -f ${CACHE_FILE} ]]; then docker load -i ${CACHE_FILE}; fi
+        - if [[ -f ${CACHE_FILE} ]]; then echo "이미지 있음.";  docker load -i ${CACHE_FILE}; else   echo "이미지 없음.";  docker pull ${IMAGE}; mkdir -p ${CACHE_FOLDER}; docker save ${IMAGE} | gzip -c > ${CACHE_FILE} fi
         - docker images 
     - stage: "build"
       script:
