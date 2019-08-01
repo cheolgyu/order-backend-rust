@@ -11,9 +11,9 @@ TIMESTAMP=$(date '+%Y%m%d%H%M%S')
 VERSION="${TIMESTAMP}-${TRAVIS_COMMIT}"
 TARGET_IMAGE_VERSIONED="${TARGET_IMAGE}:${VERSION}"
 
-aws configure set default.region ${EB_REGION}
+#aws configure set default.region ${EB_REGION}
 
-$(aws ecr get-login --no-include-email)
+#$(aws ecr get-login --no-include-email)
 
 # update latest version
 docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE_LATEST}
