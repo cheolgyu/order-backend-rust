@@ -4,8 +4,9 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      # 내 ecr base 사용.
+      #- aws --version
+      #- $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
   build:
     commands:
       - echo Build started on `date`
