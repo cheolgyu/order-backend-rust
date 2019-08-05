@@ -6,7 +6,7 @@
 # Final Stage
 # ------------------------------------------------------------------------------
 
-ARG BASE_IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base
+ARG BASE_IMAGE=410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/base:latest
 FROM ${BASE_IMAGE} AS cargo-build
 
 COPY . .
