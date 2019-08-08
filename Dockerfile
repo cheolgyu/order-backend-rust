@@ -23,7 +23,7 @@ RUN adduser -D -s /bin/sh -u 1000 -G myapp myapp
 WORKDIR /home/myapp/bin/
 
 COPY --from=cargo-build /usr/src/myapp/target/x86_64-unknown-linux-musl/release/order-backend-rust .
-COPY --from=cargo-build /usr/src/myapp/.env .
+COPY --from=cargo-build /usr/src/myapp/.env.production .env
 RUN chown myapp:myapp order-backend-rust
 
 CMD ["./order-backend-rust"]
