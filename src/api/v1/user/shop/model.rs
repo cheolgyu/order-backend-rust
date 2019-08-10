@@ -8,3 +8,7 @@ use uuid::Uuid;
 pub struct GetWithId {
     pub id: Uuid,
 }
+
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+pub struct GetList {}

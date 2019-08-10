@@ -1,4 +1,4 @@
-use crate::api::v1::user::shop::model::GetWithId;
+use crate::api::v1::user::shop::model::{GetList, GetWithId};
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 
@@ -26,10 +26,20 @@ pub fn get(
         .from_err()
         .and_then(move |_| {
             let uuid_shop_id = Uuid::parse_str(&sid).unwrap();
-           db.send(GetWithId { id: uuid_shop_id }).from_err()
+            db.send(GetWithId { id: uuid_shop_id }).from_err()
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
+}
+
+pub fn get_list(
+    db: Data<Addr<DbExecutor>>,
+) -> impl Future<Item = HttpResponse, Error = ServiceError> {
+    println!("  get_list ");
+    db.send(GetList {}).from_err().and_then(|res| match res {
+        Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+        Err(e) => Ok(e.error_response()),
+    })
 }

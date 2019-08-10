@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::product::model::SimpleProduct;
-use crate::api::v1::user::shop::model::GetWithId;
+use crate::api::v1::user::shop::model::{GetList, GetWithId};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
@@ -66,5 +66,22 @@ impl Handler<GetWithId> for DbExecutor {
             }
             None => Err(ServiceError::BadRequest("없다".into())),
         }
+    }
+}
+
+impl Handler<GetList> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: GetList, _: &mut Self::Context) -> Self::Result {
+        let conn = &self.0.get()?;
+        let shops = tb.load::<Shop>(conn)?;
+        let payload = json!({
+            "shops": shops,
+        });
+
+        Ok(Msg {
+            status: 200,
+            data: payload,
+        })
     }
 }

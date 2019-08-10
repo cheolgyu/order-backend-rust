@@ -169,15 +169,26 @@ fn main() -> std::io::Result<()> {
                         )
                     )
                      .service(
-                        web::scope("user")
-                        .service(
-                            web::scope("/{shop_id}")
+                        web::scope("user") 
+                            // 코드 위치에 따른 우선순위 탐. 주의 
+                            // 1. user/shops 
+                            .service(
+                                web::scope("/shops")
+                                    .service(
+                                        web::resource("")
+                                            .route(web::get().to_async(api::v1::user::shop::router::get_list)),
+                                    )
+                            )
+                            // 2. user/{shop_id} 
+                            .service(
+                                web::scope("/{shop_id}")
                                 .service(
                                     web::resource("")
                                         .route(web::get().to_async(api::v1::user::shop::router::get)),
                                 )
-                        )
+                            )
                     )
+                       
             )
             .service(index)
             .service(no_params)

@@ -7,7 +7,8 @@ pub trait Validate {
 
 pub fn re_test_name(text: &str) -> bool {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^[a-zA-Z0-9ㄱ-ㅎ가-힣!@#$%^&*()\s]{1,19}$").unwrap();
+        static ref RE: Regex =
+            Regex::new(r"^[a-zA-Z0-9ㄱ-ㅎ가-힣!@#$%^&*()\s]{1,19}$").unwrap();
     }
     RE.is_match(text)
 }
