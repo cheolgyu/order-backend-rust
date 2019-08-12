@@ -95,11 +95,16 @@ impl Handler<QueryUser> for DbExecutor {
         let conn = &self.0.get()?;
 
         let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
-        let query_shop = s_tb.filter(&ceo_id.eq(&uid.id)).get_result::<Shop>(conn)?;
+        let query_shop = s_tb.filter(&ceo_id.eq(&uid.id)).get_result::<Shop>(conn);
+
+        let shop_info : Option<Shop> = match query_shop {
+            Ok(s) => Some(s),
+            Err(e) => None,
+        };
 
         let payload = json!({
            "user": query_user,
-           "shop": query_shop,
+           "shop": shop_info,
         });
 
         Ok(Msg {
