@@ -99,7 +99,7 @@ impl Handler<QueryUser> for DbExecutor {
 
         let shop_info : Option<Shop> = match query_shop {
             Ok(s) => Some(s),
-            Err(e) => None,
+            Err(_e) => None,
         };
 
         let payload = json!({

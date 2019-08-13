@@ -72,7 +72,7 @@ impl Handler<GetWithId> for DbExecutor {
 impl Handler<GetList> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
-    fn handle(&mut self, msg: GetList, _: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, _msg: GetList, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
         let shops = tb.load::<Shop>(conn)?;
         let payload = json!({

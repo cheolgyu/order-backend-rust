@@ -114,7 +114,7 @@ fn main() -> std::io::Result<()> {
                                         .service(
                                             web::resource("")
                                                 .route(web::put().to_async(api::v1::ceo::shop::router::put))
-                                                .route(web::post().to(api::v1::ceo::shop::router::post)),
+                                                .route(web::post().to_async(api::v1::ceo::shop::router::post)),
                                         )
                                         .service(
                                             web::scope("/{shop_id}")

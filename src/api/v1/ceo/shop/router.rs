@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::shop::model::{InpNew, ShopID};
+use crate::api::v1::ceo::shop::model::{InpNew,InpUpdate, ShopID};
 
 use crate::models::DbExecutor;
 
@@ -21,22 +21,11 @@ pub fn put(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
-        //.and_then(|_| -> bool { auth_user.check_role(path_info.into_inner()) })
         .and_then(move |_| db.send(json.into_inner().new_shop(auth_user)).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
-
-    /*
-    result(json.validate())
-        .from_err()
-        .and_then(move |_| db.send(json.into_inner().new_shop(auth_user)).from_err())
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
-        })
-        */
 }
 
 pub fn get(
@@ -55,9 +44,21 @@ pub fn get(
         })
 }
 
-pub fn post() -> impl Responder {
-    format!("Hello {}! id:{}", 1, 0)
+pub fn post(
+    json: Json<InpUpdate>,
+    auth_user: AuthUser,
+    _path_info: Path<String>,
+    db: Data<Addr<DbExecutor>>,
+) -> impl Future<Item = HttpResponse, Error = Error> {
+    result(json.validate())
+        .from_err()
+        .and_then(move |_| db.send(json.into_inner().update_shop(auth_user)).from_err())
+        .and_then(|res| match res {
+            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+            Err(e) => Ok(e.error_response()),
+        })
 }
+
 
 #[delete("/shops/{shop_id}")]
 fn delete() -> &'static str {

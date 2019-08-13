@@ -58,3 +58,45 @@ pub struct ShopID {
     // ... other fields
     pub id: Uuid,
 }
+
+
+#[derive(Deserialize, Serialize, Debug, Message, Insertable,AsChangeset)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "shop"]
+pub struct UpdateShop {
+    // ... other fields
+    pub id: Uuid,
+    pub ceo_id: Uuid,
+    pub name: String,
+    pub products: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct InpUpdate {
+    // ... other fields
+    pub name: String,
+}
+
+impl Validate for InpUpdate {
+    fn validate(&self) -> Result<(), Error> {
+        let name = &self.name;
+        let check_name = re_test_name(name);
+
+        if check_name {
+            Ok(())
+        } else {
+            Err(error::ErrorBadRequest("shop name"))
+        }
+    }
+} 
+
+impl InpUpdate {
+    pub fn update_shop(&self, auth_user: AuthUser) -> UpdateShop {
+        UpdateShop {
+            id: Uuid::new_v4(),
+            ceo_id: auth_user.id,
+            name: self.name.to_string(),
+            products: None,
+        }
+    }
+}
