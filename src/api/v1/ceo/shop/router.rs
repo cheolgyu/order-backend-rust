@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::shop::model::{InpNew,InpUpdate, ShopID};
+use crate::api::v1::ceo::shop::model::{InpNew, InpUpdate, ShopID};
 
 use crate::models::DbExecutor;
 
@@ -8,7 +8,7 @@ use actix::Addr;
 use actix_web::{
     delete,
     web::{Data, Json, Path},
-    Error, HttpResponse, Responder, ResponseError,
+    Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 use uuid::Uuid;
@@ -58,7 +58,6 @@ pub fn post(
             Err(e) => Ok(e.error_response()),
         })
 }
-
 
 #[delete("/shops/{shop_id}")]
 fn delete() -> &'static str {
