@@ -163,6 +163,25 @@ fn main() -> std::io::Result<()> {
                                                                     ,
                                                             ),
                                                         ),
+                                                )
+                                                .service(
+                                                    web::scope("/order")
+                                                        .service(web::resource("")
+                                                        .route(web::get().to_async(api::v1::ceo::order::router::get_list))
+                                                        )
+                                                        .service(
+                                                            web::scope("/{order_id}").service(
+                                                                web::resource("")
+                                                                    .route(web::post().to_async( api::v1::ceo::order::router::post ))
+                                                                    ,
+                                                            ),
+                                                        ),
+                                                ).service(
+                                                    web::scope("/order_detail")
+                                                        .service(web::resource("")
+                                                        .route( web::put().to_async( api::v1::ceo::order_detail::router::put)  )
+                                                        )
+                                                        ,
                                                 ),
                                         ),
                                 ),

@@ -1,6 +1,9 @@
 -- Your SQL goes here
 create extension pgcrypto;
 
+
+
+
 CREATE TABLE "valid" (
 
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,

@@ -6,6 +6,8 @@ pub mod shop;
 pub mod user;
 pub mod valid;
 pub mod ws;
+pub mod order;
+pub mod order_detail;
 
 use actix::{Actor, SyncContext};
 use diesel::pg::PgConnection;

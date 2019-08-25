@@ -25,6 +25,34 @@ table! {
 }
 
 table! {
+    order (id) {
+        id -> Int4,
+        shop_id -> Uuid,
+        state -> Varchar,
+        price -> Float8,
+        products -> Jsonb,
+        req_session_id -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    order_detail (id) {
+        id -> Int4,
+        order_id -> Int4,
+        shop_id -> Uuid,
+        state -> Varchar,
+        txt -> Jsonb,
+        req_session_id -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     product (id) {
         id -> Int4,
         shop_id -> Uuid,
@@ -81,4 +109,13 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(option, option_group, product, shop, user, valid,);
+allow_tables_to_appear_in_same_query!(
+    option,
+    option_group,
+    order,
+    order_detail,
+    product,
+    shop,
+    user,
+    valid,
+);
