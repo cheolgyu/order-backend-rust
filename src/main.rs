@@ -197,6 +197,12 @@ fn main() -> std::io::Result<()> {
                                         web::resource("")
                                             .route(web::get().to_async(api::v1::user::shop::router::get_list)),
                                     )
+                            ).service(
+                                web::scope("/order")
+                                    .service(
+                                        web::resource("")
+                                            .route(web::put().to_async(api::v1::user::order::router::put)),
+                                    )
                             )
                             // 2. user/{shop_id} 
                             .service(

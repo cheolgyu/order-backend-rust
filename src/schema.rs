@@ -31,7 +31,7 @@ table! {
         state -> Varchar,
         price -> Float8,
         products -> Jsonb,
-        req_session_id -> Jsonb,
+        sw_token -> Jsonb,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,

@@ -1,5 +1,5 @@
 use actix_web::{error::ResponseError, HttpResponse};
-
+use actix_http;
 use actix::MailboxError;
 use derive_more::Display;
 use diesel::r2d2::PoolError;
@@ -80,3 +80,17 @@ impl From<ParseError> for ServiceError {
         ServiceError::BadRequest("Invalid UUID".into())
     }
 }
+impl From<actix_http::error::Error> for ServiceError {
+    fn from(_: actix_http::error::Error) -> Self {
+        ServiceError::BadRequest("actix_http::error::Error".into())
+    }
+}
+/*
+impl From<actix_http::client::error::SendRequestError> for ServiceError {
+    fn from(_: actix_http::client::error::SendRequestError) -> Self {
+        ServiceError::BadRequest("actix_http::client::error::SendRequestError".into())
+    }
+}
+*/
+
+
