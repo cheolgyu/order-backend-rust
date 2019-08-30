@@ -1,6 +1,6 @@
-use actix_web::{error::ResponseError, HttpResponse};
-use actix_http;
 use actix::MailboxError;
+use actix_http;
+use actix_web::{error::ResponseError, HttpResponse};
 use derive_more::Display;
 use diesel::r2d2::PoolError;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
@@ -92,5 +92,3 @@ impl From<actix_http::client::error::SendRequestError> for ServiceError {
     }
 }
 */
-
-

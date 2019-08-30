@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
+use crate::models::order as model;
 use crate::schema::order;
-use crate::models::order as  model;
 use crate::utils::validator::{re_test_name, Validate};
 use actix::Message;
 use actix_web::error;
@@ -20,8 +20,6 @@ pub struct InpNew {
     pub sw_token: serde_json::Value,
 }
 
-
-
 impl Validate for InpNew {
     fn validate(&self) -> Result<(), Error> {
         let check_name = true;
@@ -35,7 +33,7 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, ) -> model::New {
+    pub fn new(&self) -> model::New {
         model::New {
             shop_id: Uuid::parse_str(&self.shop_id).unwrap(),
             state: self.state.clone(),

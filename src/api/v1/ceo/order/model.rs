@@ -11,8 +11,6 @@ use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 
-
-
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "order"]

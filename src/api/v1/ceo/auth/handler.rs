@@ -97,7 +97,7 @@ impl Handler<QueryUser> for DbExecutor {
         let query_user = user.filter(&id.eq(&uid.id)).get_result::<User>(conn)?;
         let query_shop = s_tb.filter(&ceo_id.eq(&uid.id)).get_result::<Shop>(conn);
 
-        let shop_info : Option<Shop> = match query_shop {
+        let shop_info: Option<Shop> = match query_shop {
             Ok(s) => Some(s),
             Err(_e) => None,
         };

@@ -11,8 +11,7 @@ use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 
-
-#[derive(Deserialize, Serialize, Debug, Message,Queryable, Insertable)]
+#[derive(Deserialize, Serialize, Debug, Message, Queryable, Insertable)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "order_detail"]
 pub struct New {

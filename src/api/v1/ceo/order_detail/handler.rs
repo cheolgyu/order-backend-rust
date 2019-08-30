@@ -1,9 +1,11 @@
 use crate::api::v1::ceo::order_detail::model;
-use crate::models::order_detail::OrderDetail as Object;
 use crate::errors::ServiceError;
-use crate::models::DbExecutor;
-use crate::schema::order_detail::dsl::{deleted_at, id, state, order_detail as tb, shop_id,order_id};
 use crate::models::msg::Msg;
+use crate::models::order_detail::OrderDetail as Object;
+use crate::models::DbExecutor;
+use crate::schema::order_detail::dsl::{
+    deleted_at, id, order_detail as tb, order_id, shop_id, state,
+};
 use actix::Handler;
 
 use diesel;

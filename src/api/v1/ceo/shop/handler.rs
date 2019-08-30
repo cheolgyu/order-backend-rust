@@ -1,10 +1,10 @@
 use crate::api::v1::ceo::product::model::Product;
-use crate::api::v1::ceo::shop::model::{NewShop,UpdateShop, ShopID};
+use crate::api::v1::ceo::shop::model::{NewShop, ShopID, UpdateShop};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop as Object;
-use crate::schema::shop::dsl::{id,ceo_id,name, shop as tb};
 use crate::models::DbExecutor;
+use crate::schema::shop::dsl::{ceo_id, id, name, shop as tb};
 
 use actix::Handler;
 
@@ -46,7 +46,6 @@ impl Handler<ShopID> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: ShopID, _: &mut Self::Context) -> Self::Result {
-        
         let conn = &self.0.get()?;
         let shop = tb.filter(&id.eq(&msg.id)).load::<Object>(conn)?.pop();
 
@@ -77,15 +76,16 @@ impl Handler<UpdateShop> for DbExecutor {
     fn handle(&mut self, msg: UpdateShop, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let check_user = tb
-            .filter(&name.eq(&msg.name))
-            .load::<Object>(conn)?
-            .pop();
+        let check_user = tb.filter(&name.eq(&msg.name)).load::<Object>(conn)?.pop();
 
         match check_user {
-            Some(_) => Err(ServiceError::BadRequest("이미 있는 샵이름입니다.".into())),
+            Some(_) => Err(ServiceError::BadRequest(
+                "이미 있는 샵이름입니다.".into(),
+            )),
             None => {
-                let old_item = tb.filter(&ceo_id.eq(&msg.ceo_id)).get_result::<Object>(conn)?;
+                let old_item = tb
+                    .filter(&ceo_id.eq(&msg.ceo_id))
+                    .get_result::<Object>(conn)?;
                 let item_update = diesel::update(&old_item)
                     .set(&msg)
                     .get_result::<Object>(conn)?;
@@ -96,7 +96,7 @@ impl Handler<UpdateShop> for DbExecutor {
                 Ok(Msg {
                     status: 200,
                     data: payload,
-                }) 
+                })
             }
         }
     }

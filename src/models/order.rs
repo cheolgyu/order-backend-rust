@@ -1,8 +1,8 @@
-use crate::schema::order;
-use crate::models::msg::Msg;
 use crate::errors::ServiceError;
-use chrono::NaiveDateTime;
+use crate::models::msg::Msg;
+use crate::schema::order;
 use actix::Message;
+use chrono::NaiveDateTime;
 use uuid::Uuid;
 
 #[derive(

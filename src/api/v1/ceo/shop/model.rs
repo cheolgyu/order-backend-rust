@@ -59,8 +59,7 @@ pub struct ShopID {
     pub id: Uuid,
 }
 
-
-#[derive(Deserialize, Serialize, Debug, Message, Insertable,AsChangeset)]
+#[derive(Deserialize, Serialize, Debug, Message, Insertable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "shop"]
 pub struct UpdateShop {
@@ -88,7 +87,7 @@ impl Validate for InpUpdate {
             Err(error::ErrorBadRequest("shop name"))
         }
     }
-} 
+}
 
 impl InpUpdate {
     pub fn update_shop(&self, auth_user: AuthUser) -> UpdateShop {

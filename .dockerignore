@@ -1,3 +1,6 @@
-/target
-Dockerfile
-docker-compose.yml
+**/.git
+**/.DS_Store
+**/node_modules
+**/target
+**/.vscode
+**/.nuxt

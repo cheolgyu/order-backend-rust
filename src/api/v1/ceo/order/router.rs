@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::order::model::{Get, GetList,InpUpdate};
+use crate::api::v1::ceo::order::model::{Get, GetList, InpUpdate};
 
 use crate::models::DbExecutor;
 
@@ -34,7 +34,6 @@ pub fn post(
             Err(e) => Ok(e.error_response()),
         })
 }
-
 
 pub fn get_list(
     auth_user: AuthUser,

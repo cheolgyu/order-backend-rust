@@ -16,7 +16,8 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
-use crate::models::DbExecutor;
+use crate::models::{DbExecutor,AppStateWithTxt};
+
 use actix_cors::Cors;
 use actix_web::{
     client::Client,
@@ -38,6 +39,8 @@ fn no_params() -> &'static str {
     "Hello world!\r\n"
 }
 
+
+
 fn main() -> std::io::Result<()> {
     std::env::set_var(
         "RUST_LOG",
@@ -52,6 +55,14 @@ fn main() -> std::io::Result<()> {
     let url_frontend_user: String =
         env::var("URL_FRONTEND_USER").expect("URL_FRONTEND_USER must be set");
     let valid_email: String = env::var("VALID_EMAIL").expect("VALID_EMAIL must be set");
+
+    let txt = AppStateWithTxt {
+        websocket_url: env::var("WEBSOCKET_URL").expect("WEBSOCKET_URL must be set"),
+        webpush_url: env::var("WEBPUSH_URL").expect("WEBPUSH_URL must be set"),
+        webpush_key: env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set"),
+        valid_email: env::var("VALID_EMAIL").expect("VALID_EMAIL must be set"),
+    };
+
     env_logger::init();
 
     let sys = actix_rt::System::new("mybackend");
@@ -72,6 +83,7 @@ fn main() -> std::io::Result<()> {
         App::new()
             .data(address.clone())
             .data(pool2.clone())
+            .data(txt.clone())
             .data(Client::default())
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
