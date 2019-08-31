@@ -16,7 +16,7 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
-use crate::models::{DbExecutor,AppStateWithTxt};
+use crate::models::{AppStateWithTxt, DbExecutor};
 
 use actix_cors::Cors;
 use actix_web::{
@@ -38,8 +38,6 @@ fn index(req: HttpRequest, name: web::Path<String>) -> String {
 fn no_params() -> &'static str {
     "Hello world!\r\n"
 }
-
-
 
 fn main() -> std::io::Result<()> {
     std::env::set_var(
