@@ -21,7 +21,7 @@ CREATE TABLE "order" (
   price float8 NOT NULL,
   
   products jsonb NOT NULL,
-  sw_token jsonb NOT NULL,
+  sw_token VARCHAR NOT NULL,
   
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,

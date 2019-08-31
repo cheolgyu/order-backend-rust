@@ -23,7 +23,7 @@ pub struct Order {
     pub state: String,
     pub price: f64,
     pub products: serde_json::Value,
-    pub sw_token: serde_json::Value,
+    pub sw_token: String,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,
@@ -37,5 +37,5 @@ pub struct New {
     pub state: String,
     pub price: f64,
     pub products: serde_json::Value,
-    pub sw_token: serde_json::Value,
+    pub sw_token: String,
 }

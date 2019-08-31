@@ -36,6 +36,10 @@ pub fn put(
     client: Data<Client>,
     txt: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
+    
+    let j1 = json.clone();
+    let j2 = json.clone();
+
     let key = format!("key={}", txt.webpush_key.clone(),);
     let webpush_url = txt.webpush_url.clone();
     print!("{:?}", webpush_url);
@@ -47,14 +51,15 @@ pub fn put(
         // 사장님에게 알림 서비스 실행.
         //web socket 
         .and_then( move |res|  {
-           
+                /*
                 let _r = res.unwrap();
                 let _shop_id = _r.data["shop_id"].clone();
                 let o_r = Ok(_r);
+                */
                 let url = format!(
                         "{}{}/test",
                         websocket_url,
-                        _shop_id
+                        j1.shop_id
                     );
                 println!("{:?}",url);
                 client
@@ -68,7 +73,7 @@ pub fn put(
                     .and_then(|response| {
                         // <- server http response
                         println!("ws push Response: {:?}", response);
-                        o_r
+                        res
                     }).from_err()
            
                 
@@ -86,8 +91,11 @@ pub fn put(
             };
             let sendData =  SendData{
                 notification:notification,
-                to:"cksPMoBdGEs:APA91bG9tzqfByJDuxoeD7F-c2w8ENhZvtl6fxHaujVuXeFeD1cJYoAsYyz0rLB-4G3bBZMC4TwoSr1W_EGKdwIpFanOppFXDc22O72yLfH_KIZ2Wm50NXFpft0EfcGQ8oBP_3PYkruw".to_string()
+                //to:"cksPMoBdGEs:APA91bG9tzqfByJDuxoeD7F-c2w8ENhZvtl6fxHaujVuXeFeD1cJYoAsYyz0rLB-4G3bBZMC4TwoSr1W_EGKdwIpFanOppFXDc22O72yLfH_KIZ2Wm50NXFpft0EfcGQ8oBP_3PYkruw".to_string()
+                to: j2.sw_token.clone()
             };
+
+            println!("ws push sendData: {:?}", sendData);
 
                         Client::default()
                             .post(webpush_url) // <- Create request builder

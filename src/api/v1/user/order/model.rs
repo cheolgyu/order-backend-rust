@@ -11,13 +11,13 @@ use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct InpNew {
     pub shop_id: String,
     pub state: String,
     pub price: f64,
     pub products: serde_json::Value,
-    pub sw_token: serde_json::Value,
+    pub sw_token: String,
 }
 
 impl Validate for InpNew {
