@@ -71,6 +71,7 @@ table! {
         ceo_id -> Uuid,
         name -> Varchar,
         products -> Nullable<Jsonb>,
+        notification_key -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -87,6 +88,18 @@ table! {
         phone -> Nullable<Varchar>,
         name -> Varchar,
         role -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    user_device (id) {
+        id -> Int4,
+        user_id -> Uuid,
+        name -> Varchar,
+        sw_token -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -117,5 +130,6 @@ allow_tables_to_appear_in_same_query!(
     product,
     shop,
     user,
+    user_device,
     valid,
 );

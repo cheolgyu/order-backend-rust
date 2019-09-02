@@ -22,6 +22,7 @@ pub struct Shop {
     pub ceo_id: Uuid,
     pub name: String,
     pub products: Option<serde_json::Value>,
+    pub notification_key: String,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,
     pub deleted_at: Option<NaiveDateTime>,

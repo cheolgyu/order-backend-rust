@@ -36,6 +36,18 @@ CREATE TABLE "user" (
   deleted_at TIMESTAMP  
 );
 
+CREATE TABLE "user_device" (
+
+  id  SERIAL PRIMARY KEY,
+  user_id UUID NOT NULL,
+  name VARCHAR NOT NULL ,
+  sw_token VARCHAR NOT NULL DEFAULT ''  ,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
 
 CREATE TABLE "shop" (
 
@@ -43,6 +55,7 @@ CREATE TABLE "shop" (
   ceo_id UUID NOT NULL,
   name VARCHAR NOT NULL ,
   products jsonb NULL,
+  notification_key VARCHAR NOT NULL DEFAULT ''  ,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  

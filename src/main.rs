@@ -94,7 +94,6 @@ fn main() -> std::io::Result<()> {
               .allowed_header(CONTENT_TYPE)
               .max_age(3600)
             )
-            .service(web::resource("/ws/").route(web::get().to(models::ws::ws_index)))
             .service(
                 web::scope("/api/v1")
                     .service(
@@ -115,9 +114,12 @@ fn main() -> std::io::Result<()> {
                                     web::resource("/valid_email")
                                         .route(web::put().to_async(api::v1::ceo::valid::router::valid_email))
                                         .route(web::post().to_async(api::v1::ceo::valid::router::chk_valid_email)),
-                                ) .service(
+                                ).service(
                                     web::resource("/valid_phone")
                                         .route(web::put().to_async(api::v1::ceo::valid::router::valid_phone)),
+                                ).service(
+                                    web::resource("/device")
+                                        .route(web::put().to_async(api::v1::ceo::device::router::put)),
                                 )
                                 .service(
                                     web::scope("/shops")

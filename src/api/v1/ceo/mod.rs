@@ -6,3 +6,4 @@ pub mod order_detail;
 pub mod product;
 pub mod shop;
 pub mod valid;
+pub mod device;
