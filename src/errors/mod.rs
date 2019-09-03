@@ -85,6 +85,12 @@ impl From<actix_http::error::Error> for ServiceError {
         ServiceError::BadRequest("actix_http::error::Error".into())
     }
 }
+impl From<actix_http::error::PayloadError> for ServiceError {
+    fn from(_: actix_http::error::PayloadError) -> Self {
+        ServiceError::BadRequest("actix_http::error::PayloadError".into())
+    }
+}
+
 /*
 impl From<actix_http::client::error::SendRequestError> for ServiceError {
     fn from(_: actix_http::client::error::SendRequestError) -> Self {

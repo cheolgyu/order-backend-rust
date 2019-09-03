@@ -57,6 +57,7 @@ fn main() -> std::io::Result<()> {
     let txt = AppStateWithTxt {
         websocket_url: env::var("WEBSOCKET_URL").expect("WEBSOCKET_URL must be set"),
         webpush_url: env::var("WEBPUSH_URL").expect("WEBPUSH_URL must be set"),
+        webpush_group_reg_url: env::var("WEBPUSH_GROUP_REG_URL").expect("WEBPUSH_URL must be set"),
         webpush_key: env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set"),
         valid_email: env::var("VALID_EMAIL").expect("VALID_EMAIL must be set"),
     };
@@ -119,7 +120,8 @@ fn main() -> std::io::Result<()> {
                                         .route(web::put().to_async(api::v1::ceo::valid::router::valid_phone)),
                                 ).service(
                                     web::resource("/device")
-                                        .route(web::put().to_async(api::v1::ceo::device::router::put)),
+                                        .route(web::put().to_async(api::v1::ceo::device::router::put))
+                                        .route(web::post().to_async(api::v1::ceo::device::router::check)),
                                 )
                                 .service(
                                     web::scope("/shops")

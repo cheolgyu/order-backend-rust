@@ -28,6 +28,14 @@ pub struct Device {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
+#[derive(Deserialize, Serialize, Debug, Message, Insertable)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+#[table_name = "user_device"]
+pub struct Check {
+    pub user_id: Uuid,
+    pub name: String,
+    pub sw_token: String,
+}
 
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Msg, ServiceError>")]
@@ -42,6 +50,36 @@ pub struct New {
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct GetList {
     pub user_id: Uuid,
+}
+
+#[derive(Deserialize, Serialize, Debug, Message,Clone)]
+#[rtype(result = "Result<GetWithKey, ServiceError>")]
+pub struct Get {
+    pub sw_token: String,
+    pub user_id: Uuid,
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct GetWithKey {
+    pub shop_id: String,
+    pub notification_key: String,
+    pub device_cnt: i64,
+    pub params: Get,
+}
+
+impl GetWithKey {
+    pub fn get_type(&self) -> String {
+        let mut res = "";
+        if(&self.notification_key == ""){
+            res = "new group";
+        }else{
+            if(&self.device_cnt > &0){
+                res = "pass";
+            }else{
+                res = "new device";
+            }
+        }
+        res.to_string()
+    }
 }
 
 

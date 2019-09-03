@@ -24,6 +24,7 @@ impl Actor for DbExecutor {
 pub struct AppStateWithTxt {
     pub websocket_url: String,
     pub webpush_url: String,
+    pub webpush_group_reg_url: String,
     pub webpush_key: String,
     pub valid_email: String,
 }
