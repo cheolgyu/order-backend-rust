@@ -1,8 +1,9 @@
-use crate::schema::user_device;
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
+use crate::schema::user_device;
 use actix::Message;
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(
@@ -52,7 +53,7 @@ pub struct GetList {
     pub user_id: Uuid,
 }
 
-#[derive(Deserialize, Serialize, Debug, Message,Clone)]
+#[derive(Deserialize, Serialize, Debug, Message, Clone)]
 #[rtype(result = "Result<GetWithKey, ServiceError>")]
 pub struct Get {
     pub sw_token: String,
@@ -69,19 +70,18 @@ pub struct GetWithKey {
 impl GetWithKey {
     pub fn get_type(&self) -> String {
         let mut res = "";
-        if(&self.notification_key == ""){
+        if (&self.notification_key == "") {
             res = "new group";
-        }else{
-            if(&self.device_cnt > &0){
+        } else {
+            if (&self.device_cnt > &0) {
                 res = "pass";
-            }else{
+            } else {
                 res = "new device";
             }
         }
         res.to_string()
     }
 }
-
 
 #[derive(Deserialize, Serialize, Debug, Message, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]

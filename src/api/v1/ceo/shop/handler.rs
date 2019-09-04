@@ -2,9 +2,9 @@ use crate::api::v1::ceo::product::model::Product;
 use crate::api::v1::ceo::shop::model::{NewShop, ShopID, UpdateShop};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::shop::Shop as Object;
+use crate::models::shop::{Shop as Object, UpdateNotificationKey};
 use crate::models::DbExecutor;
-use crate::schema::shop::dsl::{ceo_id, id, name, shop as tb};
+use crate::schema::shop::dsl::{ceo_id, id, name, notification_key, shop as tb};
 
 use actix::Handler;
 
@@ -99,5 +99,26 @@ impl Handler<UpdateShop> for DbExecutor {
                 })
             }
         }
+    }
+}
+
+impl Handler<UpdateNotificationKey> for DbExecutor {
+    type Result = Result<Msg, ServiceError>;
+
+    fn handle(&mut self, msg: UpdateNotificationKey, _: &mut Self::Context) -> Self::Result {
+        let conn = &self.0.get()?;
+
+        let check_item = tb.filter(&id.eq(&msg.id)).get_result::<Object>(conn)?;
+        let item_update = diesel::update(&check_item)
+            .set(&msg)
+            .get_result::<Object>(conn)?;
+
+        let payload = serde_json::json!({
+            "item": item_update,
+        });
+        Ok(Msg {
+            status: 200,
+            data: payload,
+        })
     }
 }

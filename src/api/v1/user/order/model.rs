@@ -11,7 +11,7 @@ use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize,Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub shop_id: String,
     pub state: String,

@@ -1,8 +1,8 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
 use crate::models::device as m;
+use crate::models::msg::Msg;
 use crate::schema::user_device;
 
 use crate::utils::validator::{re_test_name, Validate};
@@ -16,7 +16,6 @@ use uuid::Uuid;
 pub struct InpCheck {
     pub sw_token: String,
 }
-
 
 impl Validate for InpCheck {
     fn validate(&self) -> Result<(), Error> {
@@ -39,7 +38,6 @@ impl InpCheck {
         }
     }
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
@@ -72,9 +70,8 @@ impl InpNew {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpGetList {
-    pub user_id :Uuid
+    pub user_id: Uuid,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpUpdate {

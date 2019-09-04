@@ -1,3 +1,4 @@
+pub mod device;
 pub mod msg;
 pub mod option;
 pub mod option_group;
@@ -7,8 +8,6 @@ pub mod product;
 pub mod shop;
 pub mod user;
 pub mod valid;
-pub mod device;
-
 
 use actix::{Actor, SyncContext};
 use diesel::pg::PgConnection;
