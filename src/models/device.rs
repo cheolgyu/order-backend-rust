@@ -66,16 +66,30 @@ pub struct GetWithKey {
     pub device_cnt: i64,
     pub params: Get,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SendData {
+    pub operation: String,
+    pub notification_key_name: String,
+    pub registration_ids: Vec<String>,
+}
 
 impl GetWithKey {
-    pub fn get_type(&self) -> String {
+    pub fn get(&self) -> Option<SendData> {
         if (&self.notification_key == "") {
-            "new group".to_string()
+            Some(SendData{
+                operation: "create".to_string(),
+                notification_key_name: self.shop_id.clone(),
+                registration_ids: vec![self.params.sw_token.clone()]
+            })
         } else {
             if (&self.device_cnt > &0) {
-                "pass".to_string()
+                None
             } else {
-                "new device".to_string()
+               Some( SendData{
+                    operation: "add".to_string(),
+                    notification_key_name: self.shop_id.clone(),
+                    registration_ids: vec![self.params.sw_token.clone()]
+                })
             }
         }
     }

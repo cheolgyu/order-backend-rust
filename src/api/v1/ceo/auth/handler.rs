@@ -119,14 +119,12 @@ impl Handler<Info> for DbExecutor {
 
     fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
-        println!(" path info start ");
         let msg2 = msg.clone();
         let msg3 = msg.clone();
         match msg.auth_user {
             None => Err(ServiceError::Unauthorized),
             Some(u) => {
                 use diesel::sql_types::Nullable;
-                println!(" path info start match ");
                 if u.role == "ceo" {
                     let q = sql_query("select * from ceo_info($1,$2,$3) ");
                     let res = q
@@ -135,8 +133,6 @@ impl Handler<Info> for DbExecutor {
                         .bind::<Nullable<Integer>, _>(&msg.product_id)
                         .execute(conn)?;
                     let res2 = res;
-                    println!("=====path info==>{:?}", res2);
-
                     if res2 == 1 {
                         Ok(msg2)
                     } else {

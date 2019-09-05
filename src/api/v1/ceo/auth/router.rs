@@ -55,9 +55,6 @@ pub fn getme(
     path_id: Path<String>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    println!(" ====================get me ");
-    println!(" ====================get me {:?}", auth_user);
-    println!(" ====================get me {:?}", req);
     result(auth_user.check_user(path_id.into_inner()))
         .from_err()
         .and_then(move |_| db.send(QueryUser { id: auth_user.id }).from_err())

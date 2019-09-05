@@ -81,15 +81,17 @@ impl FromRequest for AuthUser {
     #[warn(unused_variables)]
     fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
         let path_info = Path::<Info>::extract(req)?.into_inner();
-        println!("auth_user-from_request-path_info:{:?}", path_info);
+        println!("========================================================================================");
+        println!("{:?}", path_info);
         if let Some(auth_token) = req.headers().get("authorization") {
-            println!("auth_user-from_request-path_info: 11111111111111111");
+            println!("step1");
             if let Ok(auth) = auth_token.to_str() {
-                println!("auth_user-from_request-path_info: 2222222222222");
+                println!("step2");
                 let token: AuthUser = decode_token(auth)?;
                 return Ok(token);
             }
         }
+        println!("========================================================================================");
         Err(ServiceError::Unauthorized.into())
     }
 }

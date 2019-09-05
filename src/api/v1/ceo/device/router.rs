@@ -13,69 +13,15 @@ use actix_web::{
     web::{BytesMut, Data, Json, Path},
     Error, HttpResponse, ResponseError,
 };
-use futures::{future::result, Future, Stream};
+use futures::{future::{ Either, err, IntoFuture,result}, Future, Stream};
 use std::fmt;
 use uuid::Uuid;
+use crate::models::msg::Msg;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FcmResponse {
     pub notification_key: String,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-struct SendData {
-    operation: String,
-    notification_key_name: String,
-    registration_ids: Vec<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct FcmSend {
-    req_type: String,
-    send_data: SendData,
-}
-// 등록 프로세스 필요.
-/**
- * 0. 사용자uuid로 상점의 그룹key 와 토큰 조회
- * 0-1 토큰이 있다면 ok 이미 등록된 디바이스.
- * 0-2 토큰이 없다면 신규 사용자.
- * 0-1-1 기존 디바이스고 푸시키가 없다면 푸시키 발급.
- * 0-1-2 기존 디바이스고 푸시키가 있다면 ok.
- * 0-2-1 신규 디바이스이고 푸시키가 없다면. 푸시키 발급.
- * 0-2-2 신규 디바이스이고 푸시키가 있다면. 푸시키에 신규디바이스 등록.
- *
- * 1. 토큰 db에 저장
- * 2. db 에서 토큰 그룹key 조회
- * 3-1  있다면 기기등록 rest api 실행
- * 3-2 없다면 토큰 그룹key 생성( 생성시 사용자1명 필요.) rest api 실행
- * 3-2-1  생성된 그룹키 db에 저장.
- *
- */
-
-/*
-let sendData =  Create{
-    operation: "create".to_string(),
-    notification_key_name: getWithKey.shop_id.to_string(),
-    registration_ids: vec.clone()
-};
-
-println!("ws push sendData: {:?}", sendData);
-
-Client::default()
-    .post(webpush_group_reg_url) // <- Create request builder
-    .header("Authorization", key)
-    .header(header::CONTENT_TYPE, "application/json")
-    .send_json(&sendData) // <- Send http request
-    .map_err(|e| {
-        println!("sw push error : {:?}", e.error_response());
-        ServiceError::BadRequest("sw push error".into())
-    } )
-    .and_then(|response| {
-        // <- server http response
-        println!("sw push Response: {:?}", response);
-
-        //Ok(res)
-    }).from_err();
-*/
 
 pub fn check(
     json: Json<params::InpCheck>,
@@ -83,7 +29,7 @@ pub fn check(
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     txt: Data<AppStateWithTxt>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
+) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let sw_token = json.into_inner().sw_token.clone();
     let sw_token2 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
@@ -96,91 +42,52 @@ pub fn check(
         user_id: auth_user.id,
     })
     .from_err()
-    .and_then(move |res| {
-        let chk_type = match &res {
-            Ok(get_with_key) => (get_with_key.get_type(), get_with_key.shop_id.clone()),
+    .and_then(move |res|  
+        match res {
+            Ok(get_with_key) => {
+                let opt_send_data = get_with_key.get();
+                if opt_send_data.is_some() {
+                    let send_data = opt_send_data.unwrap();
+                    
+                    Either::A(
+                        send(send_data,client,txt,db2).map_err(|e| {
+                            println!("sw push error : {:?}", e.error_response());
+                            ServiceError::BadRequest("sw push error".into())
+                        }).then(|res| {
+                            match res {
+                                Ok(user) => Ok(HttpResponse::Ok().json("2")),
+                                Err(_) => Ok(HttpResponse::InternalServerError().into()),
+                                }
+                            })
+                    )
+                }else{
+                    Either::B(err(ServiceError::BadRequest("sw push error".into())))
+                }
+            },
             Err(e) => {
-                println!("err================err==============================");
-                ("err".to_string(), "err".to_string())
+                 Either::B(err(ServiceError::BadRequest("sw push error".into())))
             }
-        };
-        let shop_id = Uuid::parse_str(&chk_type.1.clone()).unwrap();
-        println!("==============================================");
-        println!("chk_type: {:?}", chk_type);
-        println!("==============================================");
-        if (chk_type.0 == "new group") {
-            
-        } else if (chk_type.0 == "new device") {
-
-        } else if (chk_type.0 == "pass") {
-
-        }
-
-        let send_data = SendData {
-            operation: "create".to_string(),
-            notification_key_name: chk_type.1.to_string(),
-            registration_ids: vec.clone(),
-        };
-
-        println!("ws push sendData: {:?}", send_data);
-
-        let resp = client
-            .post(webpush_group_reg_url)
-            .header("Authorization", key)
-            .header("project_id", "371794845174".to_string())
-            .header(header::CONTENT_TYPE, "application/json")
-            .send_json(&send_data)
-            //.map_err(Error::from)
-            .map_err(|e| {
-                println!("sw push error : {:?}", e.error_response());
-                ServiceError::BadRequest("sw push error".into())
-            })
-            .and_then(|response| {
-                let _notification_key = response
-                    .from_err()
-                    .fold(BytesMut::new(), |mut acc, chunk| {
-                        acc.extend_from_slice(&chunk);
-                        Ok::<_, ServiceError>(acc)
-                    })
-                    .map(|body| {
-                        let body: FcmResponse = serde_json::from_slice(&body).unwrap();
-                        println!("==============================================");
-                        println!("response.body(): {:?}", body);
-                        println!("==============================================");
-                        body.notification_key
-                    });
-                _notification_key
-            });
-
-        println!("==============================================");
-
-        resp.and_then(move |notification_key| {
-            println!("==============================================");
-            println!("response.body() notification_key: {:?}", notification_key);
-            println!("==============================================");
-           
-            db2.send(UpdateNotificationKey {
-                id: shop_id,
-                notification_key: notification_key,
-            });
-            res
-        })
     })
-    .from_err()
-    .and_then(|res| Ok(HttpResponse::Ok().json(res)))
+    
 }
 
 pub fn send(
-    fcm_send:FcmSend,
+    send_data: m::SendData,
     client: Data<Client>,
-    txt: Data<AppStateWithTxt>) -> impl Future<Item = String, Error = ServiceError> {
-   
+    txt: Data<AppStateWithTxt>,
+    db2: Data<Addr<DbExecutor>>,
+     ) -> impl Future<Item = std::result::Result<Msg, ServiceError>, Error = ServiceError> {
+    println!("==============================================");
+    println!("send: {:?}", send_data);
+    println!("==============================================");
+    let shop_id = Uuid::parse_str(&send_data.notification_key_name.clone()).unwrap();
+
     let resp = client
         .post(txt.webpush_group_reg_url.clone())
         .header(header::CONTENT_TYPE, "application/json")
         .header("Authorization", txt.get_key())
         .header("project_id", "371794845174".to_string())
-        .send_json(&fcm_send.send_data)
+        .send_json(&send_data)
         .map_err(|e| {
             println!("sw push error : {:?}", e.error_response());
             ServiceError::BadRequest("sw push error".into())
@@ -201,7 +108,15 @@ pub fn send(
                 });
             _notification_key
         });
-    resp
+    resp.and_then(move |notification_key| {
+        println!("==============================================");
+        println!("response.body() notification_key: {:?}", notification_key);
+        println!("==============================================");
+        db2.send(UpdateNotificationKey {
+            id: shop_id,
+            notification_key: notification_key,
+        }).from_err()
+    })
 }
 
 
