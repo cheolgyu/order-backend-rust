@@ -52,7 +52,7 @@ pub fn check(
                 let send_data = opt_send_data.unwrap();
 
                 Either::A(
-                    send(send_data, client, txt, db2)
+                    send(send_data,get_with_key, client, txt, db2)
                         .map_err(|e| {
                             println!("sw push error : {:?}", e.error_response());
                             ServiceError::BadRequest("sw push error".into())
@@ -72,6 +72,7 @@ pub fn check(
 
 pub fn send(
     send_data: m::SendData,
+    get_with_key: m::GetWithKey,
     client: Data<Client>,
     txt: Data<AppStateWithTxt>,
     db2: Data<Addr<DbExecutor>>,
@@ -80,7 +81,7 @@ pub fn send(
     println!("send: {:?}", send_data);
     println!("==============================================");
     let shop_id = Uuid::parse_str(&send_data.notification_key_name.clone()).unwrap();
-
+    let d3 = db2.clone();
     let resp = client
         .post(txt.webpush_group_reg_url.clone())
         .header(header::CONTENT_TYPE, "application/json")
@@ -109,11 +110,21 @@ pub fn send(
         });
     resp.and_then(move |notification_key| {
         println!("==============================================");
-        println!("response.body() notification_key: {:?}", notification_key);
+        println!("update shop notification_key  : {:?}", notification_key);
         println!("==============================================");
         db2.send(UpdateNotificationKey {
             id: shop_id,
             notification_key: notification_key,
+        })
+        .from_err()
+    }).and_then(move |res| {
+        println!("==============================================");
+        println!("insert user device ");
+        println!("==============================================");
+        d3.send(m::New {
+            user_id: get_with_key.params.user_id.clone(),
+            name: "test".to_string(),
+            sw_token: get_with_key.params.sw_token.clone(),
         })
         .from_err()
     })
