@@ -28,7 +28,7 @@ pub struct AppStateWithTxt {
     pub valid_email: String,
 }
 
-impl AppStateWithTxt{
+impl AppStateWithTxt {
     pub fn get_key(&self) -> String {
         format!("key={}", &self.webpush_key.clone())
     }

@@ -2,6 +2,7 @@ use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::device::model as params;
 use crate::errors::ServiceError;
 use crate::models::device as m;
+use crate::models::msg::Msg;
 use crate::models::shop::UpdateNotificationKey;
 use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
@@ -13,10 +14,12 @@ use actix_web::{
     web::{BytesMut, Data, Json, Path},
     Error, HttpResponse, ResponseError,
 };
-use futures::{future::{ Either, err, IntoFuture,result}, Future, Stream};
+use futures::{
+    future::{err, result, Either, IntoFuture},
+    Future, Stream,
+};
 use std::fmt;
 use uuid::Uuid;
-use crate::models::msg::Msg;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FcmResponse {
@@ -42,33 +45,29 @@ pub fn check(
         user_id: auth_user.id,
     })
     .from_err()
-    .and_then(move |res|  
-        match res {
-            Ok(get_with_key) => {
-                let opt_send_data = get_with_key.get();
-                if opt_send_data.is_some() {
-                    let send_data = opt_send_data.unwrap();
-                    
-                    Either::A(
-                        send(send_data,client,txt,db2).map_err(|e| {
+    .and_then(move |res| match res {
+        Ok(get_with_key) => {
+            let opt_send_data = get_with_key.get();
+            if opt_send_data.is_some() {
+                let send_data = opt_send_data.unwrap();
+
+                Either::A(
+                    send(send_data, client, txt, db2)
+                        .map_err(|e| {
                             println!("sw push error : {:?}", e.error_response());
                             ServiceError::BadRequest("sw push error".into())
-                        }).then(|res| {
-                            match res {
-                                Ok(user) => Ok(HttpResponse::Ok().json("2")),
-                                Err(_) => Ok(HttpResponse::InternalServerError().into()),
-                                }
-                            })
-                    )
-                }else{
-                    Either::B(err(ServiceError::BadRequest("sw push error".into())))
-                }
-            },
-            Err(e) => {
-                 Either::B(err(ServiceError::BadRequest("sw push error".into())))
+                        })
+                        .then(|res| match res {
+                            Ok(user) => Ok(HttpResponse::Ok().json("2")),
+                            Err(_) => Ok(HttpResponse::InternalServerError().into()),
+                        }),
+                )
+            } else {
+                Either::B(err(ServiceError::BadRequest("sw push error".into())))
             }
+        }
+        Err(e) => Either::B(err(ServiceError::BadRequest("sw push error".into()))),
     })
-    
 }
 
 pub fn send(
@@ -76,7 +75,7 @@ pub fn send(
     client: Data<Client>,
     txt: Data<AppStateWithTxt>,
     db2: Data<Addr<DbExecutor>>,
-     ) -> impl Future<Item = std::result::Result<Msg, ServiceError>, Error = ServiceError> {
+) -> impl Future<Item = std::result::Result<Msg, ServiceError>, Error = ServiceError> {
     println!("==============================================");
     println!("send: {:?}", send_data);
     println!("==============================================");
@@ -115,10 +114,10 @@ pub fn send(
         db2.send(UpdateNotificationKey {
             id: shop_id,
             notification_key: notification_key,
-        }).from_err()
+        })
+        .from_err()
     })
 }
-
 
 pub fn put(
     json: Json<params::InpNew>,

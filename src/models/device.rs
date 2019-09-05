@@ -76,19 +76,19 @@ pub struct SendData {
 impl GetWithKey {
     pub fn get(&self) -> Option<SendData> {
         if (&self.notification_key == "") {
-            Some(SendData{
+            Some(SendData {
                 operation: "create".to_string(),
                 notification_key_name: self.shop_id.clone(),
-                registration_ids: vec![self.params.sw_token.clone()]
+                registration_ids: vec![self.params.sw_token.clone()],
             })
         } else {
             if (&self.device_cnt > &0) {
                 None
             } else {
-               Some( SendData{
+                Some(SendData {
                     operation: "add".to_string(),
                     notification_key_name: self.shop_id.clone(),
-                    registration_ids: vec![self.params.sw_token.clone()]
+                    registration_ids: vec![self.params.sw_token.clone()],
                 })
             }
         }
