@@ -69,17 +69,15 @@ pub struct GetWithKey {
 
 impl GetWithKey {
     pub fn get_type(&self) -> String {
-        let mut res = "";
         if (&self.notification_key == "") {
-            res = "new group";
+            "new group".to_string()
         } else {
             if (&self.device_cnt > &0) {
-                res = "pass";
+                "pass".to_string()
             } else {
-                res = "new device";
+                "new device".to_string()
             }
         }
-        res.to_string()
     }
 }
 

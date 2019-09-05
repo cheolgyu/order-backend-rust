@@ -1,8 +1,6 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 
-use crate::errors::ServiceError;
 use crate::models::device as m;
-use crate::models::msg::Msg;
 use crate::schema::user_device;
 
 use crate::utils::validator::{re_test_name, Validate};

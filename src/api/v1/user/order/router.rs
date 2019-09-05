@@ -81,19 +81,19 @@ pub fn put(
                 icon: "bbb".to_string(),
                 click_action: "bbb".to_string(),
             };
-            let sendData = SendData {
+            let send_data = SendData {
                 notification: notification,
                 //to:"cksPMoBdGEs:APA91bG9tzqfByJDuxoeD7F-c2w8ENhZvtl6fxHaujVuXeFeD1cJYoAsYyz0rLB-4G3bBZMC4TwoSr1W_EGKdwIpFanOppFXDc22O72yLfH_KIZ2Wm50NXFpft0EfcGQ8oBP_3PYkruw".to_string()
                 to: j2.sw_token.clone(),
             };
 
-            println!("ws push sendData: {:?}", sendData);
+            println!("ws push sendData: {:?}", send_data);
 
             Client::default()
                 .post(webpush_url) // <- Create request builder
                 .header("Authorization", key)
                 .header(header::CONTENT_TYPE, "application/json")
-                .send_json(&sendData) // <- Send http request
+                .send_json(&send_data) // <- Send http request
                 .map_err(|e| {
                     println!("sw push error : {:?}", e.error_response());
                     ServiceError::BadRequest("sw push error".into())
@@ -118,18 +118,4 @@ pub fn put(
         }
         */
         Ok(HttpResponse::Ok().json(res)))
-}
-
-fn step_x(data: serde_json::Value) -> impl Future<Item = serde_json::Value, Error = Error> {
-    let get_response = Client::new()
-        .get("http://127.0.0.1:3001/push/109b7b41-f8eb-4702-abdb-6bfb95f57072/msgtest") // <- Create request builder
-        .header("User-Agent", "Actix-web")
-        .send_json(&data)
-        .map_err(Error::from) // <- convert SendRequestError to an Error
-        .and_then(|resp| {
-            println!("resp.status(): {:?}", resp.status());
-            Ok(data)
-        });
-
-    get_response
 }

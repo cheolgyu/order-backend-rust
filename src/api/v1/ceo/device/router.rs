@@ -22,12 +22,17 @@ pub struct FcmResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Create {
+struct SendData {
     operation: String,
     notification_key_name: String,
     registration_ids: Vec<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct FcmSend {
+    req_type: String,
+    send_data: SendData,
+}
 // 등록 프로세스 필요.
 /**
  * 0. 사용자uuid로 상점의 그룹key 와 토큰 조회
@@ -83,7 +88,7 @@ pub fn check(
     let sw_token2 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
     let webpush_group_reg_url = txt.webpush_group_reg_url.clone();
-    let key = format!("key={}", txt.webpush_key.clone(),);
+    let key = txt.get_key();
     let db2 = db.clone();
 
     db.send(m::Get {
@@ -93,7 +98,7 @@ pub fn check(
     .from_err()
     .and_then(move |res| {
         let chk_type = match &res {
-            Ok(getWithKey) => (getWithKey.get_type(), getWithKey.shop_id.clone()),
+            Ok(get_with_key) => (get_with_key.get_type(), get_with_key.shop_id.clone()),
             Err(e) => {
                 println!("err================err==============================");
                 ("err".to_string(), "err".to_string())
@@ -104,27 +109,27 @@ pub fn check(
         println!("chk_type: {:?}", chk_type);
         println!("==============================================");
         if (chk_type.0 == "new group") {
-
+            
         } else if (chk_type.0 == "new device") {
 
         } else if (chk_type.0 == "pass") {
 
         }
 
-        let sendData = Create {
+        let send_data = SendData {
             operation: "create".to_string(),
             notification_key_name: chk_type.1.to_string(),
             registration_ids: vec.clone(),
         };
 
-        println!("ws push sendData: {:?}", sendData);
+        println!("ws push sendData: {:?}", send_data);
 
         let resp = client
             .post(webpush_group_reg_url)
             .header("Authorization", key)
             .header("project_id", "371794845174".to_string())
             .header(header::CONTENT_TYPE, "application/json")
-            .send_json(&sendData)
+            .send_json(&send_data)
             //.map_err(Error::from)
             .map_err(|e| {
                 println!("sw push error : {:?}", e.error_response());
@@ -153,6 +158,7 @@ pub fn check(
             println!("==============================================");
             println!("response.body() notification_key: {:?}", notification_key);
             println!("==============================================");
+           
             db2.send(UpdateNotificationKey {
                 id: shop_id,
                 notification_key: notification_key,
@@ -163,6 +169,41 @@ pub fn check(
     .from_err()
     .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }
+
+pub fn send(
+    fcm_send:FcmSend,
+    client: Data<Client>,
+    txt: Data<AppStateWithTxt>) -> impl Future<Item = String, Error = ServiceError> {
+   
+    let resp = client
+        .post(txt.webpush_group_reg_url.clone())
+        .header(header::CONTENT_TYPE, "application/json")
+        .header("Authorization", txt.get_key())
+        .header("project_id", "371794845174".to_string())
+        .send_json(&fcm_send.send_data)
+        .map_err(|e| {
+            println!("sw push error : {:?}", e.error_response());
+            ServiceError::BadRequest("sw push error".into())
+        })
+        .and_then(|response| {
+            let _notification_key = response
+                .from_err()
+                .fold(BytesMut::new(), |mut acc, chunk| {
+                    acc.extend_from_slice(&chunk);
+                    Ok::<_, ServiceError>(acc)
+                })
+                .map(|body| {
+                    let body: FcmResponse = serde_json::from_slice(&body).unwrap();
+                    println!("==============================================");
+                    println!("response.body(): {:?}", body);
+                    println!("==============================================");
+                    body.notification_key
+                });
+            _notification_key
+        });
+    resp
+}
+
 
 pub fn put(
     json: Json<params::InpNew>,
