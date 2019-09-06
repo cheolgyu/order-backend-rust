@@ -39,6 +39,9 @@ pub fn check(
     let webpush_group_reg_url = txt.webpush_group_reg_url.clone();
     let key = txt.get_key();
     let db2 = db.clone();
+    let db3 = db.clone();
+    let db4 = db.clone();
+    
 
     db.send(m::Get {
         sw_token: sw_token,
@@ -48,11 +51,32 @@ pub fn check(
     .and_then(move |res| match res {
         Ok(get_with_key) => {
             let opt_send_data = get_with_key.get();
+            let _get_with_key =  get_with_key.clone();
             if opt_send_data.is_some() {
                 let send_data = opt_send_data.unwrap();
-
+                let shop_id = Uuid::parse_str(&send_data.notification_key_name.clone()).unwrap();
                 Either::A(
-                    send(send_data,get_with_key, client, txt, db2)
+                    send(send_data,_get_with_key, client, txt, db2)
+                        .and_then(move |notification_key| {
+                            println!("==============================================");
+                            println!("update shop notification_key  : {:?}", notification_key);
+                            println!("==============================================");
+                            db3.send(UpdateNotificationKey {
+                                id: shop_id,
+                                notification_key: notification_key,
+                            })
+                            .from_err()
+                        }).and_then(move |res| {
+                            println!("==============================================");
+                            println!("insert user device ");
+                            println!("==============================================");
+                            db4.send(m::New {
+                                user_id: get_with_key.params.user_id.clone(),
+                                name: "test".to_string(),
+                                sw_token: get_with_key.params.sw_token.clone(),
+                            })
+                            .from_err()
+                        })
                         .map_err(|e| {
                             println!("check device : {:?}", e.error_response());
                             ServiceError::BadRequest("check device".into())
@@ -76,7 +100,7 @@ pub fn send(
     client: Data<Client>,
     txt: Data<AppStateWithTxt>,
     db2: Data<Addr<DbExecutor>>,
-) -> impl Future<Item = std::result::Result<Msg, ServiceError>, Error = ServiceError> {
+) -> impl Future<Item = String, Error = ServiceError> {
     println!("==============================================");
     println!("send: {:?}", send_data);
     println!("==============================================");
@@ -108,26 +132,7 @@ pub fn send(
                 });
             _notification_key
         });
-    resp.and_then(move |notification_key| {
-        println!("==============================================");
-        println!("update shop notification_key  : {:?}", notification_key);
-        println!("==============================================");
-        db2.send(UpdateNotificationKey {
-            id: shop_id,
-            notification_key: notification_key,
-        })
-        .from_err()
-    }).and_then(move |res| {
-        println!("==============================================");
-        println!("insert user device ");
-        println!("==============================================");
-        d3.send(m::New {
-            user_id: get_with_key.params.user_id.clone(),
-            name: "test".to_string(),
-            sw_token: get_with_key.params.sw_token.clone(),
-        })
-        .from_err()
-    })
+    resp
 }
 
 pub fn put(

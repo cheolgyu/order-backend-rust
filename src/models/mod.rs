@@ -8,6 +8,7 @@ pub mod product;
 pub mod shop;
 pub mod user;
 pub mod valid;
+//pub mod fcm;
 
 use actix::{Actor, SyncContext};
 use diesel::pg::PgConnection;

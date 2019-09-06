@@ -59,7 +59,7 @@ pub struct Get {
     pub sw_token: String,
     pub user_id: Uuid,
 }
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug,Clone)]
 pub struct GetWithKey {
     pub shop_id: String,
     pub notification_key: String,
