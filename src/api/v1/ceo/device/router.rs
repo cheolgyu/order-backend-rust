@@ -54,8 +54,8 @@ pub fn check(
                 Either::A(
                     send(send_data,get_with_key, client, txt, db2)
                         .map_err(|e| {
-                            println!("sw push error : {:?}", e.error_response());
-                            ServiceError::BadRequest("sw push error".into())
+                            println!("check device : {:?}", e.error_response());
+                            ServiceError::BadRequest("check device".into())
                         })
                         .then(|res| match res {
                             Ok(user) => Ok(HttpResponse::Ok().json("2")),
@@ -63,10 +63,10 @@ pub fn check(
                         }),
                 )
             } else {
-                Either::B(err(ServiceError::BadRequest("sw push error".into())))
+                Either::B(result(Ok(HttpResponse::Ok().json("pass"))))
             }
         }
-        Err(e) => Either::B(err(ServiceError::BadRequest("sw push error".into()))),
+        Err(e) => Either::B(err(ServiceError::BadRequest("check device".into()))),
     })
 }
 
@@ -89,8 +89,8 @@ pub fn send(
         .header("project_id", "371794845174".to_string())
         .send_json(&send_data)
         .map_err(|e| {
-            println!("sw push error : {:?}", e.error_response());
-            ServiceError::BadRequest("sw push error".into())
+            println!("check device-send : {:?}", e.error_response());
+            ServiceError::BadRequest("check device-send".into())
         })
         .and_then(|response| {
             let _notification_key = response
@@ -158,7 +158,7 @@ pub fn get(
     })
 }
 
-pub fn post(
+pub fn post( 
     json: Json<params::InpUpdate>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
