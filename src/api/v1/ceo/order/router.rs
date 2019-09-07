@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::order::model::{ GetList, InpUpdate};
+use crate::api::v1::ceo::order::model::{GetList, InpUpdate};
 
 use crate::models::DbExecutor;
 

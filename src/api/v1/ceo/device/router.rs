@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{AuthUser};
+use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::api::v1::ceo::device::model as params;
 use crate::api::v1::ceo::fcm::router as fcm;
 use crate::errors::ServiceError;
@@ -9,15 +9,14 @@ use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     client::Client,
-    web::{ Data, Json},
+    web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
 use futures::{
     future::{err, result, Either},
-    Future, Stream,
+    Future,
 };
 use uuid::Uuid;
-
 
 pub fn check(
     json: Json<params::InpCheck>,
@@ -29,11 +28,10 @@ pub fn check(
     let sw_token = json.into_inner().sw_token.clone();
     let sw_token2 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
-    
+
     let db2 = db.clone();
     let db3 = db.clone();
     let db4 = db.clone();
-    
 
     db.send(m::Get {
         sw_token: sw_token,
@@ -45,9 +43,10 @@ pub fn check(
             let opt_send_data = get_with_key.get(store.webpush.clone());
             if opt_send_data.is_some() {
                 let send_data = opt_send_data.unwrap();
-                let shop_id = Uuid::parse_str(&send_data.params.notification_key_name.clone()).unwrap();
+                let shop_id =
+                    Uuid::parse_str(&send_data.params.notification_key_name.clone()).unwrap();
                 Either::A(
-                    fcm::send(send_data,store.webpush.clone() ,client,  db2)
+                    fcm::send(send_data, store.webpush.clone(), client, db2)
                         .and_then(move |notification_key| {
                             println!("==============================================");
                             println!("update shop notification_key  : {:?}", notification_key);
@@ -57,7 +56,8 @@ pub fn check(
                                 notification_key: notification_key,
                             })
                             .from_err()
-                        }).and_then(move |res| {
+                        })
+                        .and_then(move |res| {
                             println!("==============================================");
                             println!("insert user device ");
                             println!("==============================================");
@@ -73,7 +73,7 @@ pub fn check(
                             ServiceError::BadRequest("check device".into())
                         })
                         .then(|res| match res {
-                            Ok(user) => Ok(HttpResponse::Ok().json("2")),
+                            Ok(_user) => Ok(HttpResponse::Ok().json("2")),
                             Err(_) => Ok(HttpResponse::InternalServerError().into()),
                         }),
                 )
@@ -84,8 +84,6 @@ pub fn check(
         Err(e) => Either::B(err(ServiceError::BadRequest("check device".into()))),
     })
 }
-
-
 
 pub fn put(
     json: Json<params::InpNew>,
@@ -115,7 +113,7 @@ pub fn get(
     })
 }
 
-pub fn post( 
+pub fn post(
     json: Json<params::InpUpdate>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,

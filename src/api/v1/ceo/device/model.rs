@@ -90,7 +90,7 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn update(&self, auth_user: AuthUser) -> m::Update {
+    pub fn update(&self, _auth_user: AuthUser) -> m::Update {
         m::Update {
             id: self.id.clone(),
             name: self.name.clone(),

@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod device;
+pub mod fcm;
 pub mod option;
 pub mod option_group;
 pub mod order;
@@ -7,4 +8,3 @@ pub mod order_detail;
 pub mod product;
 pub mod shop;
 pub mod valid;
-pub mod fcm;

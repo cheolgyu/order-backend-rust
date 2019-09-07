@@ -1,25 +1,21 @@
 use crate::api::v1::ceo::fcm::model as params;
-use crate::models::fcm::SendData;
 use crate::errors::ServiceError;
-use crate::models::{WebPush, DbExecutor};
+use crate::models::fcm::SendData;
+use crate::models::{DbExecutor, WebPush};
 use actix::Addr;
 use actix_web::{
     client::Client,
-    delete,
-    http::{header::{CONTENT_TYPE}, StatusCode},
-    web::{BytesMut, Data, Json, Path},
-    Error, HttpResponse, ResponseError,
+    http::header::CONTENT_TYPE,
+    web::{BytesMut, Data},
+    ResponseError,
 };
-use futures::{
-    Future, Stream,
-};
+use futures::Future;
 
-
-pub fn send (
+pub fn send(
     send_data: SendData,
     webpush: WebPush,
     client: Data<Client>,
-    db2: Data<Addr<DbExecutor>>,
+    _db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = String, Error = ServiceError> {
     println!("==============================================");
     println!("send: {:?}", send_data);
@@ -52,4 +48,3 @@ pub fn send (
         });
     resp
 }
-

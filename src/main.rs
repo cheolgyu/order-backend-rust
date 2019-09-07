@@ -16,7 +16,7 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
-use crate::models::{AppStateWithTxt,WebPush,WebSocket, DbExecutor};
+use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
 use actix_web::{
@@ -55,14 +55,17 @@ fn main() -> std::io::Result<()> {
     let valid_email: String = env::var("VALID_EMAIL").expect("VALID_EMAIL must be set");
 
     let store = AppStateWithTxt {
-        websocket: WebSocket{
+        websocket: WebSocket {
             send: env::var("WEBSOCKET_URL").expect("WEBSOCKET_URL must be set"),
         },
-        webpush: WebPush{
+        webpush: WebPush {
             send: env::var("WEBPUSH_URL_SEND").expect("webpush_url_send must be set"),
             reg: env::var("WEBPUSH_URL_REG").expect("webpush_url_reg must be set"),
             send_id: env::var("WEBPUSH_SEND_ID").expect("webpush_send_id must be set"),
-            key: format!("key={}", env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set")),
+            key: format!(
+                "key={}",
+                env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set")
+            ),
         },
         valid_email: env::var("VALID_EMAIL").expect("VALID_EMAIL must be set"),
     };
@@ -232,7 +235,6 @@ fn main() -> std::io::Result<()> {
                                 )
                             )
                     )
-                       
             )
             .service(index)
             .service(no_params)

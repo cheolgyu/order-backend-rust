@@ -2,7 +2,7 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::order_detail;
 
-use crate::utils::validator::{ Validate};
+use crate::utils::validator::Validate;
 use actix::Message;
 use actix_web::error;
 use actix_web::Error;

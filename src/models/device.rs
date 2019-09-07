@@ -1,12 +1,12 @@
 use crate::errors::ServiceError;
+use crate::models::fcm::{Params, SendData};
 use crate::models::msg::Msg;
+use crate::models::WebPush;
 use crate::schema::user_device;
 use actix::Message;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::models::fcm::{SendData, Params};
-use crate::models::{WebPush};
 
 #[derive(
     Clone,
@@ -61,7 +61,7 @@ pub struct Get {
     pub sw_token: String,
     pub user_id: Uuid,
 }
-#[derive(Deserialize, Serialize, Debug,Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct GetWithKey {
     pub shop_id: String,
     pub notification_key: String,
@@ -69,38 +69,31 @@ pub struct GetWithKey {
     pub params: Get,
 }
 
-
 impl GetWithKey {
     pub fn get(&self, webpush: WebPush) -> Option<SendData> {
         if &self.notification_key == "" {
-            Some(
-                SendData{
-                    url: webpush.reg.clone(),
-                    webpush: webpush,
-                    params :Params {
-                        operation: "create".to_string(),
-                        notification_key_name: self.shop_id.clone(),
-                        registration_ids: vec![self.params.sw_token.clone()],
-                    }
-                }
-                
-            )
+            Some(SendData {
+                url: webpush.reg.clone(),
+                webpush: webpush,
+                params: Params {
+                    operation: "create".to_string(),
+                    notification_key_name: self.shop_id.clone(),
+                    registration_ids: vec![self.params.sw_token.clone()],
+                },
+            })
         } else {
             if &self.device_cnt > &0 {
                 None
             } else {
-                Some(
-                     SendData{
-                        url: webpush.reg.clone(),
-                        webpush: webpush,
-                        params :Params {
-                            operation: "add".to_string(),
-                            notification_key_name: self.shop_id.clone(),
-                            registration_ids: vec![self.params.sw_token.clone()],
-                        }
-                    }
-                    
-                )
+                Some(SendData {
+                    url: webpush.reg.clone(),
+                    webpush: webpush,
+                    params: Params {
+                        operation: "add".to_string(),
+                        notification_key_name: self.shop_id.clone(),
+                        registration_ids: vec![self.params.sw_token.clone()],
+                    },
+                })
             }
         }
     }

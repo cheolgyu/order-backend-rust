@@ -7,8 +7,8 @@ use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     client::Client,
-    http::{header},
-    web::{ Data, Json},
+    http::header,
+    web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
@@ -104,15 +104,5 @@ pub fn put(
                 .from_err()
         })
         .from_err()
-        .and_then(|res| 
-        /*
-        match res {
-            Ok(msg) => {
-               
-                Ok(HttpResponse::Ok().json(msg))
-            }
-            Err(e) => Ok(e.error_response()),
-        }
-        */
-        Ok(HttpResponse::Ok().json(res)))
+        .and_then(|res| Ok(HttpResponse::Ok().json(res)))
 }

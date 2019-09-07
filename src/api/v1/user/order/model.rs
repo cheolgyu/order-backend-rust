@@ -1,5 +1,5 @@
 use crate::models::order as model;
-use crate::utils::validator::{ Validate};
+use crate::utils::validator::Validate;
 use actix_web::error;
 use actix_web::Error;
 
