@@ -1,10 +1,8 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 
 use crate::models::device as m;
-use crate::schema::user_device;
 
 use crate::utils::validator::{re_test_name, Validate};
-use actix::Message;
 use actix_web::error;
 use actix_web::Error;
 

@@ -3,7 +3,6 @@ use crate::models::msg::Msg;
 use crate::schema::shop;
 use actix::Message;
 use chrono::NaiveDateTime;
-use diesel;
 
 use uuid::Uuid;
 

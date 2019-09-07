@@ -4,7 +4,7 @@ use crate::models::msg::Msg;
 use crate::models::order_detail::OrderDetail as Object;
 use crate::models::DbExecutor;
 use crate::schema::order_detail::dsl::{
-    deleted_at, id, order_detail as tb, order_id, shop_id, state,
+     order_detail as tb, order_id, state,
 };
 use actix::Handler;
 

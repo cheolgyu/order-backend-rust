@@ -5,6 +5,8 @@ use actix::Message;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use crate::models::fcm::{SendData, Params};
+use crate::models::{WebPush};
 
 #[derive(
     Clone,
@@ -66,30 +68,39 @@ pub struct GetWithKey {
     pub device_cnt: i64,
     pub params: Get,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SendData {
-    pub operation: String,
-    pub notification_key_name: String,
-    pub registration_ids: Vec<String>,
-}
+
 
 impl GetWithKey {
-    pub fn get(&self) -> Option<SendData> {
-        if (&self.notification_key == "") {
-            Some(SendData {
-                operation: "create".to_string(),
-                notification_key_name: self.shop_id.clone(),
-                registration_ids: vec![self.params.sw_token.clone()],
-            })
+    pub fn get(&self, webpush: WebPush) -> Option<SendData> {
+        if &self.notification_key == "" {
+            Some(
+                SendData{
+                    url: webpush.reg.clone(),
+                    webpush: webpush,
+                    params :Params {
+                        operation: "create".to_string(),
+                        notification_key_name: self.shop_id.clone(),
+                        registration_ids: vec![self.params.sw_token.clone()],
+                    }
+                }
+                
+            )
         } else {
-            if (&self.device_cnt > &0) {
+            if &self.device_cnt > &0 {
                 None
             } else {
-                Some(SendData {
-                    operation: "add".to_string(),
-                    notification_key_name: self.shop_id.clone(),
-                    registration_ids: vec![self.params.sw_token.clone()],
-                })
+                Some(
+                     SendData{
+                        url: webpush.reg.clone(),
+                        webpush: webpush,
+                        params :Params {
+                            operation: "add".to_string(),
+                            notification_key_name: self.shop_id.clone(),
+                            registration_ids: vec![self.params.sw_token.clone()],
+                        }
+                    }
+                    
+                )
             }
         }
     }

@@ -7,7 +7,7 @@ edition = "2018"
 futures = "0.1.28"
 actix = "0.8.3"
 actix-rt = "0.2.3"
-actix-web = { version="1.0.3", features=["ssl"] }
+actix-web = { version="1.0.7", features=["ssl"] }
 openssl = { version = "0.10", features = ["vendored"] }
 actix_derive = "0.4.0"
 actix-service = "0.4.1"

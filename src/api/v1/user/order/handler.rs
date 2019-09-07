@@ -1,8 +1,7 @@
-use crate::api::v1::user::order::model;
 use crate::errors::ServiceError;
 use crate::models::order::{New, Order as Object};
 use crate::models::DbExecutor;
-use crate::schema::order::dsl::{deleted_at, id, order as tb, shop_id};
+use crate::schema::order::dsl::{ order as tb};
 use actix::Handler;
 
 use crate::models::msg::Msg;

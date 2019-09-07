@@ -8,7 +8,7 @@ pub mod product;
 pub mod shop;
 pub mod user;
 pub mod valid;
-//pub mod fcm;
+pub mod fcm;
 
 use actix::{Actor, SyncContext};
 use diesel::pg::PgConnection;
@@ -20,17 +20,22 @@ impl Actor for DbExecutor {
     type Context = SyncContext<Self>;
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug,Serialize, Deserialize)]
 pub struct AppStateWithTxt {
-    pub websocket_url: String,
-    pub webpush_url: String,
-    pub webpush_group_reg_url: String,
-    pub webpush_key: String,
+    pub websocket: WebSocket,
+    pub webpush: WebPush,
     pub valid_email: String,
 }
 
-impl AppStateWithTxt {
-    pub fn get_key(&self) -> String {
-        format!("key={}", &self.webpush_key.clone())
-    }
+#[derive(Clone, Debug,Serialize, Deserialize)]
+pub struct WebPush {
+    pub send: String,
+    pub reg: String,
+    pub send_id: String,
+    pub key: String,
+}
+
+#[derive(Clone, Debug,Serialize, Deserialize)]
+pub struct WebSocket {
+    pub send: String,
 }

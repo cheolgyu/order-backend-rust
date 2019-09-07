@@ -2,12 +2,11 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::order;
 
-use crate::utils::validator::{re_test_name, Validate};
+use crate::utils::validator::{ Validate};
 use actix::Message;
 use actix_web::error;
 use actix_web::Error;
 
-use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 

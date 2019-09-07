@@ -7,23 +7,20 @@ use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     client::Client,
-    http::{header, StatusCode},
-    web::{BytesMut, Data, Json, Path},
+    http::{header},
+    web::{ Data, Json},
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
-use serde_json;
-use serde_json::json;
-use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct SendData {
-    notification: notification,
+    notification: Notification,
     to: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct notification {
+struct Notification {
     title: String,
     body: String,
     icon: String,
@@ -34,16 +31,16 @@ pub fn put(
     json: Json<model::InpNew>,
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
-    txt: Data<AppStateWithTxt>,
+    store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
     let j2 = json.clone();
 
-    let key = format!("key={}", txt.webpush_key.clone(),);
-    let webpush_url = txt.webpush_url.clone();
-    print!("{:?}", webpush_url);
+    let key = store.webpush.key.clone();
+    let webpush_url_send = store.webpush.send.clone();
+    print!("{:?}", webpush_url_send);
     print!("{:?}", key);
-    let websocket_url = txt.websocket_url.clone();
+    let websocket_url = store.websocket.send.clone();
     result(json.validate())
         //주문 저장
         .and_then(move |_| db.send(json.into_inner().new()).from_err())
@@ -75,7 +72,7 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
-            let notification = notification {
+            let notification = Notification {
                 title: "bbb".to_string(),
                 body: "bbb".to_string(),
                 icon: "bbb".to_string(),
@@ -90,7 +87,7 @@ pub fn put(
             println!("ws push sendData: {:?}", send_data);
 
             Client::default()
-                .post(webpush_url) // <- Create request builder
+                .post(webpush_url_send) // <- Create request builder
                 .header("Authorization", key)
                 .header(header::CONTENT_TYPE, "application/json")
                 .send_json(&send_data) // <- Send http request

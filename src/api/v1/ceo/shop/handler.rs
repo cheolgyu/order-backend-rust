@@ -4,7 +4,7 @@ use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::{Shop as Object, UpdateNotificationKey};
 use crate::models::DbExecutor;
-use crate::schema::shop::dsl::{ceo_id, id, name, notification_key, shop as tb};
+use crate::schema::shop::dsl::{ceo_id, id, name, shop as tb};
 
 use actix::Handler;
 

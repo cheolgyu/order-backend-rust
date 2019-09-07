@@ -16,7 +16,7 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
-use crate::models::{AppStateWithTxt, DbExecutor};
+use crate::models::{AppStateWithTxt,WebPush,WebSocket, DbExecutor};
 
 use actix_cors::Cors;
 use actix_web::{
@@ -54,11 +54,16 @@ fn main() -> std::io::Result<()> {
         env::var("URL_FRONTEND_USER").expect("URL_FRONTEND_USER must be set");
     let valid_email: String = env::var("VALID_EMAIL").expect("VALID_EMAIL must be set");
 
-    let txt = AppStateWithTxt {
-        websocket_url: env::var("WEBSOCKET_URL").expect("WEBSOCKET_URL must be set"),
-        webpush_url: env::var("WEBPUSH_URL").expect("WEBPUSH_URL must be set"),
-        webpush_group_reg_url: env::var("WEBPUSH_GROUP_REG_URL").expect("WEBPUSH_URL must be set"),
-        webpush_key: env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set"),
+    let store = AppStateWithTxt {
+        websocket: WebSocket{
+            send: env::var("WEBSOCKET_URL").expect("WEBSOCKET_URL must be set"),
+        },
+        webpush: WebPush{
+            send: env::var("WEBPUSH_URL_SEND").expect("webpush_url_send must be set"),
+            reg: env::var("WEBPUSH_URL_REG").expect("webpush_url_reg must be set"),
+            send_id: env::var("WEBPUSH_SEND_ID").expect("webpush_send_id must be set"),
+            key: format!("key={}", env::var("WEBPUSH_KEY").expect("WEBPUSH_KEY must be set")),
+        },
         valid_email: env::var("VALID_EMAIL").expect("VALID_EMAIL must be set"),
     };
 
@@ -82,8 +87,8 @@ fn main() -> std::io::Result<()> {
         App::new()
             .data(address.clone())
             .data(pool2.clone())
-            .data(txt.clone())
-            .data(Client::default())
+            .data(store.clone())
+            .data( Client::new().clone())
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(
