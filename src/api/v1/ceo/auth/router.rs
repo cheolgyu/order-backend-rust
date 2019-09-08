@@ -50,7 +50,7 @@ pub fn signin(
 }
 
 pub fn getme(
-    req: HttpRequest,
+    _req: HttpRequest,
     auth_user: AuthUser,
     path_id: Path<String>,
     db: Data<Addr<DbExecutor>>,

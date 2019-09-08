@@ -1,4 +1,16 @@
 table! {
+    fcm (id) {
+        id -> Int4,
+        order_id -> Int4,
+        kind -> Varchar,
+        resp -> Jsonb,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     option (id) {
         id -> Int4,
         shop_id -> Uuid,
@@ -123,6 +135,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    fcm,
     option,
     option_group,
     order,

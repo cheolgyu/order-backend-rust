@@ -46,7 +46,7 @@ pub fn check(
                 let shop_id =
                     Uuid::parse_str(&send_data.params.notification_key_name.clone()).unwrap();
                 Either::A(
-                    fcm::send(send_data, store.webpush.clone(), client, db2)
+                    fcm::to_fcm(send_data, store.webpush.clone(), client, db2)
                         .and_then(move |notification_key| {
                             println!("==============================================");
                             println!("update shop notification_key  : {:?}", notification_key);
@@ -57,7 +57,7 @@ pub fn check(
                             })
                             .from_err()
                         })
-                        .and_then(move |res| {
+                        .and_then(move |_res| {
                             println!("==============================================");
                             println!("insert user device ");
                             println!("==============================================");
