@@ -40,6 +40,10 @@ pub struct New {
 }
 
 
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ToFcmResp {
+    pub notification_key: String,
+}
 
 
 #[derive(Debug, Serialize, Deserialize)]

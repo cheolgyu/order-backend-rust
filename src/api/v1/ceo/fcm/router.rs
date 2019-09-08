@@ -41,7 +41,7 @@ pub fn to_fcm(
                 })
                 .map(|body| {
                     let body: params::FcmResponse = serde_json::from_slice(&body).unwrap();
-                    println!("==============================================");
+                    println!("================= 신규 디바이스 등록 오류 notification_key 오류 파이어폭스에서도 듀얼로 테스트 필요 =============================");
                     println!("to_fcm: response.body(): {:?}", body);
                     println!("==============================================");
                     body.notification_key

@@ -69,7 +69,7 @@ pub fn put(
                 webpush: store.webpush.clone(),
                 params: ParamsNotification{
                     notification: Notification{
-                        title: "11".to_string(),
+                        title: "사장님받아랏".to_string(),
                         body: "22".to_string(),
                         icon: "33".to_string(),
                         click_action: "44".to_string(),
