@@ -4,6 +4,7 @@ use crate::schema::order;
 use actix::Message;
 use chrono::NaiveDateTime;
 use uuid::Uuid;
+use crate::models::shop::Shop;
 
 #[derive(
     Clone,
@@ -29,8 +30,8 @@ pub struct Order {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
-#[derive(Deserialize, Serialize, Debug, Message, Insertable)]
-#[rtype(result = "Result<Msg, ServiceError>")]
+#[derive(Deserialize, Serialize, Debug, Message, Insertable, Clone)]
+#[rtype(result = "Result<NewRes, ServiceError>")]
 #[table_name = "order"]
 pub struct New {
     pub shop_id: Uuid,
@@ -39,3 +40,10 @@ pub struct New {
     pub products: serde_json::Value,
     pub sw_token: String,
 }
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct NewRes {
+    pub order: Order,
+    pub shop: Shop,
+}
+

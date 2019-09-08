@@ -60,6 +60,7 @@ pub struct SendData {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ParamsToUser {
     pub url: String,
+    pub order_id: i32,
     pub webpush: WebPush,
     pub params: ParamsNotification,
 }
@@ -81,7 +82,8 @@ pub struct Notification {
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ToUserResp {
-    pub res: String,
+    pub success: i32,
+    pub failure: i32,
 }
 
 impl ToUserResp {
