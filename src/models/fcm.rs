@@ -39,12 +39,19 @@ pub struct New {
     pub resp: serde_json::Value,
 }
 
-
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ToFcmResp {
     pub notification_key: String,
 }
-
+impl ToFcmResp {
+    pub fn new(&self,order_id: i32) -> New {
+        New {
+            order_id: order_id,
+            kind: "to_fcm".to_string(),
+            resp: serde_json::to_value(&self).unwrap()
+        }
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Params {
@@ -55,8 +62,9 @@ pub struct Params {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SendData {
+pub struct ParamsToFcm {
     pub url: String,
+    pub order_id: i32,
     pub webpush: WebPush,
     pub params: Params,
 }

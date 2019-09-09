@@ -47,20 +47,17 @@ pub fn check(
                     Uuid::parse_str(&send_data.params.notification_key_name.clone()).unwrap();
                 Either::A(
                     fcm::to_fcm(send_data, store.webpush.clone(), client, db2)
-                        .and_then(move |notification_key| {
-                            println!("==============================================");
-                            println!("update shop notification_key  : {:?}", notification_key);
-                            println!("==============================================");
+                        .and_then(move |res| {
+                            let msg = res.unwrap();
+                            let notification_key = msg.data["item"]["resp"]["notification_key"].as_str().unwrap();
                             db3.send(UpdateNotificationKey {
                                 id: shop_id,
-                                notification_key: notification_key,
+                                notification_key: notification_key.to_string(),
                             })
                             .from_err()
                         })
                         .and_then(move |_res| {
-                            println!("==============================================");
-                            println!("insert user device ");
-                            println!("==============================================");
+                            
                             db4.send(m::New {
                                 user_id: get_with_key.params.user_id.clone(),
                                 name: "test".to_string(),

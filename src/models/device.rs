@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::models::fcm::{Params, SendData};
+use crate::models::fcm::{Params, ParamsToFcm};
 use crate::models::msg::Msg;
 use crate::models::WebPush;
 use crate::schema::user_device;
@@ -70,10 +70,11 @@ pub struct GetWithKey {
 }
 
 impl GetWithKey {
-    pub fn get(&self, webpush: WebPush) -> Option<SendData> {
+    pub fn get(&self, webpush: WebPush) -> Option<ParamsToFcm> {
         if &self.notification_key == "" {
-            Some(SendData {
+            Some(ParamsToFcm {
                 url: webpush.reg.clone(),
+                order_id: -1,
                 webpush: webpush,
                 params: Params {
                     operation: "create".to_string(),
@@ -86,8 +87,9 @@ impl GetWithKey {
             if &self.device_cnt > &0 {
                 None
             } else {
-                Some(SendData {
+                Some(ParamsToFcm {
                     url: webpush.reg.clone(),
+                    order_id: -1,
                     webpush: webpush,
                     params: Params {
                         operation: "add".to_string(),

@@ -1,7 +1,6 @@
-use crate::api::v1::ceo::fcm::model as params;
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::fcm::{SendData,ToUserResp,ParamsToUser};
+use crate::models::fcm::{ParamsToFcm,ToUserResp,ParamsToUser,ToFcmResp};
 use crate::models::{DbExecutor, WebPush};
 use actix::Addr;
 use actix_web::{
@@ -14,15 +13,11 @@ use futures::Future;
 use futures::stream::Stream;
 
 pub fn to_fcm(
-    send_data: SendData,
+    send_data: ParamsToFcm,
     webpush: WebPush,
     client: Data<Client>,
     _db: Data<Addr<DbExecutor>>,
-) -> impl Future<Item = String, Error = ServiceError> {
-    println!("==============================================");
-    println!("to_fcm: {:?}", send_data.params.operation);
-    println!("to_fcm: {:?}", send_data);
-    println!("==============================================");
+) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
     let resp = client
         .post(send_data.url.clone())
         .header(CONTENT_TYPE, "application/json")
@@ -34,7 +29,7 @@ pub fn to_fcm(
             ServiceError::BadRequest("to_fcm err ".into())
         })
         .and_then(|response| {
-            let _notification_key = response
+            response
                 .from_err()
                 .fold(BytesMut::new(), |mut acc, chunk| {
                     acc.extend_from_slice(&chunk);
@@ -42,15 +37,12 @@ pub fn to_fcm(
                 })
                 .map(|body| {
                     println!("to_fcm: response.body(): {:?}", body);
-                    let body: params::FcmResponse = serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
-                    println!("==============================================");
-                    println!("to_fcm: response.body(): {:?}", body);
-                    println!("==============================================");
-                    body.notification_key
-                });
-            _notification_key
+                    let body: ToFcmResp = serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
+                    
+                    body
+                })
         });
-    resp
+    resp.and_then(move |res| _db.send(res.new(send_data.order_id.clone())).from_err() )
 }
 
 pub fn to_user(
@@ -59,9 +51,7 @@ pub fn to_user(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
     let _db = db.clone();
-    println!("==============================================");
-    println!("to_user: {:?}", send_data);
-    println!("==============================================");
+    
     let resp = client
         .post(send_data.url.clone())
         .header(CONTENT_TYPE, "application/json")
@@ -79,11 +69,7 @@ pub fn to_user(
                     Ok::<_, ServiceError>(acc)
                 })
                 .map(|body| {
-                    let body: ToUserResp = serde_json::from_slice(&body).unwrap();
-                  
-                    println!("==============================================");
-                    println!("to_user: response.body(): {:?}", body);
-                    println!("==============================================");
+                    let body: ToUserResp = serde_json::from_slice(&body).expect("to_user body 변환 오류");
                     body
                 });
             res
