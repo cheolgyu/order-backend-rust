@@ -59,7 +59,6 @@ pub struct AuthUser {
 }
 impl AuthUser {
     pub fn check_user(&self, path_id: String) -> Result<(), Error> {
-        println!("check_user==>");
         if &self.role == "ceo" {
             if path_id == self.id.to_string() {
                 Ok(())

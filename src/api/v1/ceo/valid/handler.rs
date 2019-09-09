@@ -15,20 +15,17 @@ impl Handler<New> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
-        println!("2222222{:?}", msg);
         use crate::schema::valid::dsl::{kind_value, valid as tb};
         let conn = &self.0.get()?;
         let mut check = None;
         let m2 = msg.clone();
 
         if msg.kind == "phone" {
-            println!("44444444{:?}", msg);
             check = tb
                 .filter(&kind_value.eq(&msg.kind_value))
                 .load::<Valid>(conn)?
                 .pop();
         }
-        println!("3333333333{:?}", msg);
         match check {
             Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
@@ -50,7 +47,6 @@ impl Handler<ChkValid> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
 
     fn handle(&mut self, msg: ChkValid, _: &mut Self::Context) -> Self::Result {
-        println!("2222222{:?}", msg);
         use crate::schema::valid::dsl::{code, kind, kind_value, res, user_id, valid as tb};
         let conn = &self.0.get()?;
 
@@ -62,7 +58,6 @@ impl Handler<ChkValid> for DbExecutor {
             .load::<Valid>(conn)?
             .pop();
 
-        println!("3333333333{:?}", msg);
         match check {
             Some(_target) => {
                 use crate::schema::user::dsl::{id, user as u_tb, valid_email};

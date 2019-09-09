@@ -45,18 +45,15 @@ pub fn put(
                 let o_r = Ok(_r);
                 */
                 let url = format!("{}{}/test", websocket_url, j1.shop_id);
-                println!("{:?}", url);
                 client
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
                     .map_err(|e| {
-                        println!("ws push error : {:?}", e.error_response());
                         ServiceError::BadRequest("ws push error".into())
                     })
                     .and_then(|response| {
                         // <- server http response
-                        println!("ws push Response: {:?}", response);
                         res
                     })
                     .from_err()

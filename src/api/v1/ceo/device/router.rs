@@ -66,7 +66,6 @@ pub fn check(
                             .from_err()
                         })
                         .map_err(|e| {
-                            println!("check device : {:?}", e.error_response());
                             ServiceError::BadRequest("check device".into())
                         })
                         .then(|res| match res {

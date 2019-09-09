@@ -30,7 +30,6 @@ use dotenv::dotenv;
 use std::env;
 #[get("/resource1/{name}/index.html")]
 fn index(req: HttpRequest, name: web::Path<String>) -> String {
-    println!("REQ: {:?}", req);
     format!("Hello: {}!\r\n", name)
 }
 

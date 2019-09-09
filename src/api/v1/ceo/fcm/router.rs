@@ -25,7 +25,6 @@ pub fn to_fcm(
         .header("project_id", webpush.send_id.clone())
         .send_json(&send_data.params)
         .map_err(|e| {
-            println!("to_fcm err : {:?}", e.error_response());
             ServiceError::BadRequest("to_fcm err ".into())
         })
         .and_then(|response| {
@@ -36,7 +35,6 @@ pub fn to_fcm(
                     Ok::<_, ServiceError>(acc)
                 })
                 .map(|body| {
-                    println!("to_fcm: response.body(): {:?}", body);
                     let body: ToFcmResp = serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
                     
                     body
@@ -58,7 +56,6 @@ pub fn to_user(
         .header("Authorization", send_data.webpush.key.clone())
         .send_json(&send_data.params)
         .map_err(|e| {
-            println!("to_user : {:?}", e.error_response());
             ServiceError::BadRequest("to_user ".into())
         })
         .and_then(|response| {

@@ -40,7 +40,6 @@ pub fn get_list(
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    println!("path_info:{:?}", path_info);
     let mut info = path_info.into_inner();
     let info2 = info.clone();
     info.auth_user = Some(auth_user);

@@ -97,9 +97,7 @@ pub fn chk_valid_email(
     db.send(info)
         .from_err()
         .and_then(move |_| {
-            println!("999999999999999");
             let res = db.send(json.into_inner()).from_err();
-            println!("888888888888");
             res
         })
         .and_then(|res| match res {

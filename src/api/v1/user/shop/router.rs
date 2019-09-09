@@ -37,7 +37,6 @@ pub fn get(
 pub fn get_list(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
-    println!("  get_list ");
     db.send(GetList {}).from_err().and_then(|res| match res {
         Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
         Err(e) => Ok(e.error_response()),
