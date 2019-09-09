@@ -20,6 +20,7 @@ pub fn to_fcm(
     _db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = String, Error = ServiceError> {
     println!("==============================================");
+    println!("to_fcm: {:?}", send_data.params.operation);
     println!("to_fcm: {:?}", send_data);
     println!("==============================================");
     let resp = client
@@ -40,8 +41,9 @@ pub fn to_fcm(
                     Ok::<_, ServiceError>(acc)
                 })
                 .map(|body| {
-                    let body: params::FcmResponse = serde_json::from_slice(&body).unwrap();
-                    println!("================= 신규 디바이스 등록 오류 notification_key 오류 파이어폭스에서도 듀얼로 테스트 필요 =============================");
+                    println!("to_fcm: response.body(): {:?}", body);
+                    let body: params::FcmResponse = serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
+                    println!("==============================================");
                     println!("to_fcm: response.body(): {:?}", body);
                     println!("==============================================");
                     body.notification_key
@@ -86,5 +88,5 @@ pub fn to_user(
                 });
             res
         });
-    resp.and_then(move |res| _db.send(res.new()).from_err() )
+    resp.and_then(move |res| _db.send(res.new(send_data.order_id.clone())).from_err() )
 }

@@ -50,6 +50,7 @@ pub struct ToFcmResp {
 pub struct Params {
     pub operation: String,
     pub notification_key_name: String,
+    pub notification_key: String,
     pub registration_ids: Vec<String>,
 }
 
@@ -91,9 +92,9 @@ pub struct ToUserResp {
 }
 
 impl ToUserResp {
-    pub fn new(&self) -> New {
+    pub fn new(&self,order_id: i32) -> New {
         New {
-            order_id: 111,
+            order_id: order_id,
             kind: "to_user".to_string(),
             resp: serde_json::to_value(&self).unwrap()
         }

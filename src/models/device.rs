@@ -78,6 +78,7 @@ impl GetWithKey {
                 params: Params {
                     operation: "create".to_string(),
                     notification_key_name: self.shop_id.clone(),
+                    notification_key: self.notification_key.clone(),
                     registration_ids: vec![self.params.sw_token.clone()],
                 },
             })
@@ -91,6 +92,7 @@ impl GetWithKey {
                     params: Params {
                         operation: "add".to_string(),
                         notification_key_name: self.shop_id.clone(),
+                        notification_key: self.notification_key.clone(),
                         registration_ids: vec![self.params.sw_token.clone()],
                     },
                 })
