@@ -35,6 +35,9 @@ impl Handler<GetWithId> for DbExecutor {
                                             optg.shop_id AS shop_id, 
                                             optg.name    AS name, 
                                             optg.default    AS default, 
+                                            (select id from option where id = optg.default    ) as select_opt_id,
+                                            (select name from option where id = optg.default    ) as select_opt_name,
+                                            (select price from option where id = optg.default    ) as select_opt_price,
                                             CASE 
                                             WHEN Array_length(optg.options, 1) IS NULL THEN '[]' 
                                             ELSE Array_to_json(Array_agg(opt.* ORDER BY  array_position(optg.options, opt.id) )) 
