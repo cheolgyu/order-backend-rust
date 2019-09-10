@@ -46,7 +46,10 @@ pub struct CartOptionGroup {
     pub shop_id: Uuid,
     pub name: String,
     pub default: i32,
-    pub options: Vec<CartOpt>,
+    pub select_opt_id: i32,
+    pub select_opt_name: String,
+    pub select_opt_price: f64,
+    pub option_list: Vec<CartOpt>,
 }
 
 
