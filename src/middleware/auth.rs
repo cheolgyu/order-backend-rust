@@ -4,7 +4,8 @@ use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 
 use futures::future::{ok, FutureResult};
 use futures::{Future, Poll};
-
+use crate::models::product::Product as Object;
+use crate::schema::product::dsl::{id, product as tb};
 pub struct Auth;
 
 impl<S, B> Transform<S> for Auth
@@ -48,15 +49,12 @@ where
 
         let pool = req
             .app_data::<r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>>()
-            .expect("get app_data err 222222222")
+            .expect("AuthMiddleware 오류")
             .get_ref()
             .get()
-            .expect("pool err1111111111");
+            .expect("AuthMiddleware 오류 get pull");
 
-        use crate::api::v1::ceo::product::model::Product;
-        use crate::schema::product::dsl::{id, product as tb};
-
-        let item = tb.filter(&id.eq(1)).load::<Product>(&pool).unwrap();
+        let item = tb.filter(&id.eq(1)).load::<Object>(&pool).unwrap();
 
         let payload = serde_json::json!({
             "item": item,

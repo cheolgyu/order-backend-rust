@@ -26,11 +26,7 @@ pub fn put(
 
     let key = store.webpush.key.clone();
     let webpush_url_send = store.webpush.send.clone();
-    print!("{:?}", webpush_url_send);
-    print!("{:?}", key);
     let websocket_url = store.websocket.send.clone();
-
-     
 
     result(json.validate())
         //주문 저장

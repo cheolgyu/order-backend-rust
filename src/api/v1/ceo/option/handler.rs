@@ -1,4 +1,5 @@
-use crate::api::v1::ceo::option::model::{Delete, Get, GetList, New, Opt as Object, Update};
+use crate::api::v1::ceo::option::model::{Delete, Get, GetList, New, Update};
+use crate::models::option::Opt as Object;
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::schema::option::dsl::{deleted_at, id, name, option as tb, shop_id};

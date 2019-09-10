@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::product::model::Product;
+use crate::models::product::Product ;
 use crate::api::v1::ceo::shop::model::{NewShop, ShopID, UpdateShop};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;

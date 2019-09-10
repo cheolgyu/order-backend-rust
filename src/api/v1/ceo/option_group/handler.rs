@@ -1,6 +1,7 @@
 use crate::api::v1::ceo::option_group::model::{
-    Delete, Get, GetList, New, OptionGroup as Object, SimpleOptionGroup, Update,
+    Delete, Get, GetList, New, SimpleOptionGroup, Update,
 };
+use crate::models::option_group::OptionGroup as Object;
 use crate::errors::ServiceError;
 use crate::models::DbExecutor;
 use crate::schema::option_group::dsl::{deleted_at, id, name, option_group as tb, shop_id};
