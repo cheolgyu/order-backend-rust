@@ -85,8 +85,9 @@ fn main() -> std::io::Result<()> {
     let pool2 = r2d2::Pool::builder()
         .build(manager2)
         .expect("Failed to create pool.");
-
-    let addr_batch = batch::Batch.start();
+    let bat = batch::Batch::new(address.clone());
+    let addr_batch = bat.start();
+   // let addr_batch = batch::Batch.new(address.clone()).start();
 
     HttpServer::new(move || {
         App::new()
