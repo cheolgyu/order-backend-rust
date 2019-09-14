@@ -24,7 +24,7 @@ impl Batch {
     fn hb(&self, ctx: &mut actix::Context<Self>) {
         &self.db.do_send(OrderState{});
         ctx.run_later(Duration::new(1, 0), |act, ctx| {
-            println!("batch:");
+         //   println!("batch:");
             
            // model::OrderState
             act.hb(ctx);

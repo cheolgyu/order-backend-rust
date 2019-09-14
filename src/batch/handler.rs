@@ -12,6 +12,8 @@ impl Handler<OrderState> for DbExecutor {
 
     fn handle(&mut self, msg: OrderState, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get().expect("batch_db conn err");
-        println!(" db"); 
+      //  println!(" db"); 
+        let q = sql_query("select * from order_state() ").execute(conn).expect("batch function error");
+                        
     }
 }
