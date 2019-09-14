@@ -16,6 +16,7 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
+mod batch;
 use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
@@ -70,7 +71,7 @@ fn main() -> std::io::Result<()> {
     };
 
     env_logger::init();
-
+    
     let sys = actix_rt::System::new("mybackend");
 
     // create db connection pool
@@ -84,6 +85,8 @@ fn main() -> std::io::Result<()> {
     let pool2 = r2d2::Pool::builder()
         .build(manager2)
         .expect("Failed to create pool.");
+
+    let addr_batch = batch::Batch.start();
 
     HttpServer::new(move || {
         App::new()
@@ -241,6 +244,6 @@ fn main() -> std::io::Result<()> {
     .bind(domain)?
     .workers(1)
     .start();
-
+    
     sys.run()
 }
