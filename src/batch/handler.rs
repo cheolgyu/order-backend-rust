@@ -10,10 +10,11 @@ use diesel::sql_types::{Integer, Text};
 impl Handler<OrderState> for DbExecutor {
     type Result = ();
 
-    fn handle(&mut self, msg: OrderState, _: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self,1 msg: OrderState, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get().expect("batch_db conn err");
       //  println!(" db"); 
-        let q = sql_query("select * from order_state() ").execute(conn).expect("batch function error");
-                        
+        let res = sql_query("select * from order_state() ").execute(conn).expect("batch function error");
+        println!(" db : {:?}",res); 
+                         
     }
 }
