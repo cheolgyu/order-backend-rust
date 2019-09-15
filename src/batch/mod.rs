@@ -1,23 +1,33 @@
 pub mod model;
 pub mod handler;
+
 use actix::prelude::*;
 use std::time::{Duration, Instant};
-use crate::models::DbExecutor;
-
+use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::batch::model::OrderState;
-
+use crate::api::v1::ceo::fcm::router as fcm;
+use actix_web::{
+    client::Client,
+    web::{Data, Json},
+    };
 
 
 pub struct Batch{
-    db: Addr<DbExecutor>
+    db: Addr<DbExecutor>,
+    client: Client,
+    store: AppStateWithTxt,
 }
 
 impl Batch {
      pub fn new(
-        db: Addr<DbExecutor>
+        db: Addr<DbExecutor>,
+        client: Client,
+        store: AppStateWithTxt,
     ) -> Batch {
         Batch {
             db,
+            client,
+            store
         }
     }
 

@@ -85,7 +85,7 @@ fn main() -> std::io::Result<()> {
     let pool2 = r2d2::Pool::builder()
         .build(manager2)
         .expect("Failed to create pool.");
-    let bat = batch::Batch::new(address.clone());
+    let bat = batch::Batch::new(address.clone(),Client::new(),store.clone());
     let addr_batch = bat.start();
    // let addr_batch = batch::Batch.new(address.clone()).start();
 
@@ -94,7 +94,7 @@ fn main() -> std::io::Result<()> {
             .data(address.clone())
             .data(pool2.clone())
             .data(store.clone())
-            .data( Client::new().clone())
+            .data(Client::new().clone())
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(
