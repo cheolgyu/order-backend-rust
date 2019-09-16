@@ -20,11 +20,11 @@ impl Handler<OrderState> for DbExecutor {
     type Result = Result<Vec<OrderStateRes>, ServiceError>;
 
     fn handle(&mut self, msg: OrderState, _: &mut Self::Context) -> Self::Result {
-        let conn = &self.0.get().expect("batch_db conn err");
+        let conn = &self.0.get()?;
       //  println!(" db"); 
         let list  = sql_query("select * from order_state() ").get_results::<OrderStateRes>(conn)?;
        println!(" db handler: {:?}",list.len()); 
-       for res in &list { 
+         for res in &list { 
                     
           let send_data = ParamsToUser{
           url: msg.store.webpush.send.clone(),
@@ -41,22 +41,10 @@ impl Handler<OrderState> for DbExecutor {
           }
           };
 
+          println!(" db handler  for : "); 
+          fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
 
-
-
-          /////////////////////
-          /// 
-          /// 
-          use actix_web::{
-              client::Client,
-              http::header::CONTENT_TYPE,
-              web::{BytesMut, Data},
-              ResponseError
-          };
-          use futures::Future;
-          use futures::stream::Stream;
-
-
+        /*
 
         Client::new()
         .post(send_data.url.clone())
@@ -84,10 +72,12 @@ impl Handler<OrderState> for DbExecutor {
                 });
             res 
         });
+        */
 
          // println!("{:?}",send_data);
           //fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
         }
+        
         Ok(list)
     }
 }

@@ -8,6 +8,7 @@ use crate::batch::model::OrderState;
 use crate::api::v1::ceo::fcm::router as fcm;
 use crate::models::fcm::{ParamsToUser,ParamsNotification, Notification};
 use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use futures::Future;
 use futures::stream::Stream;
 
@@ -15,6 +16,7 @@ use actix_web::{
     
     client::Client,
     web::{self,Data, Json},
+    Error, HttpResponse, ResponseError,
     };
 
 
@@ -35,67 +37,18 @@ impl Batch {
     }
 
     fn hb(&self, ctx: &mut actix::Context<Self>) {
-       
-        /*
-         match res2 {
-            Ok(res_list) => {
-                println!("{:?}",res_list.len());
-                for res in &res_list {
-                    
-                    let send_data = ParamsToUser{
-                    url: self.store.webpush.send.clone(),
-                    order_id: res.id.clone(), 
-                    webpush: self.store.webpush.clone(),
-                    params: ParamsNotification{
-                        notification: Notification{
-                            title: "[자동] 주문 5분 미응답".to_string(),
-                            body: "22".to_string(),
-                            icon: "33".to_string(),
-                            click_action: "44".to_string(),
-                        },
-                        to: res.notification_key.clone(),
-                    }
-                    };
-                    println!("{:?}",send_data);
-                    fcm::to_user(send_data,  &self.client, &self.db);
-                    /*
-                    fcm::to_user(send_data,  &self.client, &self.db).map_err(|e| {
-                        println!("배치 오류발생.2222222");
-                        ServiceError::BadRequest("batch:fcm::to_user".into());
-                    });
-                    
-                     */
-                }
 
-                Ok(())
-
-            },
-            Err(e) => {println!("배치 오류발생."); Ok(())},
-        }
-         self.db.do_send(
-                OrderState{
-                db: act.db.clone(),
-                client: act.client.clone(),
-                store: act.store.clone(),
-                }
-                );
-     
-        self.db.do_send(OrderState{
-                db: self.db.clone(),
-                store: self.store.clone(),
-        });
-           */
         use std::thread;
         println!("batch:222");
-        ctx.run_later(Duration::new(1, 0), |act, ctx| {
+        ctx.run_interval(Duration::new(1, 0), move |act, ctx| {
             println!("batch:111");
-            act.db.do_send(OrderState{
+            let sd = OrderState{
                     db: act.db.clone(),
                     store: act.store.clone(),
-            }); 
-            
-            act.hb(ctx);
+                };
+            act.db.do_send(sd);
         });
+
     }
 }
 
@@ -109,16 +62,73 @@ impl Actor for Batch {
 }
 
 #[derive(Message)]
-struct UpdateOrder;
+#[rtype(result = "Result<Vec<OrderStateRes>, ServiceError>")]
+pub struct Update;
 
-/// Handle stream of TcpStream's
-impl Handler<UpdateOrder> for Batch {
-    /// this is response for message, which is defined by `ResponseType` trait
-    /// in this case we just return unit.
-    type Result = ();
 
-    fn handle(&mut self, msg: UpdateOrder, _: &mut Context<Self>) {
-        println!("I am UpdateOrder!");
+impl Handler<Update> for Batch {
+    type Result = Result<Vec<OrderStateRes>, ServiceError>;
 
+    fn handle(&mut self, msg: OrderState, _: &mut Self::Context) -> Self::Result {
+        let conn = &self.0.get()?;
+      //  println!(" db"); 
+        let list  = sql_query("select * from order_state() ").get_results::<OrderStateRes>(conn)?;
+       println!(" db handler: {:?}",list.len()); 
+         for res in &list { 
+                    
+          let send_data = ParamsToUser{
+          url: msg.store.webpush.send.clone(),
+          order_id: res.id.clone(), 
+          webpush: msg.store.webpush.clone(),
+          params: ParamsNotification{
+              notification: Notification{
+                  title: "[자동] 주문 5분 미응답".to_string(),
+                  body: "22".to_string(),
+                  icon: "33".to_string(),
+                  click_action: "44".to_string(),
+              },
+              to: res.notification_key.clone(),
+          }
+          };
+
+          println!(" db handler  for : "); 
+          fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
+
+        /*
+
+        Client::new()
+        .post(send_data.url.clone())
+        .header(CONTENT_TYPE, "application/json")
+        .header("Authorization", send_data.webpush.key.clone())
+        .send_json(&send_data.params)
+        .map_err(|e| {
+            println!("batch:666666666666");
+            eprintln!("{:?}",e);
+            panic!("{:?}", e)
+        })
+        .and_then(|response| {
+             println!("batch:5555555555555");
+            let res = response
+                .from_err()
+                .fold(BytesMut::new(), |mut acc, chunk| {
+                    acc.extend_from_slice(&chunk);
+                    println!("batch:99");
+                    Ok::<_, ServiceError>(acc)
+                })
+                .map(|body| {
+                    println!("batch:10");
+                    let body: ToUserResp = serde_json::from_slice(&body).expect("to_user body 변환 오류");
+                    body
+                });
+            res 
+        });
+        */
+
+         // println!("{:?}",send_data);
+          //fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
+        }
+        
+        Ok(list)
     }
 }
+
