@@ -22,6 +22,7 @@ pub fn put(
     let j1 = json.clone();
     let j2 = json.clone();
     let db2 = db.clone();
+    let db3 = db.clone();
     let client2 = client.clone();
 
     let key = store.webpush.key.clone();
@@ -30,7 +31,7 @@ pub fn put(
 
     result(json.validate())
         //주문 저장
-        .and_then(move |_| db.send(json.into_inner().new()).from_err())
+        .and_then( move |_| db2.send(json.into_inner().new()).from_err())
         // 사장님에게 알림 서비스 실행.
         //web socket
         .and_then(
@@ -71,7 +72,7 @@ pub fn put(
                 }
             };
 
-            fcm::to_user(send_data,  client2, db2).from_err()
+            fcm::to_user(send_data,  client2, db3).from_err()
         })
         //.and_then(|res| Ok(HttpResponse::Ok().json(res)))
         .and_then(|res| match res {

@@ -49,27 +49,38 @@ pub fn to_user(
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
     let _db = db.clone();
+
+    println!("batch:4444444444444:{:?}",send_data);
     
-    let resp = client
+    let resp = Client::new()
         .post(send_data.url.clone())
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", send_data.webpush.key.clone())
         .send_json(&send_data.params)
         .map_err(|e| {
-            ServiceError::BadRequest("to_user ".into())
+            println!("batch:666666666666");
+            eprintln!("{:?}",e);
+            panic!("{:?}", e)
         })
         .and_then(|response| {
+             println!("batch:5555555555555");
             let res = response
                 .from_err()
                 .fold(BytesMut::new(), |mut acc, chunk| {
                     acc.extend_from_slice(&chunk);
+                    println!("batch:99");
                     Ok::<_, ServiceError>(acc)
                 })
                 .map(|body| {
+                    println!("batch:10");
                     let body: ToUserResp = serde_json::from_slice(&body).expect("to_user body 변환 오류");
                     body
                 });
-            res
+            res 
         });
-    resp.and_then(move |res| _db.send(res.new(send_data.order_id.clone())).from_err() )
+    println!("batch:777777777");
+    resp.and_then(move |res| {
+        println!("batch:888888888");
+        _db.send(res.new(send_data.order_id.clone())).from_err()
+    } )
 }

@@ -28,12 +28,14 @@ pub fn put(
     let j = json.into_inner();
     let db2 = db.clone();
     let db3 = db.clone();
+    let db4 = db.clone();
     let shop_id = info2.shop_id.unwrap();
+    let db5 = db.clone();
     
 
     result(j.validate())
         .from_err()
-        .and_then(move |_| db.send(info).from_err())
+        .and_then(move |_| db4.send(info).from_err())
         .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .and_then(move |res| {
             let ok_res = res.unwrap();
@@ -55,7 +57,7 @@ pub fn put(
                 }
             };
 
-             fcm::to_user(send_data,  client, db3)
+             fcm::to_user(send_data,  client, db5)
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
