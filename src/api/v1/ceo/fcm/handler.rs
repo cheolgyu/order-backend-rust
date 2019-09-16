@@ -1,10 +1,8 @@
-
-
 use crate::errors::ServiceError;
+use crate::models::fcm::{Fcm as Object, *};
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
-use crate::models::fcm::{Fcm as Object, *};
-use crate::schema::fcm::dsl::{ fcm as tb, order_id,kind};
+use crate::schema::fcm::dsl::{fcm as tb, kind, order_id};
 
 use actix::Handler;
 use diesel;

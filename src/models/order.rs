@@ -1,10 +1,10 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
+use crate::models::shop::Shop;
 use crate::schema::order;
 use actix::Message;
 use chrono::NaiveDateTime;
 use uuid::Uuid;
-use crate::models::shop::Shop;
 
 #[derive(
     Clone,
@@ -46,4 +46,3 @@ pub struct NewRes {
     pub order: Order,
     pub shop: Shop,
 }
-

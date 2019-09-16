@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::shop::Shop;
 use crate::models::product::Product;
+use crate::models::shop::Shop;
 use crate::schema::product;
 
 use crate::utils::validator::{re_test_name, Validate};
@@ -12,7 +12,6 @@ use actix_web::Error;
 use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
-
 
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Product, ServiceError>")]

@@ -2,10 +2,10 @@ use actix_service::{Service, Transform};
 use actix_web::Error;
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 
-use futures::future::{ok, FutureResult};
-use futures::{Future, Poll};
 use crate::models::product::Product as Object;
 use crate::schema::product::dsl::{id, product as tb};
+use futures::future::{ok, FutureResult};
+use futures::{Future, Poll};
 pub struct Auth;
 
 impl<S, B> Transform<S> for Auth
@@ -60,8 +60,6 @@ where
             "item": item,
         });
 
-        Box::new(self.service.call(req).and_then(|res| {
-            Ok(res)
-        }))
+        Box::new(self.service.call(req).and_then(|res| Ok(res)))
     }
 }

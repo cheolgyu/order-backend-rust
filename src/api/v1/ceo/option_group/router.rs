@@ -86,7 +86,6 @@ pub fn get(
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
     let j = json.into_inner();

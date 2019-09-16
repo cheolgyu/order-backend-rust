@@ -49,7 +49,9 @@ pub fn check(
                     fcm::to_fcm(send_data, store.webpush.clone(), client, db2)
                         .and_then(move |res| {
                             let msg = res.unwrap();
-                            let notification_key = msg.data["item"]["resp"]["notification_key"].as_str().unwrap();
+                            let notification_key = msg.data["item"]["resp"]["notification_key"]
+                                .as_str()
+                                .unwrap();
                             db3.send(UpdateNotificationKey {
                                 id: shop_id,
                                 notification_key: notification_key.to_string(),
@@ -57,7 +59,6 @@ pub fn check(
                             .from_err()
                         })
                         .and_then(move |_res| {
-                            
                             db4.send(m::New {
                                 user_id: get_with_key.params.user_id.clone(),
                                 name: "test".to_string(),
@@ -65,9 +66,7 @@ pub fn check(
                             })
                             .from_err()
                         })
-                        .map_err(|e| {
-                            ServiceError::BadRequest("check device".into())
-                        })
+                        .map_err(|e| ServiceError::BadRequest("check device".into()))
                         .then(|res| match res {
                             Ok(_user) => Ok(HttpResponse::Ok().json("2")),
                             Err(_) => Ok(HttpResponse::InternalServerError().into()),

@@ -10,8 +10,6 @@ use chrono::NaiveDateTime;
 use diesel;
 use uuid::Uuid;
 
-
-
 #[derive(Deserialize, Serialize, Debug, Message, Insertable)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "option_group"]

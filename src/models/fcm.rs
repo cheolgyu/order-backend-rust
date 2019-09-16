@@ -1,11 +1,10 @@
-use serde::{Deserialize, Serialize};
-use actix::Message;
-use chrono::NaiveDateTime;
+use crate::errors::ServiceError;
+use crate::models::msg::Msg;
 use crate::models::WebPush;
 use crate::schema::fcm;
-use crate::models::msg::Msg;
-use crate::errors::ServiceError;
-
+use actix::Message;
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(
     Clone,
@@ -44,11 +43,11 @@ pub struct ToFcmResp {
     pub notification_key: String,
 }
 impl ToFcmResp {
-    pub fn new(&self,order_id: i32) -> New {
+    pub fn new(&self, order_id: i32) -> New {
         New {
             order_id: order_id,
             kind: "to_fcm".to_string(),
-            resp: serde_json::to_value(&self).unwrap()
+            resp: serde_json::to_value(&self).unwrap(),
         }
     }
 }
@@ -68,7 +67,6 @@ pub struct ParamsToFcm {
     pub webpush: WebPush,
     pub params: Params,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ParamsToUser {
@@ -92,7 +90,6 @@ pub struct Notification {
     pub click_action: String,
 }
 
-
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ToUserResp {
     pub success: i32,
@@ -100,11 +97,11 @@ pub struct ToUserResp {
 }
 
 impl ToUserResp {
-    pub fn new(&self,order_id: i32) -> New {
+    pub fn new(&self, order_id: i32) -> New {
         New {
             order_id: order_id,
             kind: "to_user".to_string(),
-            resp: serde_json::to_value(&self).unwrap()
+            resp: serde_json::to_value(&self).unwrap(),
         }
     }
 }

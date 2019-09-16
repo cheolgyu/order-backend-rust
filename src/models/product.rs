@@ -1,8 +1,7 @@
-
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::shop::Shop;
 use crate::models::option_group::CartOptionGroup;
+use crate::models::shop::Shop;
 use crate::schema::product;
 
 use crate::utils::validator::{re_test_name, Validate};
@@ -37,12 +36,7 @@ pub struct Product {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
-#[derive(
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartProduct {
     pub id: i32,
     pub shop_id: Uuid,

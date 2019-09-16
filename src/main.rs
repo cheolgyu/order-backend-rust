@@ -11,12 +11,12 @@ extern crate serde_json;
 extern crate lazy_static;
 use actix::prelude::*;
 mod api;
+mod batch;
 mod errors;
 mod middleware;
 mod models;
 mod schema;
 mod utils;
-mod batch;
 use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
@@ -71,7 +71,7 @@ fn main() -> std::io::Result<()> {
     };
 
     env_logger::init();
-    
+
     let sys = actix_rt::System::new("mybackend");
 
     // create db connection pool
@@ -87,7 +87,10 @@ fn main() -> std::io::Result<()> {
         .expect("Failed to create pool.");
     let address2 = address.clone();
     let store2 = store.clone();
-    let bat = batch::Batch::new(web::Data::new(address.clone()),web::Data::new(store.clone()));
+    let bat = batch::Batch::new(
+        web::Data::new(address.clone()),
+        web::Data::new(store.clone()),
+    );
     let addr_batch = bat.start();
     //let addr_batch: Addr<batch::Batch> = SyncArbiter::start(1, move || batch::Batch( web::Data::new(address2.clone()),web::Data::new(store2.clone()) ) );
 
@@ -247,6 +250,6 @@ fn main() -> std::io::Result<()> {
     .bind(domain)?
     .workers(1)
     .start();
-    
+
     sys.run()
 }

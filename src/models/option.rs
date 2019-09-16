@@ -33,12 +33,7 @@ pub struct Opt {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
-#[derive(
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartOpt {
     pub id: i32,
     pub shop_id: Uuid,

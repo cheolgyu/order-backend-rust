@@ -1,8 +1,6 @@
-use crate::api::v1::ceo::product::model::{
-    Delete, Get, GetList, New, SimpleProduct, Update,
-};
-use crate::models::product::Product  as Object ;
+use crate::api::v1::ceo::product::model::{Delete, Get, GetList, New, SimpleProduct, Update};
 use crate::errors::ServiceError;
+use crate::models::product::Product as Object;
 use crate::models::DbExecutor;
 use crate::schema::product::dsl::{deleted_at, id, name, product as tb, shop_id};
 use actix::Handler;

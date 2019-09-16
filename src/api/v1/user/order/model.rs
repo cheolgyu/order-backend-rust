@@ -33,7 +33,8 @@ impl InpNew {
             shop_id: Uuid::parse_str(&self.shop_id).unwrap(),
             state: self.state.clone(),
             price: self.price.clone(),
-            products: serde_json::to_value(&self.products).expect("[사용자주문오류]: products serializing "),
+            products: serde_json::to_value(&self.products)
+                .expect("[사용자주문오류]: products serializing "),
             sw_token: self.sw_token.clone(),
         }
     }

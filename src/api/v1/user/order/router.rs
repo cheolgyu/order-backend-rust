@@ -1,8 +1,8 @@
-use crate::api::v1::user::order::model;
 use crate::api::v1::ceo::fcm::router as fcm;
-use crate::models::{AppStateWithTxt, DbExecutor};
-use crate::models::fcm::{ParamsToUser,ParamsNotification, Notification};
+use crate::api::v1::user::order::model;
 use crate::errors::ServiceError;
+use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
+use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -31,7 +31,7 @@ pub fn put(
 
     result(json.validate())
         //주문 저장
-        .and_then( move |_| db2.send(json.into_inner().new()).from_err())
+        .and_then(move |_| db2.send(json.into_inner().new()).from_err())
         // 사장님에게 알림 서비스 실행.
         //web socket
         .and_then(
@@ -46,9 +46,7 @@ pub fn put(
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
-                    .map_err(|e| {
-                        ServiceError::BadRequest("ws push error".into())
-                    })
+                    .map_err(|e| ServiceError::BadRequest("ws push error".into()))
                     .and_then(|response| {
                         // <- server http response
                         res
@@ -57,22 +55,22 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
-            let send_data = ParamsToUser{
+            let send_data = ParamsToUser {
                 url: store.webpush.send.clone(),
-                order_id: res.order.id.clone(), 
+                order_id: res.order.id.clone(),
                 webpush: store.webpush.clone(),
-                params: ParamsNotification{
-                    notification: Notification{
+                params: ParamsNotification {
+                    notification: Notification {
                         title: "주문!".to_string(),
                         body: "22".to_string(),
                         icon: "33".to_string(),
                         click_action: "44".to_string(),
                     },
                     to: res.shop.notification_key.clone(),
-                }
+                },
             };
 
-            fcm::to_user(send_data,  client2, db3).from_err()
+            fcm::to_user(send_data, client2, db3).from_err()
         })
         //.and_then(|res| Ok(HttpResponse::Ok().json(res)))
         .and_then(|res| match res {

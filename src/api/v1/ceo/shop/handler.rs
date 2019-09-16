@@ -1,7 +1,7 @@
-use crate::models::product::Product ;
 use crate::api::v1::ceo::shop::model::{NewShop, ShopID, UpdateShop};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
+use crate::models::product::Product;
 use crate::models::shop::{Shop as Object, UpdateNotificationKey};
 use crate::models::DbExecutor;
 use crate::schema::shop::dsl::{ceo_id, id, name, shop as tb};

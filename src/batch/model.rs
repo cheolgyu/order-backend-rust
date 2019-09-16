@@ -1,22 +1,19 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::schema::order;
-use actix::Message;
-use chrono::NaiveDateTime;
-use uuid::Uuid;
 use crate::models::shop::Shop;
 use crate::models::{AppStateWithTxt, DbExecutor};
-use actix_web::{
-    client::Client,
-    web,
-    };
+use crate::schema::order;
 use actix::prelude::*;
+use actix::Message;
+use actix_web::{client::Client, web};
+use chrono::NaiveDateTime;
+use uuid::Uuid;
 
 #[derive(Message)]
 #[rtype(result = "Result<Vec<OrderStateRes>, ServiceError>")]
-pub struct OrderState{
+pub struct OrderState {
     pub db: web::Data<Addr<DbExecutor>>,
-    pub store: web::Data<AppStateWithTxt>
+    pub store: web::Data<AppStateWithTxt>,
 }
 /*
 pub struct OrderState{

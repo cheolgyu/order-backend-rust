@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::schema::option_group;
 use crate::models::option::CartOpt;
+use crate::schema::option_group;
 
 use crate::utils::validator::{re_test_name, Validate};
 use actix::Message;
@@ -35,12 +35,7 @@ pub struct OptionGroup {
     pub deleted_at: Option<NaiveDateTime>,
 }
 
-#[derive(
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartOptionGroup {
     pub id: i32,
     pub shop_id: Uuid,
@@ -51,8 +46,6 @@ pub struct CartOptionGroup {
     pub select_opt_price: f64,
     pub option_list: Vec<CartOpt>,
 }
-
-
 
 /*
 use diesel::sql_types::{Integer, Json, Text, Uuid as uu, Double};

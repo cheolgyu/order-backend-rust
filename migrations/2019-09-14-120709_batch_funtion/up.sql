@@ -5,7 +5,7 @@ CREATE FUNCTION order_state() returns table(id integer,shop_id uuid,sw_token tex
      WITH updt AS (
       update "order" set state = 'test' 
       where 
-      --state = 'req'  and 
+      state = 'req'  and 
       created_at <= CURRENT_TIMESTAMP+ time '00:05' 
       RETURNING id, shop_id,sw_token
     )
