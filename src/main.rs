@@ -85,10 +85,11 @@ fn main() -> std::io::Result<()> {
     let pool2 = r2d2::Pool::builder()
         .build(manager2)
         .expect("Failed to create pool.");
-
+    let address2 = address.clone();
+    let store2 = store.clone();
     let bat = batch::Batch::new(web::Data::new(address.clone()),web::Data::new(store.clone()));
     let addr_batch = bat.start();
-   // let addr_batch = batch::Batch.new(address.clone()).start();
+    //let addr_batch: Addr<batch::Batch> = SyncArbiter::start(1, move || batch::Batch( web::Data::new(address2.clone()),web::Data::new(store2.clone()) ) );
 
     HttpServer::new(move || {
         App::new()

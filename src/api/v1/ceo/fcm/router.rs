@@ -50,7 +50,7 @@ pub fn to_user(
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
     let _db = db.clone();
 
-    println!("batch:4444444444444:{:?}",send_data);
+    println!("batch:to_user:--------------------------------");
     
     let resp = Client::new()
         .post(send_data.url.clone())

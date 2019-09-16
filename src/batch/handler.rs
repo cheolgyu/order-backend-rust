@@ -24,59 +24,6 @@ impl Handler<OrderState> for DbExecutor {
       //  println!(" db"); 
         let list  = sql_query("select * from order_state() ").get_results::<OrderStateRes>(conn)?;
        println!(" db handler: {:?}",list.len()); 
-         for res in &list { 
-                    
-          let send_data = ParamsToUser{
-          url: msg.store.webpush.send.clone(),
-          order_id: res.id.clone(), 
-          webpush: msg.store.webpush.clone(),
-          params: ParamsNotification{
-              notification: Notification{
-                  title: "[자동] 주문 5분 미응답".to_string(),
-                  body: "22".to_string(),
-                  icon: "33".to_string(),
-                  click_action: "44".to_string(),
-              },
-              to: res.notification_key.clone(),
-          }
-          };
-
-          println!(" db handler  for : "); 
-          fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
-
-        /*
-
-        Client::new()
-        .post(send_data.url.clone())
-        .header(CONTENT_TYPE, "application/json")
-        .header("Authorization", send_data.webpush.key.clone())
-        .send_json(&send_data.params)
-        .map_err(|e| {
-            println!("batch:666666666666");
-            eprintln!("{:?}",e);
-            panic!("{:?}", e)
-        })
-        .and_then(|response| {
-             println!("batch:5555555555555");
-            let res = response
-                .from_err()
-                .fold(BytesMut::new(), |mut acc, chunk| {
-                    acc.extend_from_slice(&chunk);
-                    println!("batch:99");
-                    Ok::<_, ServiceError>(acc)
-                })
-                .map(|body| {
-                    println!("batch:10");
-                    let body: ToUserResp = serde_json::from_slice(&body).expect("to_user body 변환 오류");
-                    body
-                });
-            res 
-        });
-        */
-
-         // println!("{:?}",send_data);
-          //fcm::to_user(send_data,  web::Data::new(Client::new().clone()), msg.db.clone());
-        }
         
         Ok(list)
     }
