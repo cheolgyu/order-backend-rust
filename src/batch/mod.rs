@@ -1,7 +1,7 @@
 pub mod handler;
 pub mod model;
 use crate::api::v1::ceo::fcm::router as fcm;
-use crate::batch::model::{OrderState, OrderStateRes};
+use crate::batch::model::{AutoCancel, AutoCancelRes};
 use crate::errors::ServiceError;
 use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
 use crate::models::msg::Msg;
@@ -25,14 +25,8 @@ impl Batch {
     pub fn new(db: Data<Addr<DbExecutor>>, store: Data<AppStateWithTxt>) -> Batch {
         Batch { db, store }
     }
-}
 
-impl Actor for Batch {
-    type Context = Context<Self>;
-
-    fn started(&mut self, ctx: &mut Self::Context) {
-        println!("I am alive!");
-
+    fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
             let result = index3(act.db.clone(), act.store.clone());
             // spawn future to reactor
@@ -42,19 +36,47 @@ impl Actor for Batch {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
-                        println!("Actor is probably dead: {}", e);
+                        println!("batch: come_find : {}", e);
+                    }),
+            );
+        });
+    }
+
+    fn auto_cancel(&self, ctx: &mut actix::Context<Self>) {
+        ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
+            let result = index3(act.db.clone(), act.store.clone());
+            // spawn future to reactor
+            Arbiter::spawn(
+                result
+                    .map(|res| {
+                        //println!("Got result: {}", res);
+                    })
+                    .map_err(|e| {
+                        println!("batch: auto_cancel : {}", e);
                     }),
             );
         });
     }
 }
 
+impl Actor for Batch {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        println!("I am alive!");
+        self.auto_cancel(ctx);
+        self.come_find(ctx);
+    }
+}
+
+
+
 fn index3(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> Box<dyn Future<Item = &'static str, Error = Error>> {
     use futures::future::{ok, Future};
-    let sd = OrderState {
+    let sd = AutoCancel {
         db: db.clone(),
         store: store.clone(),
     };

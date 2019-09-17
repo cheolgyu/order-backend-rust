@@ -10,13 +10,13 @@ use chrono::NaiveDateTime;
 use uuid::Uuid;
 
 #[derive(Message)]
-#[rtype(result = "Result<Vec<OrderStateRes>, ServiceError>")]
-pub struct OrderState {
+#[rtype(result = "Result<Vec<AutoCancelRes>, ServiceError>")]
+pub struct AutoCancel {
     pub db: web::Data<Addr<DbExecutor>>,
     pub store: web::Data<AppStateWithTxt>,
 }
 /*
-pub struct OrderState{
+pub struct AutoCancel{
     db: Addr<DbExecutor>,
     client: Client,
     store: AppStateWithTxt
@@ -25,7 +25,7 @@ pub struct OrderState{
 */
 use diesel::sql_types::{Integer, Json, Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
-pub struct OrderStateRes {
+pub struct AutoCancelRes {
     #[sql_type = "Integer"]
     pub id: i32,
     #[sql_type = "uu"]
