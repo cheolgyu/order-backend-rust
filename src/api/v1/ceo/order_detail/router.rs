@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::fcm::router as fcm;
+use crate::fcm::router as fcm;
 use crate::api::v1::ceo::order_detail::model;
 use crate::errors::ServiceError;
 use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};

@@ -1,6 +1,6 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::api::v1::ceo::device::model as params;
-use crate::api::v1::ceo::fcm::router as fcm;
+use crate::fcm::router as fcm;
 use crate::errors::ServiceError;
 use crate::models::device as m;
 use crate::models::shop::UpdateNotificationKey;

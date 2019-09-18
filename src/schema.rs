@@ -1,8 +1,12 @@
 table! {
     fcm (id) {
         id -> Int4,
+        to -> Varchar,
         order_id -> Int4,
-        kind -> Varchar,
+        order_detail_id -> Int4,
+        order_detail_state -> Varchar,
+        trigger -> Varchar,
+        req -> Jsonb,
         resp -> Jsonb,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

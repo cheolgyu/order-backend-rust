@@ -17,6 +17,7 @@ mod middleware;
 mod models;
 mod schema;
 mod utils;
+mod fcm;
 use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;

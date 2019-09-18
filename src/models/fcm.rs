@@ -20,8 +20,13 @@ use serde::{Deserialize, Serialize};
 #[table_name = "fcm"]
 pub struct Fcm {
     pub id: i32,
+    pub to: String,
     pub order_id: i32,
-    pub kind: String,
+    pub order_detail_id: i32,
+    pub order_detail_state: String,
+    pub trigger: String,
+
+    pub req: serde_json::Value,
     pub resp: serde_json::Value,
 
     pub created_at: NaiveDateTime,

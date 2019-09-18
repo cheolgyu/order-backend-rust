@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::fcm::router as fcm;
+use crate::fcm::router as fcm;
 use crate::api::v1::user::order::model;
 use crate::errors::ServiceError;
 use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};

@@ -1,6 +1,5 @@
 pub mod auth;
 pub mod device;
-pub mod fcm;
 pub mod option;
 pub mod option_group;
 pub mod order;

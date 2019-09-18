@@ -1,6 +1,6 @@
 pub mod handler;
 pub mod model;
-use crate::api::v1::ceo::fcm::router as fcm;
+use crate::fcm::router as fcm;
 use crate::batch::model::{AutoCancel, AutoCancelRes};
 use crate::errors::ServiceError;
 use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
