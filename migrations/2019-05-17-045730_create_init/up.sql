@@ -203,3 +203,97 @@ JOIN    pg_catalog.pg_proc p
 ON      p.pronamespace = n.oid
 WHERE   n.nspname = 'public'
 and p.proname ='ceo_info';
+
+
+
+-- Your SQL goes here
+CREATE TABLE "order_detail" (
+
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER NOT NULL,
+  shop_id UUID NOT NULL,
+  state VARCHAR NOT NULL,
+  txt jsonb NOT NULL,
+  req_session_id jsonb NOT NULL,
+  
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+CREATE TABLE "order" (
+
+  id SERIAL PRIMARY KEY,
+  shop_id UUID NOT NULL,
+  state VARCHAR NOT NULL,
+  price float8 NOT NULL,
+  
+  products jsonb NOT NULL,
+  sw_token VARCHAR NOT NULL,
+  
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+); 
+
+-- Your SQL goes here
+
+/*
+- 사장님 디바이스 추가시
+- 사장님에게 발신
+    고객이 주문시
+    시스템:배치가 주문자동취소시
+- 고객에게 발신 -  
+    주문상세-사장님이 주문 승인시
+    주문상세-사장님이 주문 거절시
+    주문상세-사장님이 주문 수령시
+    사장님이 주문 추가 수령시
+    시스템:배치가 주문 자동취소시
+    시스템:배치가 주문 자동 수령요청시 최대 2회 5분간격.
+*/
+
+CREATE TABLE "fcm" ( 
+
+  id SERIAL PRIMARY KEY,
+  "to" VARCHAR NOT NULL,
+  order_id INTEGER NOT NULL,
+  order_detail_id INTEGER NOT NULL DEFAULT '0' ,
+  order_detail_state  VARCHAR NOT NULL DEFAULT ''  ,
+  trigger  VARCHAR NOT NULL DEFAULT ''  ,
+  req jsonb NOT NULL,
+  resp jsonb NOT NULL,
+ 
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+-- Your SQL goes here
+
+-- 구매한 주문의 자동 취소 프로시저
+CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
+     WITH updt AS (
+      update "order" set state = 'test' 
+      where 
+      state = 'req'  and 
+      created_at <= CURRENT_TIMESTAMP+ time '00:05' 
+      RETURNING id, shop_id,sw_token
+    )
+    SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
+$$ language 'sql';
+
+-- 구매한 주문의 사장님의 제조완료에 대한 프로시저
+CREATE FUNCTION come_find() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
+     WITH updt AS (
+      update "order" set state = 'test' 
+      where 
+      state = 'req'  and 
+      created_at <= CURRENT_TIMESTAMP+ time '00:05' 
+      RETURNING id, shop_id,sw_token
+    )
+    SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
+$$ language 'sql';
+
+
+
+
