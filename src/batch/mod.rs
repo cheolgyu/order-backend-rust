@@ -1,45 +1,38 @@
 pub mod handler;
 pub mod model;
-use crate::batch::model::{AutoCancel, AutoCancelRes};
-use crate::errors::ServiceError;
-use crate::models::msg::Msg;
+use crate::batch::model::{AutoCancel};
 use crate::models::{AppStateWithTxt, DbExecutor};
 use actix::prelude::*;
-use futures::stream::Stream;
 use futures::Future;
-use std::time::{Duration, Instant};
+use std::time::{Duration};
 
 use actix_web::{
-    client::Client,
-    web::{self, Data, Json},
-    Error, HttpResponse, ResponseError,
+    web::{ Data},
+    Error, 
 };
-
-use crate::fcm::FcmExecutor;
 use crate::fcm::model::*;
+use crate::fcm::router::to_user;
 
 pub struct Batch {
     pub db: Data<Addr<DbExecutor>>,
     pub store: Data<AppStateWithTxt>,
-    pub fcm: Data<Addr<FcmExecutor>>,
 }
 
 impl Batch {
-    pub fn new(db: Data<Addr<DbExecutor>>, store: Data<AppStateWithTxt>, fcm: Data<Addr<FcmExecutor>>) -> Batch {
-        Batch { db, store, fcm }
+    pub fn new(db: Data<Addr<DbExecutor>>, store: Data<AppStateWithTxt>) -> Batch {
+        Batch { db, store }
     }
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result =  index3(act.db.clone(), act.store.clone(), act.fcm.clone());
-            // spawn future to reactor
+            let result =  index3(act.db.clone(), act.store.clone());
+            // spawn future to reactor 
             Arbiter::spawn(
-                result
-                    .map(|res| {
+                result.map(|res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
-                        println!("batch: come_find : {}", e);
+                        println!("batch: auto_cancel : {}", e);
                     }),
             );
         });
@@ -47,11 +40,10 @@ impl Batch {
 
     fn auto_cancel(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(act.db.clone(), act.store.clone(), act.fcm.clone());
+            let result = index3(act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
-                result
-                    .map(|res| {
+                result.map(|res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
@@ -73,13 +65,11 @@ impl Actor for Batch {
 }
 
 
-
 fn index3(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
-    fcm: Data<Addr<FcmExecutor>>,
 ) -> Box<dyn Future<Item = &'static str, Error = Error>> {
-    use futures::future::{ok, Future};
+    use futures::future::ok;
     let sd = AutoCancel {
         db: db.clone(),
         store: store.clone(),
@@ -87,11 +77,11 @@ fn index3(
     let db2 = db.clone();
     let store2 = store.clone();
     Box::new({
-        db.send(sd).from_err().and_then(move |res| match res {
+        db.send(sd).from_err().and_then( move |res| match res {
             Ok(list) => {
                 for res in &list {
                     let db_addr = db2.clone();
-
+                    let store3 = store2.clone();
                     let send_data = ReqToUser {
                         order_id: res.id.clone(),
                         params: ReqToUserData {
@@ -104,10 +94,9 @@ fn index3(
                             to: res.notification_key.clone(),
                         },
                     };
-
                     println!(" db handler  for : ");
 
-                    let result =  fcm.send(send_data);
+                    let result = to_user(send_data,db_addr,store3);
                     Arbiter::spawn(
                         result
                             .map(|res| {
@@ -115,8 +104,10 @@ fn index3(
                             })
                             .map_err(|e| {
                                 println!("Actor is probably dead: {}", e);
-                            }),
+                            })
                     );
+
+
                 }
                 ok::<_, Error>("Welcome!2 Welcome")
             }

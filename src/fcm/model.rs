@@ -1,15 +1,11 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::WebPush;
-use crate::schema::fcm;
 use actix::Message;
-use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use futures::Future;
 
 ///////////////////////////////////////////////////////////////
 #[derive(Debug, Serialize, Deserialize,Message)]
-#[rtype(result = "Box<dyn Future<Item =Result<Msg, ServiceError>, Error = ServiceError>>")]
+#[rtype(result = "Result<Msg, ServiceError>")]
 pub struct ReqToFcm {
     pub order_id: i32,
     pub params: ReqToFcmData,
@@ -25,10 +21,9 @@ pub struct ReqToFcmData {
 pub struct RespFcm {
     pub notification_key: String,
 }
-
 ///////////////////////////////////////////////////////////////
 #[derive(Debug, Serialize, Deserialize,Message)]
-#[rtype(result = "Box<dyn Future<Item =Result<Msg, ServiceError>, Error = ServiceError>>")]
+#[rtype(result = "Result<Msg, ServiceError>")]
 pub struct ReqToUser {
     pub order_id: i32,
     pub params: ReqToUserData,

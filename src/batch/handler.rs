@@ -1,15 +1,12 @@
 use crate::batch::model::{AutoCancel, AutoCancelRes};
 use crate::errors::ServiceError;
-use crate::models::{AppStateWithTxt, DbExecutor};
+use crate::models::{ DbExecutor};
 use actix::Handler;
 use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer, Text};
 
-use actix_web::{client::Client, web};
-use futures::future::Future;
 
 impl Handler<AutoCancel> for DbExecutor {
     type Result = Result<Vec<AutoCancelRes>, ServiceError>;

@@ -1,6 +1,5 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
-use crate::models::WebPush;
 use crate::schema::fcm;
 use actix::Message;
 use chrono::NaiveDateTime;
@@ -40,6 +39,15 @@ pub struct Fcm {
 pub struct New {
     pub order_id: i32,
     pub resp: serde_json::Value,
+}
+
+impl New{
+    pub fn new_fcm(resp: serde_json::Value)-> New{
+        New{
+            order_id: -1,
+            resp: resp,
+        }
+    }
 }
 /*
 

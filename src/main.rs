@@ -86,26 +86,16 @@ fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create pool.");
     let address: Addr<DbExecutor> = SyncArbiter::start(4, move || DbExecutor(pool.clone()));
-
     let manager2 = ConnectionManager::<PgConnection>::new(database_url.clone());
     let pool2 = r2d2::Pool::builder()
         .build(manager2)
         .expect("Failed to create pool.");
-    let address2 = address.clone();
-    let store2 = store.clone();
-    let addr_fcm: Addr<fcm::FcmExecutor> = SyncArbiter::start(2, move || 
-        fcm::FcmExecutor::new(
-            web::Data::new(address.clone()),
-            web::Data::new(store.clone()),
-        )
-    );
 
     let bat = batch::Batch::new(
         web::Data::new(address.clone()),
         web::Data::new(store.clone()),
-        web::Data::new(addr_fcm.clone()),
     );
-    let addr_batch = bat.start();
+    bat.start();
     
     //let addr_batch: Addr<batch::Batch> = SyncArbiter::start(1, move || batch::Batch( web::Data::new(address2.clone()),web::Data::new(store2.clone()) ) );
     
@@ -114,7 +104,6 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(address.clone())
-            .data(addr_fcm.clone())
             .data(pool2.clone())
             .data(store.clone())
             .data(Client::new().clone())

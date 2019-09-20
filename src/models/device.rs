@@ -1,7 +1,6 @@
 use crate::errors::ServiceError;
 //use crate::models::fcm::{Params, ParamsToFcm};
 use crate::models::msg::Msg;
-use crate::models::WebPush;
 use crate::schema::user_device;
 use actix::Message;
 use chrono::NaiveDateTime;
@@ -62,7 +61,7 @@ pub struct GetWithShop {
     pub user_id: Uuid,
 }
 
-use diesel::sql_types::{Double, Integer, Json, Text, Uuid as uu};
+use diesel::sql_types::{ Integer,  Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct GetWithShopRes { 
      #[sql_type = "uu"]

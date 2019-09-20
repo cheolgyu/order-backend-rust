@@ -11,7 +11,7 @@ use crate::utils::validator::{
 };
 
 use actix::Message;
-use actix_web::{dev::Payload, web::Path, Error, HttpRequest};
+use actix_web::{dev::Payload, Error, HttpRequest};
 use actix_web::{error, FromRequest};
 
 use chrono::NaiveDateTime;
@@ -77,9 +77,9 @@ impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
-    #[warn(unused_variables)]
+   
     fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
-        let path_info = Path::<Info>::extract(req)?.into_inner();
+        //let path_info = Path::<Info>::extract(req)?.into_inner();
         if let Some(auth_token) = req.headers().get("authorization") {
             if let Ok(auth) = auth_token.to_str() {
                 let token: AuthUser = decode_token(auth)?;

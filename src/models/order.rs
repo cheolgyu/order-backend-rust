@@ -1,5 +1,4 @@
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
 use crate::models::shop::Shop;
 use crate::schema::order;
 use actix::Message;

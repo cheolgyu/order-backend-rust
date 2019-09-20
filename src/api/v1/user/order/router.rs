@@ -6,11 +6,11 @@ use actix::Addr;
 use actix_web::{
     client::Client,
     web::{Data, Json},
-    Error, HttpResponse, ResponseError,
+    Error, HttpResponse, ResponseError
 };
 use futures::{future::result, Future};
 
-use crate::fcm::FcmExecutor;
+use crate::fcm::router::to_user;
 use crate::fcm::model::*;
 
 
@@ -19,30 +19,23 @@ pub fn put(
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
-    fcm: Data<Addr<FcmExecutor>>,
+    
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
     let j2 = json.clone();
     let db2 = db.clone();
     let db3 = db.clone();
     let client2 = client.clone();
+    let store2 = store.clone();
 
     let key = store.webpush.key.clone();
     let webpush_url_send = store.webpush.send.clone();
     let websocket_url = store.websocket.send.clone();
 
     result(json.validate())
-        //주문 저장
         .and_then(move |_| db2.send(json.into_inner().new()).from_err())
-        // 사장님에게 알림 서비스 실행.
-        //web socket
         .and_then(
             move |res| {
-                /*
-                let _r = res.unwrap();
-                let _shop_id = _r.data["shop_id"].clone();
-                let o_r = Ok(_r);
-                */
                 let url = format!("{}{}/test", websocket_url, j1.shop_id);
                 client
                     .get(url) // <- Create request builder
@@ -70,11 +63,11 @@ pub fn put(
                 },
             };
 
-            fcm.send(send_data).from_err()
+            to_user(send_data,db,store2).from_err()
         })
-        //.and_then(|res| Ok(HttpResponse::Ok().json(res)))
-        .and_then(|res| match res {
-            Ok(_) => Ok(HttpResponse::Ok()),
+        //.and_then(|res| Ok(HttpResponse::Ok()))
+        .and_then( |res| match res {
+            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
 }

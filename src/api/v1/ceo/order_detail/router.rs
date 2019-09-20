@@ -11,7 +11,7 @@ use actix_web::{
 };
 use futures::{future::result, Future};
 
-use crate::fcm::FcmExecutor;
+use crate::fcm::router::to_user;
 use crate::fcm::model::*;
 
 pub fn put(
@@ -21,7 +21,7 @@ pub fn put(
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
-    fcm: Data<Addr<FcmExecutor>>,
+    
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
@@ -62,9 +62,9 @@ pub fn put(
                 },
             };
 
-             fcm.send(send_data).from_err()
+            to_user(send_data,db,store)
         })
-        .and_then(|res| match res {
+        .and_then( |res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })

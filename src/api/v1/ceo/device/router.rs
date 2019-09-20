@@ -4,7 +4,7 @@ use crate::errors::ServiceError;
 use crate::models::device as m;
 use crate::models::shop::UpdateNotificationKey;
 use crate::models::{AppStateWithTxt, DbExecutor};
-use crate::fcm::FcmExecutor;
+use crate::fcm::router::to_fcm;
 use crate::fcm::model::*;
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -17,13 +17,11 @@ use futures::{
     future::{err, result, Either},
     Future,
 };
-use uuid::Uuid;
 
 pub fn check(
     json: Json<params::InpCheck>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
-    fcm: Data<Addr<FcmExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
@@ -33,7 +31,7 @@ pub fn check(
     let vec = vec![sw_token2.to_string()];
 
     let db2 = db.clone();
-    let db3 = db.clone();
+    
     let db4 = db.clone();
 
     let user_id = auth_user.id.clone();
@@ -45,12 +43,12 @@ pub fn check(
     .from_err()
     .and_then(move |res_opt| match res_opt {
         Ok(res) => {
-           
-            match res.operation.as_ref() {
+            match res.operation.as_str() {
                 "create" | "add" =>{
                     let shop_id = res.shop_id.clone();
+                    let db3 = db.clone();
                     Either::A(
-                        fcm.send(ReqToFcm{
+                        to_fcm(ReqToFcm{
                             order_id: -1,
                             params: ReqToFcmData{
                                 operation: res.operation.clone(),
@@ -58,9 +56,10 @@ pub fn check(
                                 notification_key: res.notification_key.clone(),
                                 registration_ids: vec,
                             }
-                        })
-                        .and_then(move |res| {
+                        },db,store)
+                        .and_then( move |res| {
                             let msg = res.unwrap();
+                            let shop_id2  = shop_id.clone();
                             let notification_key = msg.data["item"]["resp"]["notification_key"]
                                 .as_str()
                                 .unwrap();
@@ -78,7 +77,7 @@ pub fn check(
                             })
                             .from_err()
                         })
-                        .map_err(|e| ServiceError::BadRequest("check device".into()))
+                        .map_err(|e| ServiceError::BadRequest(e.to_string()))
                         .then(|res| match res {
                             Ok(_user) => Ok(HttpResponse::Ok().json("2")),
                             Err(_) => Ok(HttpResponse::InternalServerError().into()),
@@ -89,11 +88,14 @@ pub fn check(
                     Either::B(result(Ok(HttpResponse::Ok().json("pass"))))
                 },
                 "" =>{
-                    Either::B(err(ServiceError::BadRequest("check device: whoareyou".into())))
-                }
+                    Either::B(err(ServiceError::BadRequest("check device: whoareyou1".into())))
+                },
+                _ => {
+                    Either::B(err(ServiceError::BadRequest("check device: whoareyou1".into())))
+                },
             }
         }
-        Err(e) => Either::B(err(ServiceError::BadRequest("check device".into()))),
+        Err(e) => Either::B(err(ServiceError::BadRequest(e.to_string()))),
     })
 }
 
