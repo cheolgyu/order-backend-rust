@@ -1,23 +1,25 @@
-use crate::fcm::router as fcm;
 use crate::api::v1::user::order::model;
 use crate::errors::ServiceError;
-use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
 use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     client::Client,
-    http::header,
     web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
+
+use crate::fcm::FcmExecutor;
+use crate::fcm::model::*;
+
 
 pub fn put(
     json: Json<model::InpNew>,
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
+    fcm: Data<Addr<FcmExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
     let j2 = json.clone();
@@ -55,11 +57,9 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
-            let send_data = ParamsToUser {
-                url: store.webpush.send.clone(),
+            let send_data = ReqToUser {
                 order_id: res.order.id.clone(),
-                webpush: store.webpush.clone(),
-                params: ParamsNotification {
+                params: ReqToUserData {
                     notification: Notification {
                         title: "주문!".to_string(),
                         body: "22".to_string(),
@@ -70,11 +70,11 @@ pub fn put(
                 },
             };
 
-            fcm::to_user(send_data, client2, db3).from_err()
+            fcm.send(send_data).from_err()
         })
         //.and_then(|res| Ok(HttpResponse::Ok().json(res)))
         .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+            Ok(_) => Ok(HttpResponse::Ok()),
             Err(e) => Ok(e.error_response()),
         })
 }

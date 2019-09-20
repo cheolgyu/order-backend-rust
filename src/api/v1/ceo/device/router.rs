@@ -1,10 +1,11 @@
 use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::api::v1::ceo::device::model as params;
-use crate::fcm::router as fcm;
 use crate::errors::ServiceError;
 use crate::models::device as m;
 use crate::models::shop::UpdateNotificationKey;
 use crate::models::{AppStateWithTxt, DbExecutor};
+use crate::fcm::FcmExecutor;
+use crate::fcm::model::*;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -22,31 +23,42 @@ pub fn check(
     json: Json<params::InpCheck>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
+    fcm: Data<Addr<FcmExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let sw_token = json.into_inner().sw_token.clone();
     let sw_token2 = sw_token.clone();
+    let sw_token3 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
 
     let db2 = db.clone();
     let db3 = db.clone();
     let db4 = db.clone();
 
-    db.send(m::Get {
+    let user_id = auth_user.id.clone();
+
+    db.send(m::GetWithShop {
         sw_token: sw_token,
         user_id: auth_user.id,
     })
     .from_err()
-    .and_then(move |res| match res {
-        Ok(get_with_key) => {
-            let opt_send_data = get_with_key.get(store.webpush.clone());
-            if opt_send_data.is_some() {
-                let send_data = opt_send_data.unwrap();
-                let shop_id =
-                    Uuid::parse_str(&send_data.params.notification_key_name.clone()).unwrap();
-                Either::A(
-                    fcm::to_fcm(send_data, store.webpush.clone(), client, db2)
+    .and_then(move |res_opt| match res_opt {
+        Ok(res) => {
+           
+            match res.operation.as_ref() {
+                "create" | "add" =>{
+                    let shop_id = res.shop_id.clone();
+                    Either::A(
+                        fcm.send(ReqToFcm{
+                            order_id: -1,
+                            params: ReqToFcmData{
+                                operation: res.operation.clone(),
+                                notification_key_name: shop_id.to_string(),
+                                notification_key: res.notification_key.clone(),
+                                registration_ids: vec,
+                            }
+                        })
                         .and_then(move |res| {
                             let msg = res.unwrap();
                             let notification_key = msg.data["item"]["resp"]["notification_key"]
@@ -60,9 +72,9 @@ pub fn check(
                         })
                         .and_then(move |_res| {
                             db4.send(m::New {
-                                user_id: get_with_key.params.user_id.clone(),
+                                user_id: user_id,
                                 name: "test".to_string(),
-                                sw_token: get_with_key.params.sw_token.clone(),
+                                sw_token: sw_token3,
                             })
                             .from_err()
                         })
@@ -71,9 +83,14 @@ pub fn check(
                             Ok(_user) => Ok(HttpResponse::Ok().json("2")),
                             Err(_) => Ok(HttpResponse::InternalServerError().into()),
                         }),
-                )
-            } else {
-                Either::B(result(Ok(HttpResponse::Ok().json("pass"))))
+                    )
+                },
+                "pass" =>{
+                    Either::B(result(Ok(HttpResponse::Ok().json("pass"))))
+                },
+                "" =>{
+                    Either::B(err(ServiceError::BadRequest("check device: whoareyou".into())))
+                }
             }
         }
         Err(e) => Either::B(err(ServiceError::BadRequest("check device".into()))),

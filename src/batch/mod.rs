@@ -1,9 +1,7 @@
 pub mod handler;
 pub mod model;
-use crate::fcm::router as fcm;
 use crate::batch::model::{AutoCancel, AutoCancelRes};
 use crate::errors::ServiceError;
-use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
 use crate::models::msg::Msg;
 use crate::models::{AppStateWithTxt, DbExecutor};
 use actix::prelude::*;
@@ -16,19 +14,24 @@ use actix_web::{
     web::{self, Data, Json},
     Error, HttpResponse, ResponseError,
 };
+
+use crate::fcm::FcmExecutor;
+use crate::fcm::model::*;
+
 pub struct Batch {
     pub db: Data<Addr<DbExecutor>>,
     pub store: Data<AppStateWithTxt>,
+    pub fcm: Data<Addr<FcmExecutor>>,
 }
 
 impl Batch {
-    pub fn new(db: Data<Addr<DbExecutor>>, store: Data<AppStateWithTxt>) -> Batch {
-        Batch { db, store }
+    pub fn new(db: Data<Addr<DbExecutor>>, store: Data<AppStateWithTxt>, fcm: Data<Addr<FcmExecutor>>) -> Batch {
+        Batch { db, store, fcm }
     }
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(act.db.clone(), act.store.clone());
+            let result =  index3(act.db.clone(), act.store.clone(), act.fcm.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
@@ -44,7 +47,7 @@ impl Batch {
 
     fn auto_cancel(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(act.db.clone(), act.store.clone());
+            let result = index3(act.db.clone(), act.store.clone(), act.fcm.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
@@ -74,6 +77,7 @@ impl Actor for Batch {
 fn index3(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
+    fcm: Data<Addr<FcmExecutor>>,
 ) -> Box<dyn Future<Item = &'static str, Error = Error>> {
     use futures::future::{ok, Future};
     let sd = AutoCancel {
@@ -88,11 +92,9 @@ fn index3(
                 for res in &list {
                     let db_addr = db2.clone();
 
-                    let send_data = ParamsToUser {
-                        url: store2.webpush.send.clone(),
+                    let send_data = ReqToUser {
                         order_id: res.id.clone(),
-                        webpush: store2.webpush.clone(),
-                        params: ParamsNotification {
+                        params: ReqToUserData {
                             notification: Notification {
                                 title: "[자동] 주문 5분 미응답".to_string(),
                                 body: "22".to_string(),
@@ -105,8 +107,7 @@ fn index3(
 
                     println!(" db handler  for : ");
 
-                    let result =
-                        fcm::to_user(send_data, web::Data::new(Client::new().clone()), db_addr);
+                    let result =  fcm.send(send_data);
                     Arbiter::spawn(
                         result
                             .map(|res| {

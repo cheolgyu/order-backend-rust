@@ -6,7 +6,6 @@ use crate::schema::order::dsl::order as tb;
 use crate::schema::shop::dsl::{id as tb_shop_id, shop as tb_shop};
 use actix::Handler;
 
-use crate::models::msg::Msg;
 use diesel;
 use diesel::prelude::*;
 

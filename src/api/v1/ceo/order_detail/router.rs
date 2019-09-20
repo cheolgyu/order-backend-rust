@@ -1,8 +1,6 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::fcm::router as fcm;
 use crate::api::v1::ceo::order_detail::model;
 use crate::errors::ServiceError;
-use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser};
 use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
 use actix::Addr;
@@ -13,6 +11,9 @@ use actix_web::{
 };
 use futures::{future::result, Future};
 
+use crate::fcm::FcmExecutor;
+use crate::fcm::model::*;
+
 pub fn put(
     json: Json<model::InpNew>,
     auth_user: AuthUser,
@@ -20,6 +21,7 @@ pub fn put(
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
+    fcm: Data<Addr<FcmExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let mut info = path_info.into_inner();
     info.auth_user = Some(auth_user);
@@ -47,11 +49,9 @@ pub fn put(
                 .unwrap()
                 .to_string();
             //let order_id = ok_res.data["order"]["od"].as_str().unwrap();
-            let send_data = ParamsToUser {
-                url: store.webpush.send.clone(),
+            let send_data = ReqToUser {
                 order_id: order_id,
-                webpush: store.webpush.clone(),
-                params: ParamsNotification {
+                params: ReqToUserData {
                     notification: Notification {
                         title: "[손님]주문에 대한 응답.".to_string(),
                         body: state,
@@ -62,7 +62,7 @@ pub fn put(
                 },
             };
 
-            fcm::to_user(send_data, client, db5)
+             fcm.send(send_data).from_err()
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),

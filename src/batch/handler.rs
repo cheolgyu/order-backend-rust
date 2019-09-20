@@ -8,8 +8,6 @@ use diesel::prelude::*;
 use diesel::sql_query;
 use diesel::sql_types::{Integer, Text};
 
-use crate::fcm::router as fcm;
-use crate::models::fcm::{Notification, ParamsNotification, ParamsToUser, ToUserResp};
 use actix_web::{client::Client, web};
 use futures::future::Future;
 

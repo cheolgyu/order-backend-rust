@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::models::fcm::{Params, ParamsToFcm};
+//use crate::models::fcm::{Params, ParamsToFcm};
 use crate::models::msg::Msg;
 use crate::models::WebPush;
 use crate::schema::user_device;
@@ -56,20 +56,26 @@ pub struct GetList {
 }
 
 #[derive(Deserialize, Serialize, Debug, Message, Clone)]
-#[rtype(result = "Result<GetWithKey, ServiceError>")]
-pub struct Get {
+#[rtype(result = "Result<GetWithShopRes, ServiceError>")]
+pub struct GetWithShop {
     pub sw_token: String,
     pub user_id: Uuid,
 }
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct GetWithKey {
-    pub shop_id: String,
-    pub notification_key: String,
-    pub device_cnt: i64,
-    pub params: Get,
-}
 
-impl GetWithKey {
+use diesel::sql_types::{Double, Integer, Json, Text, Uuid as uu};
+#[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
+pub struct GetWithShopRes { 
+     #[sql_type = "uu"]
+    pub shop_id: Uuid,
+    #[sql_type = "Text"]
+    pub notification_key: String,
+    #[sql_type = "Integer"]
+    pub device_cnt: i32,
+    #[sql_type = "Text"]
+    pub operation: String,
+}
+/*
+impl GetWithShopRes {
     pub fn get(&self, webpush: WebPush) -> Option<ParamsToFcm> {
         if &self.notification_key == "" {
             Some(ParamsToFcm {
@@ -102,6 +108,7 @@ impl GetWithKey {
         }
     }
 }
+*/
 
 #[derive(Deserialize, Serialize, Debug, Message, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]

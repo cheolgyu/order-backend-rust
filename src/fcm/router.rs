@@ -11,6 +11,8 @@ use actix_web::{
 };
 use futures::stream::Stream;
 use futures::Future;
+// 1. params에서 제외 db,webpush 컨텍스트에서 가져오기
+// 2. ParamsToFcm ParamsToUser 정리.
 
 pub fn to_fcm(
     send_data: ParamsToFcm,

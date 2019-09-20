@@ -1,3 +1,5 @@
+
+
 #[macro_use]
 extern crate diesel;
 extern crate actix_derive;
@@ -10,6 +12,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate lazy_static;
 use actix::prelude::*;
+
 mod api;
 mod batch;
 mod errors;
@@ -40,6 +43,8 @@ fn no_params() -> &'static str {
     "Hello world!\r\n"
 }
 
+
+#[allow( dead_code, unused_imports ) ]
 fn main() -> std::io::Result<()> {
     std::env::set_var(
         "RUST_LOG",
@@ -88,16 +93,28 @@ fn main() -> std::io::Result<()> {
         .expect("Failed to create pool.");
     let address2 = address.clone();
     let store2 = store.clone();
+    let addr_fcm: Addr<fcm::FcmExecutor> = SyncArbiter::start(2, move || 
+        fcm::FcmExecutor::new(
+            web::Data::new(address.clone()),
+            web::Data::new(store.clone()),
+        )
+    );
+
     let bat = batch::Batch::new(
         web::Data::new(address.clone()),
         web::Data::new(store.clone()),
+        web::Data::new(addr_fcm.clone()),
     );
     let addr_batch = bat.start();
+    
     //let addr_batch: Addr<batch::Batch> = SyncArbiter::start(1, move || batch::Batch( web::Data::new(address2.clone()),web::Data::new(store2.clone()) ) );
+    
+    
 
     HttpServer::new(move || {
         App::new()
             .data(address.clone())
+            .data(addr_fcm.clone())
             .data(pool2.clone())
             .data(store.clone())
             .data(Client::new().clone())

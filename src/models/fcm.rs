@@ -39,9 +39,9 @@ pub struct Fcm {
 #[table_name = "fcm"]
 pub struct New {
     pub order_id: i32,
-    pub kind: String,
     pub resp: serde_json::Value,
 }
+/*
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ToFcmResp {
@@ -51,7 +51,6 @@ impl ToFcmResp {
     pub fn new(&self, order_id: i32) -> New {
         New {
             order_id: order_id,
-            kind: "to_fcm".to_string(),
             resp: serde_json::to_value(&self).unwrap(),
         }
     }
@@ -105,8 +104,9 @@ impl ToUserResp {
     pub fn new(&self, order_id: i32) -> New {
         New {
             order_id: order_id,
-            kind: "to_user".to_string(),
             resp: serde_json::to_value(&self).unwrap(),
         }
     }
 }
+
+*/
