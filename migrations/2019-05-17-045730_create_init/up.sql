@@ -143,8 +143,8 @@ INSERT INTO "user" ("id", "account_id", "account_password", "email", "name", "ro
 ('0290a0ad-9851-461b-af42-0313f15c9702',	'dlacjfrb123',	
 crypt('dlacjfrb123!@#',gen_salt('bf'))
 ,	'cjfrb119@hanmail.net',	'',	'ceo',	'2019-05-18 12:44:02.647759',	'2019-05-18 12:44:02.647759',	NULL);
-INSERT INTO "shop" ("id", "ceo_id", "name", "products", "created_at", "updated_at", "deleted_at") VALUES
-('109b7b41-f8eb-4702-abdb-6bfb95f57072',	'0290a0ad-9851-461b-af42-0313f15c9702',	'hello coffee',	NULL,	'2019-05-18 12:44:41.184624',	'2019-05-18 12:44:41.184624',	NULL);
+INSERT INTO "shop" ("id", "ceo_id", "name", "products", "created_at", "updated_at", "deleted_at","notification_key") VALUES
+('109b7b41-f8eb-4702-abdb-6bfb95f57072',	'0290a0ad-9851-461b-af42-0313f15c9702',	'hello coffee',	NULL,	'2019-05-18 12:44:41.184624',	'2019-05-18 12:44:41.184624',	NULL,"APA91bG7i0xJglP9m-spquKBSfdDR8ZHTbLCzCzMI_S8Cy2ucPKMjfyiBCrqC7GafMXpByEVmc_yMxppx4L72LlMOprc0Bpbp2RrjrPp-5iKbmzmLa8_baYq9H7SpprsbFOkAaLFsvVzKoZAHYTq9e27vpGNYcAK-A");
 
 INSERT INTO "product" ("id", "shop_id", "name", "price", "opt_group", "created_at", "updated_at", "deleted_at") VALUES
 (DEFAULT,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'ffff222',	11110222,	'{2,8,9,1}',	'2019-07-09 03:39:31.970138',	'2019-07-09 03:39:31.970138',	'2019-07-11 04:51:15.996875'),
