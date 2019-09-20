@@ -1,4 +1,5 @@
-
+// #![deny(warnings)] 
+ #![allow(warnings)] 
 
 #[macro_use]
 extern crate diesel;
@@ -44,7 +45,6 @@ fn no_params() -> &'static str {
 }
 
 
-#[allow( dead_code, unused_imports ) ]
 fn main() -> std::io::Result<()> {
     std::env::set_var(
         "RUST_LOG",
