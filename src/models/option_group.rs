@@ -1,7 +1,6 @@
 use crate::models::option::CartOpt;
 use crate::schema::option_group;
 
-
 use chrono::NaiveDateTime;
 use uuid::Uuid;
 

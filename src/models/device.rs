@@ -61,10 +61,10 @@ pub struct GetWithShop {
     pub user_id: Uuid,
 }
 
-use diesel::sql_types::{ Integer,  Text, Uuid as uu};
+use diesel::sql_types::{Integer, Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
-pub struct GetWithShopRes { 
-     #[sql_type = "uu"]
+pub struct GetWithShopRes {
+    #[sql_type = "uu"]
     pub shop_id: Uuid,
     #[sql_type = "Text"]
     pub notification_key: String,

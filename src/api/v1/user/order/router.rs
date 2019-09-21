@@ -6,20 +6,18 @@ use actix::Addr;
 use actix_web::{
     client::Client,
     web::{Data, Json},
-    Error, HttpResponse, ResponseError
+    Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 
-use crate::fcm::router::to_user;
 use crate::fcm::model::*;
-
+use crate::fcm::router::to_user;
 
 pub fn put(
     json: Json<model::InpNew>,
     db: Data<Addr<DbExecutor>>,
     client: Data<Client>,
     store: Data<AppStateWithTxt>,
-    
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
     let j2 = json.clone();
@@ -63,10 +61,10 @@ pub fn put(
                 },
             };
 
-            to_user(send_data,db,store2).from_err()
+            to_user(send_data, db, store2).from_err()
         })
         //.and_then(|res| Ok(HttpResponse::Ok()))
-        .and_then( |res| match res {
+        .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })

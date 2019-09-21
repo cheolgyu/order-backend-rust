@@ -10,7 +10,7 @@ use diesel::prelude::*;
 use serde_json::json;
 
 use diesel::sql_query;
-use diesel::sql_types::{Uuid, Text};
+use diesel::sql_types::{Text, Uuid};
 
 // 등록 프로세스 필요.
 /**
@@ -108,7 +108,8 @@ impl Handler<GetWithShop> for DbExecutor {
     fn handle(&mut self, msg: GetWithShop, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let res = sql_query("
+        let res = sql_query(
+            "
        SELECT a.shop_id, 
             a.notification_key, 
             a.device_cnt, 
@@ -128,7 +129,9 @@ impl Handler<GetWithShop> for DbExecutor {
                                 AND d.sw_token = $2 
                 WHERE  s.ceo_id = $1
                 GROUP  BY s.id) a      
-        ").bind::<Uuid, _>(&msg.user_id)
+        ",
+        )
+        .bind::<Uuid, _>(&msg.user_id)
         .bind::<Text, _>(&msg.sw_token)
         .get_result::<GetWithShopRes>(conn)?;
 

@@ -1,17 +1,14 @@
 pub mod handler;
 pub mod model;
-use crate::batch::model::{AutoCancel};
+use crate::batch::model::AutoCancel;
 use crate::models::{AppStateWithTxt, DbExecutor};
 use actix::prelude::*;
 use futures::Future;
-use std::time::{Duration};
+use std::time::Duration;
 
-use actix_web::{
-    web::{ Data},
-    Error, 
-};
 use crate::fcm::model::*;
 use crate::fcm::router::to_user;
+use actix_web::{web::Data, Error};
 
 pub struct Batch {
     pub db: Data<Addr<DbExecutor>>,
@@ -25,10 +22,11 @@ impl Batch {
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result =  index3(act.db.clone(), act.store.clone());
-            // spawn future to reactor 
+            let result = index3(act.db.clone(), act.store.clone());
+            // spawn future to reactor
             Arbiter::spawn(
-                result.map(|res| {
+                result
+                    .map(|res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
@@ -43,7 +41,8 @@ impl Batch {
             let result = index3(act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
-                result.map(|res| {
+                result
+                    .map(|res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
@@ -64,7 +63,6 @@ impl Actor for Batch {
     }
 }
 
-
 fn index3(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
@@ -77,7 +75,7 @@ fn index3(
     let db2 = db.clone();
     let store2 = store.clone();
     Box::new({
-        db.send(sd).from_err().and_then( move |res| match res {
+        db.send(sd).from_err().and_then(move |res| match res {
             Ok(list) => {
                 for res in &list {
                     let db_addr = db2.clone();
@@ -96,7 +94,7 @@ fn index3(
                     };
                     println!(" db handler  for : ");
 
-                    let result = to_user(send_data,db_addr,store3);
+                    let result = to_user(send_data, db_addr, store3);
                     Arbiter::spawn(
                         result
                             .map(|res| {
@@ -104,10 +102,8 @@ fn index3(
                             })
                             .map_err(|e| {
                                 println!("Actor is probably dead: {}", e);
-                            })
+                            }),
                     );
-
-
                 }
                 ok::<_, Error>("Welcome!2 Welcome")
             }

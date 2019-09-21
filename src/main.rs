@@ -1,5 +1,5 @@
-// #![deny(warnings)] 
- #![allow(warnings)] 
+// #![deny(warnings)]
+#![allow(warnings)]
 
 #[macro_use]
 extern crate diesel;
@@ -17,11 +17,11 @@ use actix::prelude::*;
 mod api;
 mod batch;
 mod errors;
+mod fcm;
 mod middleware;
 mod models;
 mod schema;
 mod utils;
-mod fcm;
 use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
@@ -43,7 +43,6 @@ fn index(req: HttpRequest, name: web::Path<String>) -> String {
 fn no_params() -> &'static str {
     "Hello world!\r\n"
 }
-
 
 fn main() -> std::io::Result<()> {
     std::env::set_var(
@@ -96,10 +95,8 @@ fn main() -> std::io::Result<()> {
         web::Data::new(store.clone()),
     );
     bat.start();
-    
+
     //let addr_batch: Addr<batch::Batch> = SyncArbiter::start(1, move || batch::Batch( web::Data::new(address2.clone()),web::Data::new(store2.clone()) ) );
-    
-    
 
     HttpServer::new(move || {
         App::new()

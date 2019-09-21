@@ -41,16 +41,16 @@ pub struct New {
     pub resp: serde_json::Value,
 }
 
-impl New{
-    pub fn new_fcm(resp: serde_json::Value)-> New{
-        New{
+impl New {
+    pub fn new_fcm(resp: serde_json::Value) -> New {
+        New {
             order_id: -1,
             resp: resp,
         }
     }
 
-    pub fn new_user(order_id:i32, resp: serde_json::Value)-> New{
-        New{
+    pub fn new_user(order_id: i32, resp: serde_json::Value) -> New {
+        New {
             order_id: order_id,
             resp: resp,
         }

@@ -33,7 +33,7 @@ impl Handler<model::New> for DbExecutor {
                     status: 400,
                     data: payload,
                 })
-            },
+            }
             None => {
                 println!("   요청을 저장 합니다. ");
                 let insert: Object = diesel::insert_into(tb)

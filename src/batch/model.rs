@@ -2,7 +2,7 @@ use crate::errors::ServiceError;
 use crate::models::{AppStateWithTxt, DbExecutor};
 use actix::prelude::*;
 use actix::Message;
-use actix_web::{ web};
+use actix_web::web;
 use uuid::Uuid;
 
 #[derive(Message)]
@@ -12,7 +12,7 @@ pub struct AutoCancel {
     pub store: web::Data<AppStateWithTxt>,
 }
 
-use diesel::sql_types::{Integer,  Text, Uuid as uu};
+use diesel::sql_types::{Integer, Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct AutoCancelRes {
     #[sql_type = "Integer"]

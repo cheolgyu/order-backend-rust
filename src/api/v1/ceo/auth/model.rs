@@ -77,7 +77,7 @@ impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
     type Future = Result<AuthUser, Error>;
-   
+
     fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
         //let path_info = Path::<Info>::extract(req)?.into_inner();
         if let Some(auth_token) = req.headers().get("authorization") {
