@@ -23,8 +23,19 @@ impl Handler<model::New> for DbExecutor {
             .pop();
 
         match check {
-            Some(_) => Err(ServiceError::BadRequest("중복: 주문응답".into())),
+            Some(_) => {
+                println!("  이미 요청하셧습니다. ");
+                let payload = serde_json::json!({
+                    "msg": "이미 요청하셧습니다."
+                });
+
+                Ok(Msg {
+                    status: 400,
+                    data: payload,
+                })
+            },
             None => {
+                println!("   요청을 저장 합니다. ");
                 let insert: Object = diesel::insert_into(tb)
                     .values(&msg)
                     .get_result::<Object>(conn)?;

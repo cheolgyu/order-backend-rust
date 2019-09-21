@@ -49,7 +49,8 @@ pub fn to_user(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
-   
+    let order_id = send_data.order_id.clone();
+    
     let resp = Client::new()
             .post(store.webpush.send.clone())
             .header(CONTENT_TYPE, "application/json")
@@ -57,6 +58,7 @@ pub fn to_user(
             .send_json(&send_data.params)
             .map_err(|e| ServiceError::BadRequest("to_user ".into()))
             .and_then(|response| {
+                
                 response
                     .from_err()
                     .fold(BytesMut::new(), |mut acc, chunk| {
@@ -70,8 +72,8 @@ pub fn to_user(
                         
                     })
     });
-    resp.and_then(  |(res,db)| {
-        let p = New::new_fcm(serde_json::to_value(&res).unwrap());
+    resp.and_then( move  |(res,db)| {
+        let p = New::new_user(order_id ,serde_json::to_value(&res).unwrap());
         db.send(p).from_err()
     })
 }

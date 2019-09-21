@@ -22,18 +22,18 @@ pub struct RespFcm {
     pub notification_key: String,
 }
 ///////////////////////////////////////////////////////////////
-#[derive(Debug, Serialize, Deserialize,Message)]
+#[derive(Debug, Serialize, Deserialize,Message,Clone)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct ReqToUser {
     pub order_id: i32,
     pub params: ReqToUserData,
 }
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct ReqToUserData {
     pub notification: Notification,
     pub to: String,
 }
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct Notification {
     pub title: String,
     pub body: String,

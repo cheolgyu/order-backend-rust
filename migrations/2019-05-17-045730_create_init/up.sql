@@ -273,7 +273,7 @@ CREATE TABLE "fcm" (
 -- 구매한 주문의 자동 취소 프로시저
 CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
      WITH updt AS (
-      update "order" set state = 'test' 
+      update "order" set state = 'auto_cacnle' 
       where 
       state = 'req'  and 
       created_at <= CURRENT_TIMESTAMP+ time '00:05' 

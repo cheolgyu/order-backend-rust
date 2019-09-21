@@ -6,7 +6,7 @@ use diesel::r2d2::PoolError;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::convert::From;
 use uuid::ParseError;
-#[derive(Debug, Display)]
+#[derive(Debug, Display,PartialEq)]
 pub enum ServiceError {
     // 400
     #[display(fmt = "BadRequest: {}", _0)]

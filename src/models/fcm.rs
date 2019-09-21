@@ -48,6 +48,13 @@ impl New{
             resp: resp,
         }
     }
+
+    pub fn new_user(order_id:i32, resp: serde_json::Value)-> New{
+        New{
+            order_id: order_id,
+            resp: resp,
+        }
+    }
 }
 /*
 
