@@ -13,7 +13,7 @@ use futures::stream::Stream;
 use futures::Future;
 
 pub fn to_fcm(
-    send_data: ReqToFcm,
+    mut send_data: ReqToFcm,
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
@@ -25,19 +25,27 @@ pub fn to_fcm(
         .send_json(&send_data.params)
         .map_err(|e| ServiceError::BadRequest(e.to_string()))
         .and_then(|response| {
+            let status = response.status().as_u16();
+
             response
                 .from_err()
                 .fold(BytesMut::new(), |mut acc, chunk| {
                     acc.extend_from_slice(&chunk);
                     Ok::<_, ServiceError>(acc)
                 })
-                .map(|body| {
+                .map(move |body| {
                     let body: RespFcm =
                         serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
-                    (body, db)
+                    let resp_json = serde_json::json!({
+                        "status": status,
+                        "body": body
+                    });
+                     (db,resp_json )
                 })
         });
-    resp.and_then(|(res, db)| {
+    resp.and_then(|(db, resp_json)| {
+        send_data.comm.req = serde_json::to_value(send_data.params).unwrap() ;
+        send_data.comm.resp = resp_json;
         let p = send_data.comm.get_new();
         db.send(p).from_err()
     })
@@ -82,6 +90,7 @@ pub fn to_user(
     
 
     req.and_then(move |(db,resp_json)| {
+        send_data.comm.req = serde_json::to_value(send_data.params).unwrap() ;
         send_data.comm.resp = resp_json;
         let p = send_data.comm.get_new();
         db.send(p).from_err()
