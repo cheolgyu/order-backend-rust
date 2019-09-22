@@ -14,7 +14,7 @@ impl Handler<New> for DbExecutor {
     fn handle(&mut self, msg: New, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-       let insert: Object = diesel::insert_into(tb)
+        let insert: Object = diesel::insert_into(tb)
             .values(&msg)
             .get_result::<Object>(conn)?;
 

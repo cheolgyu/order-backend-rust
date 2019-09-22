@@ -1,6 +1,6 @@
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
 use crate::models::fcm::New;
+use crate::models::msg::Msg;
 use actix::Message;
 use serde::{Deserialize, Serialize};
 
@@ -15,8 +15,8 @@ pub struct ReqToComm {
     pub resp: serde_json::Value,
 }
 impl ReqToComm {
-    pub fn get_new(self) ->New{
-        New{
+    pub fn get_new(self) -> New {
+        New {
             to: self.to,
             order_id: self.order_id,
             order_detail_id: self.order_detail_id,
@@ -26,51 +26,51 @@ impl ReqToComm {
             resp: self.resp,
         }
     }
-    pub fn new_fcm() ->  ReqToComm{
+    pub fn new_fcm() -> ReqToComm {
         ReqToComm {
-             to: "fcm".to_string(),
-             order_id: -1,
-             order_detail_id: -1,
-             order_detail_state: "".to_string(),
-             trigger: "device::check".to_string(),
-             req: serde_json::json!(null),
-             resp: serde_json::json!(null),
+            to: "fcm".to_string(),
+            order_id: -1,
+            order_detail_id: -1,
+            order_detail_state: "".to_string(),
+            trigger: "device::check".to_string(),
+            req: serde_json::json!(null),
+            resp: serde_json::json!(null),
         }
     }
 
-    pub fn new_auto_cancle(trigger: String,order_id: i32) ->  ReqToComm{
+    pub fn new_auto_cancle(trigger: String, order_id: i32) -> ReqToComm {
         ReqToComm {
-             to: "fcm".to_string(),
-             order_id: order_id,
-             order_detail_id: -1,
-             order_detail_state: "".to_string(),
-             trigger: trigger,
-             req: serde_json::json!(null),
-             resp: serde_json::json!(null),
+            to: "fcm".to_string(),
+            order_id: order_id,
+            order_detail_id: -1,
+            order_detail_state: "".to_string(),
+            trigger: trigger,
+            req: serde_json::json!(null),
+            resp: serde_json::json!(null),
         }
     }
-    
-    pub fn new_order(trigger: String,order_id: i32) ->  ReqToComm{
+
+    pub fn new_order(trigger: String, order_id: i32) -> ReqToComm {
         ReqToComm {
-             to: "user".to_string(),
-             order_id: order_id,
-             order_detail_id: -1,
-             order_detail_state: "".to_string(),
-             trigger: trigger,
-             req: serde_json::json!(null),
-             resp: serde_json::json!(null),
+            to: "user".to_string(),
+            order_id: order_id,
+            order_detail_id: -1,
+            order_detail_state: "".to_string(),
+            trigger: trigger,
+            req: serde_json::json!(null),
+            resp: serde_json::json!(null),
         }
     }
-    
-    pub fn new_order_detail(trigger: String,order_id: i32) ->  ReqToComm{
+
+    pub fn new_order_detail(trigger: String, order_id: i32) -> ReqToComm {
         ReqToComm {
-             to: "user".to_string(),
-             order_id: order_id,
-             order_detail_id: -1,
-             order_detail_state: "".to_string(),
-             trigger: trigger,
-             req: serde_json::json!(null),
-             resp: serde_json::json!(null),
+            to: "user".to_string(),
+            order_id: order_id,
+            order_detail_id: -1,
+            order_detail_state: "".to_string(),
+            trigger: trigger,
+            req: serde_json::json!(null),
+            resp: serde_json::json!(null),
         }
     }
 }

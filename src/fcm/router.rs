@@ -40,11 +40,11 @@ pub fn to_fcm(
                         "status": status,
                         "body": body
                     });
-                     (db,resp_json )
+                    (db, resp_json)
                 })
         });
     resp.and_then(|(db, resp_json)| {
-        send_data.comm.req = serde_json::to_value(send_data.params).unwrap() ;
+        send_data.comm.req = serde_json::to_value(send_data.params).unwrap();
         send_data.comm.resp = resp_json;
         let p = send_data.comm.get_new();
         db.send(p).from_err()
@@ -64,10 +64,10 @@ pub fn to_user(
         .header("Authorization", store.webpush.key.clone())
         .send_json(&send_data.params)
         .map_err(|e| ServiceError::BadRequest("to_user ".into()))
-        .and_then(| response| {
-            println!("Status: {}",  response.status().as_u16());
+        .and_then(|response| {
+            println!("Status: {}", response.status().as_u16());
             let status = response.status().as_u16();
-            
+
             response
                 .from_err()
                 .fold(BytesMut::new(), |mut acc, chunk| {
@@ -77,20 +77,17 @@ pub fn to_user(
                 .map(move |body| {
                     let body: RespUser =
                         serde_json::from_slice(&body).expect("to_user body 변환 오류");
-                    
+
                     let resp_json = serde_json::json!({
                         "status": status,
                         "body": body
                     });
-                     (db,resp_json )
-                    
-            })
-           
+                    (db, resp_json)
+                })
         });
-    
 
-    req.and_then(move |(db,resp_json)| {
-        send_data.comm.req = serde_json::to_value(send_data.params).unwrap() ;
+    req.and_then(move |(db, resp_json)| {
+        send_data.comm.req = serde_json::to_value(send_data.params).unwrap();
         send_data.comm.resp = resp_json;
         let p = send_data.comm.get_new();
         db.send(p).from_err()

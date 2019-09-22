@@ -49,7 +49,7 @@ pub fn put(
         )
         .and_then(move |res| {
             let send_data = ReqToUser {
-                comm: ReqToComm::new_order("new order".to_string(),res.order.id),
+                comm: ReqToComm::new_order("new order".to_string(), res.order.id),
                 params: ReqToUserData {
                     notification: Notification {
                         title: "주문!".to_string(),
