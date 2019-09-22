@@ -22,7 +22,7 @@ impl Batch {
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(act.db.clone(), act.store.clone());
+            let result = index3("batch::come_find".to_string(),act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
@@ -38,7 +38,7 @@ impl Batch {
 
     fn auto_cancel(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(act.db.clone(), act.store.clone());
+            let result = index3("batch::auto_cancel".to_string(),act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
@@ -64,6 +64,7 @@ impl Actor for Batch {
 }
 
 fn index3(
+    trigger: String,
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> Box<dyn Future<Item = &'static str, Error = Error>> {
@@ -81,7 +82,7 @@ fn index3(
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
                     let send_data = ReqToUser {
-                        order_id: res.id.clone(),
+                        comm: ReqToComm::new_auto_cancle(trigger.clone(),res.id.clone() ),
                         params: ReqToUserData {
                             notification: Notification {
                                 title: "[자동] 주문 5분 미응답".to_string(),

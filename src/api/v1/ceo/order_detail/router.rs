@@ -61,7 +61,7 @@ pub fn put(
                     let to = res.data["order"]["sw_token"].as_str().unwrap().to_string();
 
                     let send_data = ReqToUser {
-                        order_id: order_id,
+                        comm: ReqToComm::new_order_detail("new order detail".to_string(), order_id),
                         params: ReqToUserData {
                             notification: Notification {
                                 title: "[손님]주문에 대한 응답.".to_string(),

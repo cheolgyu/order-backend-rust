@@ -37,25 +37,16 @@ pub struct Fcm {
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "fcm"]
 pub struct New {
+    pub to: String,
     pub order_id: i32,
+    pub order_detail_id: i32,
+    pub order_detail_state: String,
+    pub trigger: String,
+
+    pub req: serde_json::Value,
     pub resp: serde_json::Value,
 }
 
-impl New {
-    pub fn new_fcm(resp: serde_json::Value) -> New {
-        New {
-            order_id: -1,
-            resp: resp,
-        }
-    }
-
-    pub fn new_user(order_id: i32, resp: serde_json::Value) -> New {
-        New {
-            order_id: order_id,
-            resp: resp,
-        }
-    }
-}
 /*
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

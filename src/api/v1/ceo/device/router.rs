@@ -49,7 +49,7 @@ pub fn check(
                 Either::A(
                     to_fcm(
                         ReqToFcm {
-                            order_id: -1,
+                            comm: ReqToComm::new_fcm(),
                             params: ReqToFcmData {
                                 operation: res.operation.clone(),
                                 notification_key_name: shop_id.to_string(),
