@@ -1,6 +1,6 @@
 pub mod handler;
 pub mod model;
-use crate::batch::model::AutoCancel;
+use crate::batch::model::{AutoCancel,ComeFind};
 use crate::models::{AppStateWithTxt, DbExecutor};
 use actix::prelude::*;
 use futures::Future;
@@ -22,7 +22,7 @@ impl Batch {
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
         ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
-            let result = index3(
+            let result = index4(
                 "batch::come_find".to_string(),
                 act.db.clone(),
                 act.store.clone(),
@@ -70,6 +70,61 @@ impl Actor for Batch {
         self.come_find(ctx);
     }
 }
+
+
+fn index4(
+    trigger: String,
+    db: Data<Addr<DbExecutor>>,
+    store: Data<AppStateWithTxt>,
+) -> Box<dyn Future<Item = &'static str, Error = Error>> {
+    use futures::future::ok;
+    let sd = ComeFind {
+        db: db.clone(),
+        store: store.clone(),
+    };
+    let db2 = db.clone();
+    let store2 = store.clone();
+    Box::new({
+        db.send(sd).from_err().and_then(move |res| match res {
+            Ok(list) => {
+                for res in &list {
+                    let db_addr = db2.clone();
+                    let store3 = store2.clone();
+                    let send_data = ReqToUser {
+                        comm: ReqToComm::new_auto_cancle(trigger.clone(), res.id.clone()),
+                        params: ReqToUserData {
+                            notification: Notification {
+                                title: "[자동] 수령 하세요.".to_string(),
+                                body: "22".to_string(),
+                                icon: "33".to_string(),
+                                click_action: "44".to_string(),
+                            },
+                            to: res.notification_key.clone(),
+                        },
+                    };
+                    println!(" db handler  for : ");
+
+                    let result = to_user(send_data, db_addr, store3);
+                    Arbiter::spawn(
+                        result
+                            .map(|res| {
+                                // println!("Actor is  map");
+                            })
+                            .map_err(|e| {
+                                println!("Actor is probably dead: {}", e);
+                            }),
+                    );
+                }
+                ok::<_, Error>("Welcome!2 Welcome")
+            }
+            Err(e) => {
+                println!(" index3--: errr ");
+                ok::<_, Error>("Welcome!2 ERRR")
+            }
+        })
+    })
+}
+
 
 fn index3(
     trigger: String,

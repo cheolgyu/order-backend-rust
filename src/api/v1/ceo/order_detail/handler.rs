@@ -12,7 +12,7 @@ use diesel;
 use diesel::prelude::*;
 
 impl Handler<model::New> for DbExecutor {
-    type Result = Result<Msg, ServiceError>;
+    type Result = Result<model::NewRes, ServiceError>;
 
     fn handle(&mut self, msg: model::New, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
@@ -24,32 +24,18 @@ impl Handler<model::New> for DbExecutor {
 
         match check {
             Some(_) => {
-                println!("  이미 요청하셧습니다. ");
-                let payload = serde_json::json!({
-                    "msg": "이미 요청하셧습니다."
-                });
-
-                Ok(Msg {
-                    status: 400,
-                    data: payload,
-                })
+                Err(ServiceError::BadRequest("중복".into()))
             }
             None => {
-                println!("   요청을 저장 합니다. ");
-                let insert: Object = diesel::insert_into(tb)
+                let item_order_detail: Object = diesel::insert_into(tb)
                     .values(&msg)
                     .get_result::<Object>(conn)?;
                 let item_order = tb_order
                     .filter(&id.eq(&msg.order_id))
                     .get_result::<Order>(conn)?;
-
-                let payload = serde_json::json!({
-                    "item": insert,
-                    "order": item_order,
-                });
-                Ok(Msg {
-                    status: 200,
-                    data: payload,
+                Ok(model::NewRes{
+                    order: item_order,
+                    order_detail: item_order_detail
                 })
             }
         }

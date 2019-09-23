@@ -1,7 +1,8 @@
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::order_detail;
-
+use crate::models::order::Order;
+use crate::models::order_detail::OrderDetail;
 use crate::utils::validator::Validate;
 use actix::Message;
 use actix_web::error;
@@ -10,7 +11,7 @@ use actix_web::Error;
 use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Debug, Message, Queryable, Insertable)]
-#[rtype(result = "Result<Msg, ServiceError>")]
+#[rtype(result = "Result<NewRes, ServiceError>")]
 #[table_name = "order_detail"]
 pub struct New {
     pub shop_id: Uuid,
@@ -18,6 +19,12 @@ pub struct New {
     pub state: String,
     pub txt: serde_json::Value,
     pub req_session_id: serde_json::Value,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct NewRes {
+    pub order: Order,
+    pub order_detail: OrderDetail,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

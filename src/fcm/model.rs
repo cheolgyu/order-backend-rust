@@ -62,13 +62,13 @@ impl ReqToComm {
         }
     }
 
-    pub fn new_order_detail(trigger: String, order_id: i32) -> ReqToComm {
+    pub fn new_order_detail(order_id: i32,order_detail_id:i32, order_detail_state: String) -> ReqToComm {
         ReqToComm {
-            to: "user".to_string(),
+           to: "user".to_string(),
             order_id: order_id,
-            order_detail_id: -1,
-            order_detail_state: "".to_string(),
-            trigger: trigger,
+            order_detail_id: order_detail_id,
+            order_detail_state: order_detail_state,
+            trigger: "new order detail".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),
         }

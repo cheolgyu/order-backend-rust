@@ -52,16 +52,17 @@ pub fn put(
         .and_then(move |_| db4.send(info).from_err())
         .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .and_then(move |res_opt| match res_opt {
-            Ok(res) => match res.status {
-                200 => {
+            Ok(res) =>  {
+                    let inp_state = res.order_detail.state;
+                    let new_order_detail_id = res.order_detail.id;
                     let state = format!(
                         "상태코드: {}",
-                        res.data["item"]["state"].as_str().unwrap().to_string()
+                        inp_state
                     );
-                    let to = res.data["order"]["sw_token"].as_str().unwrap().to_string();
+                    let to = res.order.sw_token;
 
                     let send_data = ReqToUser {
-                        comm: ReqToComm::new_order_detail("new order detail".to_string(), order_id),
+                        comm: ReqToComm::new_order_detail(order_id,new_order_detail_id,inp_state),
                         params: ReqToUserData {
                             notification: Notification {
                                 title: "[손님]주문에 대한 응답.".to_string(),
@@ -73,13 +74,6 @@ pub fn put(
                         },
                     };
                     Either::A(to_user(send_data, db, store))
-                }
-                400 => Either::B(new_example_future_err(
-                    "중복된 주문응답 요청".to_string(),
-                )),
-                _ => Either::B(new_example_future_err(
-                    "알수없는 주문응답 요청".to_string(),
-                )),
             },
             Err(e) => Either::B(new_example_future_err(
                 "서버오류, 주문응답 요청".to_string(),

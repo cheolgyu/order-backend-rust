@@ -52,7 +52,7 @@ pub fn put(
                 comm: ReqToComm::new_order("new order".to_string(), res.order.id),
                 params: ReqToUserData {
                     notification: Notification {
-                        title: "주문!".to_string(),
+                        title: "[가게]주문!".to_string(),
                         body: "22".to_string(),
                         icon: "33".to_string(),
                         click_action: "44".to_string(),
