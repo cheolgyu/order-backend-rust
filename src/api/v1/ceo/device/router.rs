@@ -1,8 +1,8 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
+use crate::api::v1::ceo::auth::model::{AuthUser, Info};
 use crate::api::v1::ceo::device::model as params;
 use crate::errors::ServiceError;
 use crate::fcm::model::*;
-use crate::fcm::router::to_fcm;
+use crate::fcm::router;
 use crate::models::device as m;
 use crate::models::shop::UpdateNotificationKey;
 use crate::models::{AppStateWithTxt, DbExecutor};
@@ -29,25 +29,25 @@ pub fn check(
     let sw_token2 = sw_token.clone();
     let sw_token3 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
-
     let db2 = db.clone();
-
     let db4 = db.clone();
-
-    let user_id = auth_user.id.clone();
-
+    let user_id = auth_user.id;
+    
     db.send(m::GetWithShop {
         sw_token: sw_token,
         user_id: auth_user.id,
     })
-    .from_err()
+    .map_err(|e| {
+        ServiceError::BadRequest(e.to_string())
+    })
     .and_then(move |res_opt| match res_opt {
         Ok(res) => match res.operation.as_str() {
+            
             "create" | "add" => {
                 let shop_id = res.shop_id.clone();
                 let db3 = db.clone();
                 Either::A(
-                    to_fcm(
+                    router::to_fcm(
                         ReqToFcm {
                             comm: ReqToComm::new_fcm(),
                             params: ReqToFcmData {
@@ -60,17 +60,24 @@ pub fn check(
                         db,
                         store,
                     )
-                    .and_then(move |res| {
-                        let msg = res.unwrap();
-                        let shop_id2 = shop_id.clone();
-                        let notification_key = msg.data["item"]["resp"]["notification_key"]
-                            .as_str()
-                            .unwrap();
-                        db3.send(UpdateNotificationKey {
-                            id: shop_id,
-                            notification_key: notification_key.to_string(),
-                        })
-                        .from_err()
+                    .and_then(move |res_opt| match res_opt{
+                        Ok(msg) =>{
+                            let shop_id2 = shop_id.clone();
+                            let notification_key = msg.data["item"]["resp"]["body"]["notification_key"]
+                                .as_str()
+                                .expect("notification_key errer===========");
+                            Either::A(
+                            db3.send(UpdateNotificationKey {
+                                id: shop_id,
+                                notification_key: notification_key.to_string(),
+                            }).from_err()
+                            )
+                       
+                        },Err(e)=>{
+                            Either::B(err(ServiceError::BadRequest(
+                                "check device: tttest1".into(),
+                            )))
+                        }
                     })
                     .and_then(move |_res| {
                         db4.send(m::New {
@@ -83,7 +90,7 @@ pub fn check(
                     .map_err(|e| ServiceError::BadRequest(e.to_string()))
                     .then(|res| match res {
                         Ok(_user) => Ok(HttpResponse::Ok().json("2")),
-                        Err(_) => Ok(HttpResponse::InternalServerError().into()),
+                        Err(e) => Ok(HttpResponse::InternalServerError().into()),
                     }),
                 )
             }
