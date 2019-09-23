@@ -61,18 +61,19 @@ pub struct GetWithShop {
     pub user_id: Uuid,
 }
 
-use diesel::sql_types::{Integer, Text, Uuid as uu};
+use diesel::sql_types::{Integer, Text, Uuid as uu,BigInt};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct GetWithShopRes {
     #[sql_type = "uu"]
     pub shop_id: Uuid,
     #[sql_type = "Text"]
     pub notification_key: String,
-    #[sql_type = "Integer"]
-    pub device_cnt: i32,
+    #[sql_type = "BigInt"]
+    pub device_cnt: i64,
     #[sql_type = "Text"]
     pub operation: String,
 }
+
 /*
 impl GetWithShopRes {
     pub fn get(&self, webpush: WebPush) -> Option<ParamsToFcm> {
