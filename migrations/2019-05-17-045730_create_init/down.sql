@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS "product";
 DROP TABLE IF EXISTS  "valid";
 DROP TABLE IF EXISTS  "option";
 DROP TABLE IF EXISTS  "option_group";
+DROP TABLE IF EXISTS  "user_device";
+
 
 
 
