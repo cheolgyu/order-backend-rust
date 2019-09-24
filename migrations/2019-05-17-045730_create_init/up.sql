@@ -279,13 +279,6 @@ CREATE TABLE "fcm" (
   deleted_at TIMESTAMP  
 );
 
-CREATE VIEW view_comfind_info AS 
-SELECT od.id as od_id, sn.id as sn_id, sn.interval , sn.content , count(f.id) as send_cnt, od.created_at
-FROM "order_detail" od left join "shop_notification" sn on od.shop_id = sn.shop_id
-left join "fcm" f on  od.id = f.order_id and f.trigger= 'batch::comfind'
-WHERE od.state >= 2 
-group by od.id, sn.id , sn.interval , sn.content 
-;
 
 -- Your SQL goes here
 
@@ -300,6 +293,17 @@ CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token tex
     )
     SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
 $$ language 'sql';
+
+
+CREATE VIEW view_comfind_info AS 
+SELECT od.* 
+FROM "order_detail" od left join shop_notification sn on od.shop_id = sn.shop_id
+left join "fcm" f on  od.id = f.order_id and f.trigger= 'batch::comfind'
+WHERE od.state >= 2 
+AND 
+date_trunc('minute', CURRENT_TIMESTAMP) = date_trunc('minute', (od.created_at +  interval '1 seconds'*sn.interval))
+group by od.id, sn.id , sn.interval , sn.content 
+;
 
 -- 구매한 주문의 사장님의 제조완료에 대한 프로시저
 CREATE FUNCTION come_find() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
