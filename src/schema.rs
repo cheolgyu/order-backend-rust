@@ -4,7 +4,7 @@ table! {
         to -> Varchar,
         order_id -> Int4,
         order_detail_id -> Int4,
-        order_detail_state -> Varchar,
+        order_detail_state -> Int4,
         trigger -> Varchar,
         req -> Jsonb,
         resp -> Jsonb,
@@ -59,7 +59,7 @@ table! {
         id -> Int4,
         order_id -> Int4,
         shop_id -> Uuid,
-        state -> Varchar,
+        state -> Int4,
         txt -> Jsonb,
         req_session_id -> Jsonb,
         created_at -> Timestamp,
@@ -88,6 +88,18 @@ table! {
         name -> Varchar,
         products -> Nullable<Jsonb>,
         notification_key -> Varchar,
+        created_at -> Timestamp,
+        updated_at -> Nullable<Timestamp>,
+        deleted_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    shop_notification (id) {
+        id -> Int4,
+        shop_id -> Uuid,
+        interval -> Int4,
+        content -> Varchar,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,
         deleted_at -> Nullable<Timestamp>,
@@ -146,6 +158,7 @@ allow_tables_to_appear_in_same_query!(
     order_detail,
     product,
     shop,
+    shop_notification,
     user,
     user_device,
     valid,

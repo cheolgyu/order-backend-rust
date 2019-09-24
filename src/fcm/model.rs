@@ -9,7 +9,7 @@ pub struct ReqToComm {
     pub to: String,
     pub order_id: i32,
     pub order_detail_id: i32,
-    pub order_detail_state: String,
+    pub order_detail_state: i32,
     pub trigger: String,
     pub req: serde_json::Value,
     pub resp: serde_json::Value,
@@ -31,38 +31,49 @@ impl ReqToComm {
             to: "fcm".to_string(),
             order_id: -1,
             order_detail_id: -1,
-            order_detail_state: "".to_string(),
+            order_detail_state: -1,
             trigger: "device::check".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),
         }
     }
 
-    pub fn new_auto_cancle(trigger: String, order_id: i32) -> ReqToComm {
+    pub fn new_auto_cancle(order_id: i32) -> ReqToComm {
         ReqToComm {
             to: "fcm".to_string(),
             order_id: order_id,
             order_detail_id: -1,
-            order_detail_state: "".to_string(),
-            trigger: trigger,
+            order_detail_state: -1,
+            trigger: "batch::auto_cancle".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),
         }
     }
 
-    pub fn new_order(trigger: String, order_id: i32) -> ReqToComm {
+    pub fn new_comefind(order_id: i32) -> ReqToComm {
+        ReqToComm {
+            to: "fcm".to_string(),
+            order_id: order_id,
+            order_detail_id: -1,
+            order_detail_state: -1,
+            trigger: "batch::comfind".to_string(),
+            req: serde_json::json!(null),
+            resp: serde_json::json!(null),
+        }
+    }
+    pub fn new_order( order_id: i32) -> ReqToComm {
         ReqToComm {
             to: "user".to_string(),
             order_id: order_id,
             order_detail_id: -1,
-            order_detail_state: "".to_string(),
-            trigger: trigger,
+            order_detail_state: -1,
+            trigger: "new_order".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),
         }
     }
 
-    pub fn new_order_detail(order_id: i32,order_detail_id:i32, order_detail_state: String) -> ReqToComm {
+    pub fn new_order_detail(order_id: i32,order_detail_id:i32, order_detail_state: i32) -> ReqToComm {
         ReqToComm {
            to: "user".to_string(),
             order_id: order_id,

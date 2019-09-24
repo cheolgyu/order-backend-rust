@@ -16,7 +16,7 @@ use uuid::Uuid;
 pub struct New {
     pub shop_id: Uuid,
     pub order_id: i32,
-    pub state: String,
+    pub state: i32,
     pub txt: serde_json::Value,
     pub req_session_id: serde_json::Value,
 }
@@ -31,7 +31,7 @@ pub struct NewRes {
 pub struct InpNew {
     pub shop_id: Uuid,
     pub order_id: i32,
-    pub state: String,
+    pub state: i32,
     pub txt: serde_json::Value,
     pub req_session_id: serde_json::Value,
 }

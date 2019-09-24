@@ -48,14 +48,23 @@ CREATE TABLE "user_device" (
   deleted_at TIMESTAMP  
 );
 
-
 CREATE TABLE "shop" (
-
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   ceo_id UUID NOT NULL,
   name VARCHAR NOT NULL ,
   products jsonb NULL,
   notification_key VARCHAR NOT NULL DEFAULT ''  ,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
+  deleted_at TIMESTAMP  
+);
+
+CREATE TABLE "shop_notification" (
+  id SERIAL PRIMARY KEY,
+  shop_id UUID NOT NULL,
+  interval  INTEGER NOT NULL DEFAULT 10,
+  content VARCHAR NOT NULL DEFAULT '10초 후 기본 메시지',
+  
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  
@@ -194,7 +203,9 @@ INSERT INTO "option" ("id", "shop_id", "name", "price", "created_at", "updated_a
 (DEFAULT,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'일반샷 추가',	500,	'2019-07-17 00:11:00.605369',	'2019-07-17 00:11:00.605369',	'2019-07-20 05:57:42.217618',	's'),
 (DEFAULT,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'프리미엄 추가',	500,	'2019-07-17 00:11:09.611149',	'2019-07-17 00:11:09.611149',	'2019-07-20 05:57:45.26888',	's');
 
-
+INSERT INTO "shop_notification" ("id", "shop_id", "interval", "content", "created_at", "updated_at", "deleted_at") VALUES
+(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	10,	'10초 후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL),
+(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	20,	'20초 후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL);
 
 SELECT  p.prosrc
 FROM    pg_catalog.pg_namespace n
@@ -211,7 +222,7 @@ CREATE TABLE "order_detail" (
   id SERIAL PRIMARY KEY,
   order_id INTEGER NOT NULL,
   shop_id UUID NOT NULL,
-  state VARCHAR NOT NULL,
+  state INTEGER NOT NULL,
   txt jsonb NOT NULL,
   req_session_id jsonb NOT NULL,
   
@@ -219,6 +230,7 @@ CREATE TABLE "order_detail" (
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  
 );
+COMMENT ON COLUMN "order_detail"."state" IS '0: 거절, 1:승인, 2: 수령';
 
 CREATE TABLE "order" (
 
@@ -257,7 +269,7 @@ CREATE TABLE "fcm" (
   "to" VARCHAR NOT NULL,
   order_id INTEGER NOT NULL,
   order_detail_id INTEGER NOT NULL DEFAULT '0' ,
-  order_detail_state  VARCHAR NOT NULL DEFAULT ''  ,
+  order_detail_state  INTEGER NOT NULL,
   trigger  VARCHAR NOT NULL DEFAULT ''  ,
   req jsonb NOT NULL,
   resp jsonb NOT NULL,
@@ -266,6 +278,14 @@ CREATE TABLE "fcm" (
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  
 );
+
+CREATE VIEW view_comfind_info AS 
+SELECT od.id as od_id, sn.id as sn_id, sn.interval , sn.content , count(f.id) as send_cnt, od.created_at
+FROM "order_detail" od left join "shop_notification" sn on od.shop_id = sn.shop_id
+left join "fcm" f on  od.id = f.order_id and f.trigger= 'batch::comfind'
+WHERE od.state >= 2 
+group by od.id, sn.id , sn.interval , sn.content 
+;
 
 -- Your SQL goes here
 
@@ -292,6 +312,8 @@ CREATE FUNCTION come_find() returns table(id integer,shop_id uuid,sw_token text,
     )
     SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
 $$ language 'sql';
+
+
 
 
 

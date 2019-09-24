@@ -20,7 +20,7 @@ pub struct OrderDetail {
     pub id: i32,
     pub order_id: i32,
     pub shop_id: Uuid,
-    pub state: String,
+    pub state: i32,
     pub txt: serde_json::Value,
     pub req_session_id: serde_json::Value,
     pub created_at: NaiveDateTime,
