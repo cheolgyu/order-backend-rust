@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::models::device::{Device as Object,New,GetWithShop, GetWithShopRes,GetList,Update};
+use crate::models::device::{Device as Object, GetList, GetWithShop, GetWithShopRes, New, Update};
 use crate::models::msg::Msg;
 use crate::models::DbExecutor;
 use crate::schema::user_device::dsl::{id, name, sw_token, user_device as tb, user_id};
@@ -10,8 +10,7 @@ use diesel::prelude::*;
 use serde_json::json;
 
 use diesel::sql_query;
-use diesel::sql_types::{Uuid,Text};
-
+use diesel::sql_types::{Text, Uuid};
 
 impl Handler<New> for DbExecutor {
     type Result = Result<Msg, ServiceError>;
@@ -50,7 +49,8 @@ impl Handler<GetWithShop> for DbExecutor {
     fn handle(&mut self, msg: GetWithShop, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let q = sql_query("
+        let q = sql_query(
+            "
        SELECT
             a.shop_id, 
             a.notification_key, 
@@ -71,7 +71,8 @@ impl Handler<GetWithShop> for DbExecutor {
                             AND d.sw_token = $2 
                 WHERE  s.ceo_id = $1
                 GROUP  BY s.id) a      
-        ")
+        ",
+        )
         .bind::<Uuid, _>(&msg.user_id)
         .bind::<Text, _>(&msg.sw_token);
         let res = q.get_result::<GetWithShopRes>(conn).expect(" 쿼리오류 ");

@@ -54,7 +54,11 @@ impl ReqToComm {
         }
     }
 
-    pub fn new_comefind(order_id: i32,order_detail_id: i32,shop_notification_id :i32) -> ReqToComm {
+    pub fn new_comefind(
+        order_id: i32,
+        order_detail_id: i32,
+        shop_notification_id: i32,
+    ) -> ReqToComm {
         ReqToComm {
             to: "user".to_string(),
             order_id: order_id.clone(),
@@ -66,7 +70,7 @@ impl ReqToComm {
             resp: serde_json::json!(null),
         }
     }
-    pub fn new_order( order_id: i32) -> ReqToComm {
+    pub fn new_order(order_id: i32) -> ReqToComm {
         ReqToComm {
             to: "user".to_string(),
             order_id: order_id,
@@ -79,9 +83,13 @@ impl ReqToComm {
         }
     }
 
-    pub fn new_order_detail(order_id: i32,order_detail_id:i32, order_detail_state: i32) -> ReqToComm {
+    pub fn new_order_detail(
+        order_id: i32,
+        order_detail_id: i32,
+        order_detail_state: i32,
+    ) -> ReqToComm {
         ReqToComm {
-           to: "user".to_string(),
+            to: "user".to_string(),
             order_id: order_id,
             order_detail_id: order_detail_id,
             order_detail_state: order_detail_state,

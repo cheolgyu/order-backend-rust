@@ -23,9 +23,7 @@ impl Handler<model::New> for DbExecutor {
             .pop();
 
         match check {
-            Some(_) => {
-                Err(ServiceError::BadRequest("중복".into()))
-            }
+            Some(_) => Err(ServiceError::BadRequest("중복".into())),
             None => {
                 let item_order_detail: Object = diesel::insert_into(tb)
                     .values(&msg)
@@ -33,9 +31,9 @@ impl Handler<model::New> for DbExecutor {
                 let item_order = tb_order
                     .filter(&id.eq(&msg.order_id))
                     .get_result::<Order>(conn)?;
-                Ok(model::NewRes{
+                Ok(model::NewRes {
                     order: item_order,
-                    order_detail: item_order_detail
+                    order_detail: item_order_detail,
                 })
             }
         }

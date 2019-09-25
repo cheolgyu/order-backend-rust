@@ -65,7 +65,6 @@ pub fn to_user(
         .send_json(&send_data.params)
         .map_err(|e| ServiceError::BadRequest("to_user ".into()))
         .and_then(|response| {
-           
             let status = response.status().as_u16();
 
             response

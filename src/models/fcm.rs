@@ -23,7 +23,7 @@ pub struct Fcm {
     pub order_id: i32,
     pub order_detail_id: i32,
     pub shop_notification_id: i32,
-    
+
     pub order_detail_state: i32,
     pub trigger: String,
 

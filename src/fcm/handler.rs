@@ -5,7 +5,7 @@ use crate::models::DbExecutor;
 use crate::schema::fcm::dsl::{fcm as tb, *};
 
 use actix::Handler;
-use diesel; 
+use diesel;
 use diesel::prelude::*;
 // fcm 내역 저장
 impl Handler<New> for DbExecutor {

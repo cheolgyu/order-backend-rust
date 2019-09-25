@@ -32,17 +32,14 @@ pub fn check(
     let db2 = db.clone();
     let db4 = db.clone();
     let user_id = auth_user.id;
-    
+
     db.send(m::GetWithShop {
         sw_token: sw_token,
         user_id: auth_user.id,
     })
-    .map_err(|e| {
-        ServiceError::BadRequest(e.to_string())
-    })
+    .map_err(|e| ServiceError::BadRequest(e.to_string()))
     .and_then(move |res_opt| match res_opt {
         Ok(res) => match res.operation.as_str() {
-            
             "create" | "add" => {
                 let shop_id = res.shop_id.clone();
                 let db3 = db.clone();
@@ -60,24 +57,24 @@ pub fn check(
                         db,
                         store,
                     )
-                    .and_then(move |res_opt| match res_opt{
-                        Ok(msg) =>{
+                    .and_then(move |res_opt| match res_opt {
+                        Ok(msg) => {
                             let shop_id2 = shop_id.clone();
-                            let notification_key = msg.data["item"]["resp"]["body"]["notification_key"]
+                            let notification_key = msg.data["item"]["resp"]["body"]
+                                ["notification_key"]
                                 .as_str()
                                 .expect("notification_key errer===========");
                             Either::A(
-                            db3.send(UpdateNotificationKey {
-                                id: shop_id,
-                                notification_key: notification_key.to_string(),
-                            }).from_err()
+                                db3.send(UpdateNotificationKey {
+                                    id: shop_id,
+                                    notification_key: notification_key.to_string(),
+                                })
+                                .from_err(),
                             )
-                       
-                        },Err(e)=>{
-                            Either::B(err(ServiceError::BadRequest(
-                                "check device: tttest1".into(),
-                            )))
                         }
+                        Err(e) => Either::B(err(ServiceError::BadRequest(
+                            "check device: tttest1".into(),
+                        ))),
                     })
                     .and_then(move |_res| {
                         db4.send(m::New {

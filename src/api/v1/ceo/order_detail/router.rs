@@ -52,29 +52,26 @@ pub fn put(
         .and_then(move |_| db4.send(info).from_err())
         .and_then(move |_| db2.send(j.new(shop_id)).from_err())
         .and_then(move |res_opt| match res_opt {
-            Ok(res) =>  {
-                    let inp_state = res.order_detail.state;
-                    let new_order_detail_id = res.order_detail.id;
-                    let state = format!(
-                        "상태코드: {}",
-                        inp_state
-                    );
-                    let to = res.order.sw_token;
+            Ok(res) => {
+                let inp_state = res.order_detail.state;
+                let new_order_detail_id = res.order_detail.id;
+                let state = format!("상태코드: {}", inp_state);
+                let to = res.order.sw_token;
 
-                    let send_data = ReqToUser {
-                        comm: ReqToComm::new_order_detail(order_id,new_order_detail_id,inp_state),
-                        params: ReqToUserData {
-                            notification: Notification {
-                                title: "[손님]주문에 대한 응답.".to_string(),
-                                body: state,
-                                icon: "".to_string(),
-                                click_action: "".to_string(),
-                            },
-                            to: to,
+                let send_data = ReqToUser {
+                    comm: ReqToComm::new_order_detail(order_id, new_order_detail_id, inp_state),
+                    params: ReqToUserData {
+                        notification: Notification {
+                            title: "[손님]주문에 대한 응답.".to_string(),
+                            body: state,
+                            icon: "".to_string(),
+                            click_action: "".to_string(),
                         },
-                    };
-                    Either::A(to_user(send_data, db, store))
-            },
+                        to: to,
+                    },
+                };
+                Either::A(to_user(send_data, db, store))
+            }
             Err(e) => Either::B(new_example_future_err(
                 "서버오류, 주문응답 요청".to_string(),
             )),
