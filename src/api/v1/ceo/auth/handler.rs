@@ -9,7 +9,7 @@ use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer, Text};
+use diesel::sql_types::{Integer, Text,Uuid as uu};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
@@ -127,11 +127,12 @@ impl Handler<Info> for DbExecutor {
                 use diesel::sql_types::Nullable;
                 if u.role == "ceo" {
                     let q = sql_query("select * from ceo_info($1,$2,$3) ");
+                    
                     let res = q
-                        .bind::<Text, _>(u.id.to_string())
-                        .bind::<Nullable<Text>, _>(&msg.shop_id)
+                        .bind::<uu, _>(u.id)
+                        .bind::<Nullable<uu>, _>(&msg.shop_id)
                         .bind::<Nullable<Integer>, _>(&msg.product_id)
-                        .execute(conn)?;
+                        .execute(conn).expect("ceo_info 조회 오류");
                     let res2 = res;
                     if res2 == 1 {
                         Ok(msg2)

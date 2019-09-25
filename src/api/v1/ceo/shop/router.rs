@@ -34,7 +34,7 @@ pub fn get(
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let info = path_info.into_inner();
     let sid = info.shop_id.unwrap();
-    let uuid_shop_id = Uuid::parse_str(&sid).unwrap();
+    let uuid_shop_id = sid;
     db.send(ShopID { id: uuid_shop_id })
         .from_err()
         .and_then(|res| match res {

@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS  "user_device";
 
 
 
-DROP FUNCTION IF EXISTS ceo_info (u_id UUID,
+DROP FUNCTION IF EXISTS ceo_info(u_id UUID,
                           s_id UUID,
                           p_id INTEGER);
 

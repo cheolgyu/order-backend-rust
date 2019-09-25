@@ -109,7 +109,7 @@ CREATE TABLE "option_group" (
 );
 
 -- 조회 프로시저
-CREATE FUNCTION ceo_info (u_id UUID,
+CREATE FUNCTION ceo_info(u_id UUID,
                           s_id UUID,
                           p_id INTEGER) returns SETOF int
 AS

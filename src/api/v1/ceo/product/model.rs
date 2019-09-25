@@ -42,9 +42,9 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, shop_id: String) -> New {
+    pub fn new(&self, shop_id: Uuid) -> New {
         New {
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
             name: self.name.to_string(),
             price: self.price.parse().expect("상품가격 파서 오류"),
             opt_group: self.opt_group.clone(),
@@ -141,10 +141,10 @@ impl Validate for InpDelete {
 }
 
 impl InpDelete {
-    pub fn new(&self, shop_id: String) -> Delete {
+    pub fn new(&self, shop_id: Uuid) -> Delete {
         Delete {
             id: self.id,
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
         }
     }
 }

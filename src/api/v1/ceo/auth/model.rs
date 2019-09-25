@@ -203,8 +203,8 @@ pub struct QueryUser {
 #[derive(Deserialize, Serialize, Debug, Message, Clone)]
 #[rtype(result = "Result<Info, ServiceError>")]
 pub struct Info {
-    pub ceo_id: String,
-    pub shop_id: Option<String>,
+    pub ceo_id: Uuid,
+    pub shop_id: Option<Uuid>,
     pub product_id: Option<i32>,
     pub auth_user: Option<AuthUser>,
 }

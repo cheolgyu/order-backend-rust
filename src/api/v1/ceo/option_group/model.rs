@@ -39,10 +39,10 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, shop_id: String) -> New {
+    pub fn new(&self, shop_id: Uuid) -> New {
         New {
             name: self.name.to_string(),
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
             options: self.options.clone(),
             default: self.default.clone(),
         }
@@ -81,10 +81,10 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn new(&self, shop_id: String) -> Update {
+    pub fn new(&self, shop_id: Uuid) -> Update {
         Update {
             id: self.id,
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
             name: self.name.to_string(),
             options: self.options.clone(),
             default: self.default.clone(),
@@ -120,10 +120,10 @@ impl Validate for InpDelete {
 }
 
 impl InpDelete {
-    pub fn new(&self, shop_id: String) -> Delete {
+    pub fn new(&self, shop_id: Uuid) -> Delete {
         Delete {
             id: self.id,
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
         }
     }
 }

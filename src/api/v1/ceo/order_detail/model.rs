@@ -49,9 +49,9 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, shop_id: String) -> New {
+    pub fn new(&self, shop_id: Uuid) -> New {
         New {
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
             order_id: self.order_id.clone(),
             state: self.state.clone(),
             txt: self.txt.clone(),

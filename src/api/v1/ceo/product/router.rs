@@ -79,7 +79,7 @@ pub fn get_list(
     let mut info = path_info.into_inner();
     let info2 = info.clone();
     let sid = info2.shop_id.unwrap();
-    let uusid = Uuid::parse_str(&sid).unwrap();
+    let uusid = sid;
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
 

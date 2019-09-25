@@ -38,10 +38,10 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn new(&self, shop_id: String) -> Update {
+    pub fn new(&self, shop_id: Uuid) -> Update {
         Update {
             id: self.id,
-            shop_id: Uuid::parse_str(&shop_id).unwrap(),
+            shop_id: shop_id,
             state: self.state.clone(),
         }
     }

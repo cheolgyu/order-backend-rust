@@ -115,7 +115,7 @@ pub fn get_list(
         .from_err()
         .and_then(move |_| {
             db2.send(GetList {
-                shop_id: Uuid::parse_str(&shop_id).unwrap(),
+                shop_id: shop_id,
             })
         })
         .from_err()
