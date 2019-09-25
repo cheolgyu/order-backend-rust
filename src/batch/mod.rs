@@ -88,19 +88,20 @@ fn index4(
                 for res in &list {
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
+                    let title = format!("[{}] 수령하세요.", res.shop_name);
                     let send_data = ReqToUser {
-                        comm: ReqToComm::new_comefind( res.id.clone()),
+                        comm: ReqToComm::new_comefind( res.order_id.clone(),res.order_detail_id.clone(),res.shop_notification_id.clone()),
                         params: ReqToUserData {
                             notification: Notification {
-                                title: "[자동] 수령 하세요.".to_string(),
-                                body: "22".to_string(),
+                                title: title,
+                                body: res.content.clone(),
                                 icon: "33".to_string(),
                                 click_action: "44".to_string(),
                             },
-                            to: res.notification_key.clone(),
+                            to: res.to.clone(),
                         },
                     };
-                    println!(" db handler  for : ");
+                    
 
                     let result = to_user(send_data, db_addr, store3);
                     Arbiter::spawn(
@@ -116,7 +117,7 @@ fn index4(
                 ok::<_, Error>("Welcome!2 Welcome")
             }
             Err(e) => {
-                println!(" index3--: errr ");
+                println!(" index4--: errr {:?}",e);
                 ok::<_, Error>("Welcome!2 ERRR")
             }
         })
@@ -140,13 +141,13 @@ fn index3(
         db.send(sd).from_err().and_then(move |res| match res {
             Ok(list) => {
                 for res in &list {
-                    let db_addr = db2.clone();
+                    let db_addr = db2.clone(); 
                     let store3 = store2.clone();
                     let send_data = ReqToUser {
                         comm: ReqToComm::new_auto_cancle( res.id.clone()),
                         params: ReqToUserData {
                             notification: Notification {
-                                title: "[자동] 주문 5분 미응답".to_string(),
+                                title: "[자동] 주문후 5분 미응답".to_string(),
                                 body: "22".to_string(),
                                 icon: "33".to_string(),
                                 click_action: "44".to_string(),
@@ -154,7 +155,7 @@ fn index3(
                             to: res.notification_key.clone(),
                         },
                     };
-                    println!(" db handler  for : ");
+                    
 
                     let result = to_user(send_data, db_addr, store3);
                     Arbiter::spawn(
@@ -170,7 +171,7 @@ fn index3(
                 ok::<_, Error>("Welcome!2 Welcome")
             }
             Err(e) => {
-                println!(" index3--: errr ");
+                println!(" index3--: errr {:?}",e);
                 ok::<_, Error>("Welcome!2 ERRR")
             }
         })

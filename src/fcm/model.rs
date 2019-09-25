@@ -9,6 +9,7 @@ pub struct ReqToComm {
     pub to: String,
     pub order_id: i32,
     pub order_detail_id: i32,
+    pub shop_notification_id: i32,
     pub order_detail_state: i32,
     pub trigger: String,
     pub req: serde_json::Value,
@@ -20,6 +21,7 @@ impl ReqToComm {
             to: self.to,
             order_id: self.order_id,
             order_detail_id: self.order_detail_id,
+            shop_notification_id: self.shop_notification_id,
             order_detail_state: self.order_detail_state,
             trigger: self.trigger,
             req: self.req,
@@ -31,6 +33,7 @@ impl ReqToComm {
             to: "fcm".to_string(),
             order_id: -1,
             order_detail_id: -1,
+            shop_notification_id: -1,
             order_detail_state: -1,
             trigger: "device::check".to_string(),
             req: serde_json::json!(null),
@@ -43,6 +46,7 @@ impl ReqToComm {
             to: "fcm".to_string(),
             order_id: order_id,
             order_detail_id: -1,
+            shop_notification_id: -1,
             order_detail_state: -1,
             trigger: "batch::auto_cancle".to_string(),
             req: serde_json::json!(null),
@@ -50,12 +54,13 @@ impl ReqToComm {
         }
     }
 
-    pub fn new_comefind(order_id: i32) -> ReqToComm {
+    pub fn new_comefind(order_id: i32,order_detail_id: i32,shop_notification_id :i32) -> ReqToComm {
         ReqToComm {
-            to: "fcm".to_string(),
-            order_id: order_id,
-            order_detail_id: -1,
-            order_detail_state: -1,
+            to: "user".to_string(),
+            order_id: order_id.clone(),
+            order_detail_id: order_detail_id.clone(),
+            shop_notification_id: shop_notification_id.clone(),
+            order_detail_state: 2,
             trigger: "batch::comfind".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),
@@ -66,6 +71,7 @@ impl ReqToComm {
             to: "user".to_string(),
             order_id: order_id,
             order_detail_id: -1,
+            shop_notification_id: -1,
             order_detail_state: -1,
             trigger: "new_order".to_string(),
             req: serde_json::json!(null),
@@ -79,6 +85,7 @@ impl ReqToComm {
             order_id: order_id,
             order_detail_id: order_detail_id,
             order_detail_state: order_detail_state,
+            shop_notification_id: -1,
             trigger: "new order detail".to_string(),
             req: serde_json::json!(null),
             resp: serde_json::json!(null),

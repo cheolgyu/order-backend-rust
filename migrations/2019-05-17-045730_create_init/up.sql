@@ -62,8 +62,8 @@ CREATE TABLE "shop" (
 CREATE TABLE "shop_notification" (
   id SERIAL PRIMARY KEY,
   shop_id UUID NOT NULL,
-  interval  INTEGER NOT NULL DEFAULT 10,
-  content VARCHAR NOT NULL DEFAULT '10초 후 기본 메시지',
+  interval  INTEGER NOT NULL DEFAULT 60,
+  content VARCHAR NOT NULL DEFAULT '60초 후 기본 메시지',
   
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
@@ -204,8 +204,8 @@ INSERT INTO "option" ("id", "shop_id", "name", "price", "created_at", "updated_a
 (DEFAULT,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	'프리미엄 추가',	500,	'2019-07-17 00:11:09.611149',	'2019-07-17 00:11:09.611149',	'2019-07-20 05:57:45.26888',	's');
 
 INSERT INTO "shop_notification" ("id", "shop_id", "interval", "content", "created_at", "updated_at", "deleted_at") VALUES
-(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	10,	'10초 후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL),
-(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	20,	'20초 후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL);
+(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	60,	'60 초후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL),
+(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	120,	'120 초 후 기본 메시지',	'2019-09-24 00:41:01.722745',	'2019-09-24 00:41:01.722745',	NULL);
 
 SELECT  p.prosrc
 FROM    pg_catalog.pg_namespace n
@@ -269,6 +269,7 @@ CREATE TABLE "fcm" (
   "to" VARCHAR NOT NULL,
   order_id INTEGER NOT NULL,
   order_detail_id INTEGER NOT NULL DEFAULT '0' ,
+  shop_notification_id INTEGER NOT NULL DEFAULT '0' ,
   order_detail_state  INTEGER NOT NULL,
   trigger  VARCHAR NOT NULL DEFAULT ''  ,
   req jsonb NOT NULL,
@@ -288,7 +289,7 @@ CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token tex
       update "order" set state = 'auto_cacnle' 
       where 
       state = 'req'  and 
-      created_at <= CURRENT_TIMESTAMP+ time '00:05' 
+      Date_trunc('minute', CURRENT_TIMESTAMP) = Date_trunc('minute', created_at+ time '00:05' )
       RETURNING id, shop_id,sw_token
     )
     SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
@@ -296,26 +297,34 @@ $$ language 'sql';
 
 
 CREATE VIEW view_comfind_info AS 
-SELECT od.* 
-FROM "order_detail" od left join shop_notification sn on od.shop_id = sn.shop_id
-left join "fcm" f on  od.id = f.order_id and f.trigger= 'batch::comfind'
-WHERE od.state >= 2 
-AND 
-date_trunc('minute', CURRENT_TIMESTAMP) = date_trunc('minute', (od.created_at +  interval '1 seconds'*sn.interval))
-group by od.id, sn.id , sn.interval , sn.content 
+SELECT    od.order_id AS order_id , 
+          od.id       AS order_detail_id, 
+          od.shop_id  AS shop_id,
+          sn.id as shop_notification_id, 
+          o.sw_token  AS to , 
+          sn.content  AS content, 
+          s.NAME      AS shop_name 
+FROM      "order_detail" od 
+LEFT JOIN "order" o 
+ON        od.order_id = o.id 
+LEFT JOIN shop s 
+ON        od.shop_id = s.id 
+LEFT JOIN shop_notification sn 
+ON        od.shop_id = sn.shop_id 
+AND       sn.id NOT IN 
+          ( 
+                 SELECT f.shop_notification_id 
+                 FROM   fcm f 
+                 WHERE  f.order_detail_state=2 
+                 AND    f.TRIGGER= 'batch::comfind' ) 
+WHERE     od.state = 2 
+AND       Date_trunc('minute', CURRENT_TIMESTAMP) = date_trunc('minute', (od.created_at + interval '1 seconds'*sn.interval))
 ;
-
--- 구매한 주문의 사장님의 제조완료에 대한 프로시저
-CREATE FUNCTION come_find() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
-     WITH updt AS (
-      update "order" set state = 'test' 
-      where 
-      state = 'req'  and 
-      created_at <= CURRENT_TIMESTAMP+ time '00:05' 
-      RETURNING id, shop_id,sw_token
-    )
-    SELECT up.id,up.shop_id,up.sw_token,s.notification_key as notification_key FROM updt up left join shop s on shop_id = s.id;
-$$ language 'sql';
+-- 구매한 주문의 사장님의 제조완료에 대한 배치 프로시저
+CREATE FUNCTION come_find() 
+returns TABLE(order_id integer,order_detail_id integer,shop_id uuid,shop_notification_id integer,"to" text,content text,shop_name text) AS $$ 
+SELECT * 
+FROM   view_comfind_info $$ language 'sql';
 
 
 

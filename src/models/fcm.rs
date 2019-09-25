@@ -22,6 +22,8 @@ pub struct Fcm {
     pub to: String,
     pub order_id: i32,
     pub order_detail_id: i32,
+    pub shop_notification_id: i32,
+    
     pub order_detail_state: i32,
     pub trigger: String,
 
@@ -40,9 +42,9 @@ pub struct New {
     pub to: String,
     pub order_id: i32,
     pub order_detail_id: i32,
+    pub shop_notification_id: i32,
     pub order_detail_state: i32,
     pub trigger: String,
-
     pub req: serde_json::Value,
     pub resp: serde_json::Value,
 }

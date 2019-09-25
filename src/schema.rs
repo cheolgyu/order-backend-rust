@@ -4,6 +4,7 @@ table! {
         to -> Varchar,
         order_id -> Int4,
         order_detail_id -> Int4,
+        shop_notification_id -> Int4,
         order_detail_state -> Int4,
         trigger -> Varchar,
         req -> Jsonb,

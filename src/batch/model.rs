@@ -16,13 +16,20 @@ pub struct ComeFind {
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct ComeFindRes {
     #[sql_type = "Integer"]
-    pub id: i32,
+    pub order_id: i32,
+    #[sql_type = "Integer"]
+    pub order_detail_id: i32,
     #[sql_type = "uu"]
     pub shop_id: Uuid,
+    #[sql_type = "Integer"]
+    pub shop_notification_id: i32,
     #[sql_type = "Text"]
-    pub sw_token: String,
+    pub to: String,
     #[sql_type = "Text"]
-    pub notification_key: String,
+    pub content: String,
+    #[sql_type = "Text"]
+    pub shop_name: String,
+    
 }
 
 

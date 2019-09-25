@@ -13,7 +13,7 @@ impl Handler<ComeFind> for DbExecutor {
     fn handle(&mut self, msg: ComeFind, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let list = sql_query("select * from come_find() ").get_results::<ComeFindRes>(conn)?;
+        let list = sql_query("select * from view_comfind_info ").get_results::<ComeFindRes>(conn)?;
 
         Ok(list)
     }
