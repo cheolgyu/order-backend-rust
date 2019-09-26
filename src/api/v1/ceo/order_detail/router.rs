@@ -18,15 +18,6 @@ use crate::fcm::model::*;
 use crate::fcm::router::to_user;
 use crate::models::msg::Msg;
 use futures::future::FutureResult;
-#[derive(Debug, PartialEq)]
-pub enum ExampleFutureError {
-    Oops,
-}
-type ExampleFuture = FutureResult<Result<Msg, ServiceError>, ServiceError>;
-
-pub fn new_example_future_err(msg: String) -> ExampleFuture {
-    futures::future::err(ServiceError::BadRequest(msg.clone()))
-}
 
 pub fn put(
     json: Json<model::InpNew>,
@@ -72,15 +63,11 @@ pub fn put(
                 };
                 Either::A(to_user(send_data, db, store))
             }
-            Err(e) => Either::B(new_example_future_err(
-                e.to_string(),
-            )),
+            Err(e) => Either::B(futures::future::ok( Err(e) )),
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => {
-                println!("=============================");
-                println!("============================={:?}", e);
                 Ok(e.error_response())
             },
         })

@@ -25,7 +25,7 @@ impl Handler<model::New> for DbExecutor {
             Some(check_ok)=>{
                 match check_ok.state{
                     0  =>{
-                        Err(ServiceError::BadRequest("거절하신 주문 입니다.".into()))
+                        Err(ServiceError::BadRequest("거절하신 주문 입니다.".to_string()))
                     },
                     1 =>{
                          match msg.state{
@@ -42,13 +42,13 @@ impl Handler<model::New> for DbExecutor {
                                 })
                             },
                             1 =>{
-                                Err(ServiceError::BadRequest("이미 승인된 주문입니다.".into()))
+                                Err(ServiceError::BadRequest("이미 승인된 주문입니다.".to_string()))
                             },
                             0 =>{
-                                Err(ServiceError::BadRequest("승인된 주문은 거절할수 없습니다.".into()))
+                                Err(ServiceError::BadRequest("승인된 주문은 거절할수 없습니다.".to_string()))
                             },
                             _=>{
-                                Err(ServiceError::BadRequest("누 구 냐?".into()))
+                                Err(ServiceError::BadRequest("누 구 냐?".to_string()))
                             }
                         }
                     },
@@ -68,26 +68,26 @@ impl Handler<model::New> for DbExecutor {
                                 })
                             },
                             1 =>{
-                                Err(ServiceError::BadRequest("주문을 승인할수 없습니다.".into()))
+                                Err(ServiceError::BadRequest("주문을 승인할수 없습니다.".to_string()))
                             },
                             0 =>{
-                                Err(ServiceError::BadRequest("주문을 거절할수 없습니다.".into()))
+                                Err(ServiceError::BadRequest("주문을 거절할수 없습니다.".to_string()))
                             },
                             _=>{
-                                Err(ServiceError::BadRequest("누구 냐?".into()))
+                                Err(ServiceError::BadRequest("누구 냐?".to_string()))
                             }
 
                         }
                     },
                     _=>{
-                        Err(ServiceError::BadRequest("누구냐?".into()))
+                        Err(ServiceError::BadRequest("누구냐?".to_string()))
                     }
                 }
             },
             None=>{
                 match msg.state{
                     2 =>{
-                        Err(ServiceError::BadRequest("승인이나 거절부터하십시요.".into()))
+                        Err(ServiceError::BadRequest("승인이나 거절부터하십시요.".to_string()))
                     },
                     _=>{
                         let item_order_detail: Object = diesel::insert_into(tb)

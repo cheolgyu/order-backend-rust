@@ -32,7 +32,9 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => {
                 HttpResponse::InternalServerError().json("4444444444444444444444444444")
             }
-            ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
+            ServiceError::BadRequest(ref message) => {
+                HttpResponse::BadRequest().json(message)
+            },
             ServiceError::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
             ServiceError::NotFound(ref message) => HttpResponse::NotFound().json(message),
         }
