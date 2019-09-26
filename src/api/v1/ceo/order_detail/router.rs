@@ -25,7 +25,7 @@ pub enum ExampleFutureError {
 type ExampleFuture = FutureResult<Result<Msg, ServiceError>, ServiceError>;
 
 pub fn new_example_future_err(msg: String) -> ExampleFuture {
-    futures::future::err(ServiceError::BadRequest(msg.into()))
+    futures::future::err(ServiceError::BadRequest(msg.clone()))
 }
 
 pub fn put(
@@ -73,11 +73,15 @@ pub fn put(
                 Either::A(to_user(send_data, db, store))
             }
             Err(e) => Either::B(new_example_future_err(
-                "서버오류, 주문응답 요청".to_string(),
+                e.to_string(),
             )),
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
+            Err(e) => {
+                println!("=============================");
+                println!("============================={:?}", e);
+                Ok(e.error_response())
+            },
         })
 }

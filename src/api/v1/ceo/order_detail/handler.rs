@@ -18,24 +18,93 @@ impl Handler<model::New> for DbExecutor {
         let conn = &self.0.get()?;
         let check = tb
             .filter(&order_id.eq(&msg.order_id))
-            .filter(&state.eq(&msg.state))
+            .order(state.desc())
             .load::<Object>(conn)?
             .pop();
+        match check{
+            Some(check_ok)=>{
+                match check_ok.state{
+                    0  =>{
+                        Err(ServiceError::BadRequest("거절하신 주문 입니다.".into()))
+                    },
+                    1 =>{
+                         match msg.state{
+                            2 =>{
+                                let item_order_detail: Object = diesel::insert_into(tb)
+                                    .values(&msg)
+                                    .get_result::<Object>(conn)?;
+                                let item_order = tb_order
+                                    .filter(&id.eq(&msg.order_id))
+                                    .get_result::<Order>(conn)?;
+                                Ok(model::NewRes {
+                                    order: item_order,
+                                    order_detail: item_order_detail,
+                                })
+                            },
+                            1 =>{
+                                Err(ServiceError::BadRequest("이미 승인된 주문입니다.".into()))
+                            },
+                            0 =>{
+                                Err(ServiceError::BadRequest("승인된 주문은 거절할수 없습니다.".into()))
+                            },
+                            _=>{
+                                Err(ServiceError::BadRequest("누 구 냐?".into()))
+                            }
+                        }
+                    },
+                    2 =>{
+                        match msg.state{
+                            2 =>{
+                                //추가 수령하세요 요청.
+                                let item_order_detail: Object = diesel::insert_into(tb)
+                                    .values(&msg)
+                                    .get_result::<Object>(conn)?;
+                                let item_order = tb_order
+                                    .filter(&id.eq(&msg.order_id))
+                                    .get_result::<Order>(conn)?;
+                                Ok(model::NewRes {
+                                    order: item_order,
+                                    order_detail: item_order_detail,
+                                })
+                            },
+                            1 =>{
+                                Err(ServiceError::BadRequest("주문을 승인할수 없습니다.".into()))
+                            },
+                            0 =>{
+                                Err(ServiceError::BadRequest("주문을 거절할수 없습니다.".into()))
+                            },
+                            _=>{
+                                Err(ServiceError::BadRequest("누구 냐?".into()))
+                            }
 
-        match check {
-            Some(_) => Err(ServiceError::BadRequest("중복".into())),
-            None => {
-                let item_order_detail: Object = diesel::insert_into(tb)
-                    .values(&msg)
-                    .get_result::<Object>(conn)?;
-                let item_order = tb_order
-                    .filter(&id.eq(&msg.order_id))
-                    .get_result::<Order>(conn)?;
-                Ok(model::NewRes {
-                    order: item_order,
-                    order_detail: item_order_detail,
-                })
+                        }
+                    },
+                    _=>{
+                        Err(ServiceError::BadRequest("누구냐?".into()))
+                    }
+                }
+            },
+            None=>{
+                match msg.state{
+                    2 =>{
+                        Err(ServiceError::BadRequest("승인이나 거절부터하십시요.".into()))
+                    },
+                    _=>{
+                        let item_order_detail: Object = diesel::insert_into(tb)
+                            .values(&msg)
+                            .get_result::<Object>(conn)?;
+                        let item_order = tb_order
+                            .filter(&id.eq(&msg.order_id))
+                            .get_result::<Order>(conn)?;
+                        Ok(model::NewRes {
+                            order: item_order,
+                            order_detail: item_order_detail,
+                        })
+                    }
+                }
             }
         }
+        
+
     }
 }
