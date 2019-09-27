@@ -39,7 +39,7 @@ pub fn put(
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
-                    .map_err(|e| ServiceError::BadRequest("ws push error".into()))
+                    .map_err(|e| ServiceError::BadRequest(e.to_string()))
                     .and_then(|response| {
                         // <- server http response
                         res
