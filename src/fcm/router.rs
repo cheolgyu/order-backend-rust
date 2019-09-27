@@ -63,7 +63,7 @@ pub fn to_user(
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", store.webpush.key.clone())
         .send_json(&send_data.params)
-        .map_err(|e| ServiceError::BadRequest("to_user ".into()))
+        .map_err(|e| ServiceError::BadRequest(e.to_string()))
         .and_then(|response| {
             let status = response.status().as_u16();
 
