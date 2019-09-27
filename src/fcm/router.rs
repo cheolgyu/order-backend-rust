@@ -23,7 +23,11 @@ pub fn to_fcm(
         .header("Authorization", store.webpush.key.clone())
         .header("project_id", store.webpush.send_id.clone())
         .send_json(&send_data.params)
-        .map_err(|e| ServiceError::BadRequest(e.to_string()))
+        .map_err(|e| {
+            let msg = format!("to_fcm=>: {}", e.to_string());
+            
+            ServiceError::BadRequest(msg)
+        })
         .and_then(|response| {
             let status = response.status().as_u16();
 
@@ -63,7 +67,11 @@ pub fn to_user(
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", store.webpush.key.clone())
         .send_json(&send_data.params)
-        .map_err(|e| ServiceError::BadRequest(e.to_string()))
+        .map_err(|e| {
+            let msg = format!("to_user=>: {}", e.to_string());
+            
+            ServiceError::BadRequest(msg)
+        })
         .and_then(|response| {
             let status = response.status().as_u16();
 
