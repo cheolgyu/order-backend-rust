@@ -15,6 +15,7 @@ RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-li
 
 FROM alpine:edge
 RUN apk add --no-cache libpq
+RUN apk add --no-cache openssl
 
 RUN addgroup -g 1000 myapp
 
