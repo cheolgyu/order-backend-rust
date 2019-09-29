@@ -24,7 +24,6 @@ pub fn put(
     auth_user: AuthUser,
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
-    client: Data<Client>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let mut info = path_info.into_inner();

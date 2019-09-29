@@ -3,7 +3,9 @@ use crate::fcm::model::*;
 use crate::models::fcm::New;
 use crate::models::msg::Msg;
 use crate::models::{AppStateWithTxt, DbExecutor};
+use crate::utils::client::SSLClinet;
 use actix::Addr;
+
 use actix_web::{
     client::Client,
     http::header::CONTENT_TYPE,
@@ -17,7 +19,7 @@ pub fn to_fcm(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
-    let resp = Client::new()
+    let resp = SSLClinet::build()
         .post(store.webpush.reg.clone())
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", store.webpush.key.clone())
@@ -63,7 +65,7 @@ pub fn to_user(
     let order_id = send_data.comm.order_id.clone();
     println!("to_user=>:  url={:?}, key={:?}, params={:?} ", store.webpush.send.clone(), store.webpush.key.clone(),&send_data.params);
 
-    let req = Client::new()
+    let req = SSLClinet::build()
         .post(store.webpush.send.clone())
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", store.webpush.key.clone())

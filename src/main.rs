@@ -26,7 +26,7 @@ use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
 use actix_web::{
-    client::Client,
+    client::{Client,Connector},
     get,
     http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     middleware as actix_middleware, web, App, HttpRequest, HttpServer,
@@ -34,6 +34,7 @@ use actix_web::{
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use dotenv::dotenv;
 use std::env;
+
 #[get("/resource1/{name}/index.html")]
 fn index(req: HttpRequest, name: web::Path<String>) -> String {
     format!("Hello: {}!\r\n", name)
@@ -103,7 +104,6 @@ fn main() -> std::io::Result<()> {
             .data(address.clone())
             .data(pool2.clone())
             .data(store.clone())
-            .data(Client::new().clone())
             .data(valid_email.clone())
             .wrap(actix_middleware::Logger::default())
             .wrap(

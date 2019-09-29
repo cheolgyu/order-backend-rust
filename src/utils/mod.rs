@@ -1,5 +1,6 @@
 pub mod jwt;
 pub mod validator;
+pub mod client;
 
 lazy_static! {
     static ref HASH_ROUNDS: String = std::env::var("HASH_ROUNDS").unwrap();

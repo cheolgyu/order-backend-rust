@@ -9,21 +9,19 @@ use actix_web::{
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
-
+use crate::utils::client::SSLClinet;
 use crate::fcm::model::*;
 use crate::fcm::router::to_user;
 
 pub fn put(
     json: Json<model::InpNew>,
     db: Data<Addr<DbExecutor>>,
-    client: Data<Client>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
     let j2 = json.clone();
     let db2 = db.clone();
     let db3 = db.clone();
-    let client2 = client.clone();
     let store2 = store.clone();
 
     let key = store.webpush.key.clone();
@@ -35,7 +33,7 @@ pub fn put(
         .and_then(
             move |res| {
                 let url = format!("{}{}/test", websocket_url, j1.shop_id);
-                client
+                SSLClinet::build()
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request

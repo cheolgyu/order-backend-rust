@@ -22,7 +22,6 @@ pub fn check(
     json: Json<params::InpCheck>,
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
-    client: Data<Client>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
     let sw_token = json.into_inner().sw_token.clone();

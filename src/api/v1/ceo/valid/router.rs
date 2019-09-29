@@ -13,6 +13,7 @@ use actix_web::{
 use chrono::format::strftime::StrftimeItems;
 use chrono::{Duration, Local};
 use futures::{Future, Stream};
+use crate::utils::client::SSLClinet;
 
 #[derive(Debug, Deserialize)]
 struct HttpBinResponse {
@@ -22,7 +23,7 @@ struct HttpBinResponse {
 pub fn valid_email(
     auth_user: AuthUser,
     path_info: Path<Info>,
-    client: Data<Client>,
+    
     url_valid_email: Data<String>,
     json: Json<InpNew>,
     db: Data<Addr<DbExecutor>>,
@@ -57,7 +58,7 @@ pub fn valid_email(
                 n.valid_at.format_with_items(fmt.clone()).to_string()
             );
 
-            client
+            SSLClinet::build()
                 .get(url)
                 .header("User-Agent", "Actix-web")
                 .send()
