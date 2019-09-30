@@ -46,11 +46,12 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
+            let title= format!("[{}] 주문!",res.shop.name);
             let send_data = ReqToUser {
                 comm: ReqToComm::new_order(res.order.id),
                 params: ReqToUserData {
                     notification: Notification {
-                        title: "[가게]주문!".to_string(),
+                        title: title,
                         body: "22".to_string(),
                         icon: "33".to_string(),
                         click_action: "44".to_string(),
