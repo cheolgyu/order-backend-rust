@@ -74,3 +74,9 @@ pub struct Simple {
     #[sql_type = "Json"]
     pub option_list: serde_json::Value,
 }
+
+#[derive(Deserialize, Serialize, Debug, Message)]
+#[rtype(result = "Result<Msg, ServiceError>")]
+pub struct NowList {
+    pub shop_id: Uuid,
+}

@@ -1,5 +1,5 @@
 use crate::api::v1::ceo::auth::model::{AuthUser, Info};
-use crate::api::v1::ceo::order::model::{GetList, InpUpdate};
+use crate::api::v1::ceo::order::model::{GetList, InpUpdate, NowList};
 
 use crate::models::DbExecutor;
 
@@ -69,11 +69,10 @@ pub fn now_list(
 
     db.send(info)
         .from_err()
-        .and_then(move |_| db2.send(GetList { shop_id: shop_id }))
+        .and_then(move |_| db2.send(NowList { shop_id: shop_id }))
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),
         })
 }
-
