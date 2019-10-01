@@ -27,7 +27,7 @@ pub fn to_fcm(
         .send_json(&send_data.params)
         .map_err(|e| {
             let msg = format!("to_fcm=>: {}", e.to_string());
-            
+
             ServiceError::BadRequest(msg)
         })
         .and_then(|response| {
@@ -63,16 +63,21 @@ pub fn to_user(
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
     let order_id = send_data.comm.order_id.clone();
-    println!("to_user=>:  url={:?}, key={:?}, params={:?} ", store.webpush.send.clone(), store.webpush.key.clone(),&send_data.params);
+    println!(
+        "to_user=>:  url={:?}, key={:?}, params={:?} ",
+        store.webpush.send.clone(),
+        store.webpush.key.clone(),
+        &send_data.params
+    );
 
     let req = SSLClinet::build()
         .post(store.webpush.send.clone())
         .header(CONTENT_TYPE, "application/json")
         .header("Authorization", store.webpush.key.clone())
         .send_json(&send_data.params)
-        .map_err(|e| { 
+        .map_err(|e| {
             let msg = format!("to_user=>: err: {}, ", e.to_string());
-            
+
             ServiceError::BadRequest(msg)
         })
         .and_then(|response| {

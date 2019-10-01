@@ -62,12 +62,10 @@ pub fn put(
                 };
                 Either::A(to_user(send_data, db, store))
             }
-            Err(e) => Either::B(futures::future::ok( Err(e) )),
+            Err(e) => Either::B(futures::future::ok(Err(e))),
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => {
-                Ok(e.error_response())
-            },
+            Err(e) => Ok(e.error_response()),
         })
 }

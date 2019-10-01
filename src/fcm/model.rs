@@ -4,7 +4,7 @@ use crate::models::msg::Msg;
 use actix::Message;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize,Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReqToComm {
     pub to: String,
     pub order_id: i32,
@@ -120,18 +120,18 @@ pub struct RespFcm {
 }
 
 ///////////////////////////////////////////////////////////////
-#[derive(Debug, Serialize, Deserialize, Message,Clone)]
+#[derive(Debug, Serialize, Deserialize, Message, Clone)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct ReqToUser {
     pub comm: ReqToComm,
     pub params: ReqToUserData,
 }
-#[derive(Debug, Serialize, Deserialize,Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReqToUserData {
     pub notification: Notification,
     pub to: String,
 }
-#[derive(Debug, Serialize, Deserialize,Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Notification {
     pub title: String,
     pub body: String,

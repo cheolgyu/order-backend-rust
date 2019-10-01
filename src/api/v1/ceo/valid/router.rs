@@ -3,6 +3,7 @@ use crate::api::v1::ceo::valid::model::{ChkValid, InpNew, New};
 
 use crate::models::DbExecutor;
 
+use crate::utils::client::SSLClinet;
 use actix::Addr;
 use actix_web::client::Client;
 use actix_web::web::BytesMut;
@@ -13,7 +14,6 @@ use actix_web::{
 use chrono::format::strftime::StrftimeItems;
 use chrono::{Duration, Local};
 use futures::{Future, Stream};
-use crate::utils::client::SSLClinet;
 
 #[derive(Debug, Deserialize)]
 struct HttpBinResponse {
@@ -23,7 +23,7 @@ struct HttpBinResponse {
 pub fn valid_email(
     auth_user: AuthUser,
     path_info: Path<Info>,
-    
+
     url_valid_email: Data<String>,
     json: Json<InpNew>,
     db: Data<Addr<DbExecutor>>,

@@ -1,6 +1,9 @@
 use crate::api::v1::user::order::model;
 use crate::errors::ServiceError;
+use crate::fcm::model::*;
+use crate::fcm::router::to_user;
 use crate::models::{AppStateWithTxt, DbExecutor};
+use crate::utils::client::SSLClinet;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
@@ -9,9 +12,6 @@ use actix_web::{
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
-use crate::utils::client::SSLClinet;
-use crate::fcm::model::*;
-use crate::fcm::router::to_user;
 
 pub fn put(
     json: Json<model::InpNew>,
@@ -46,7 +46,7 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
-            let title= format!("[{}] 주문!",res.shop.name);
+            let title = format!("[{}] 주문!", res.shop.name);
             let send_data = ReqToUser {
                 comm: ReqToComm::new_order(res.order.id),
                 params: ReqToUserData {
