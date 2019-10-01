@@ -9,6 +9,8 @@ use std::time::Duration;
 use crate::fcm::model::*;
 use crate::fcm::router::to_user;
 use actix_web::{web::Data, Error};
+use crate::utils::client::SSLClinet;
+use crate::errors::ServiceError;
 
 pub struct Batch {
     pub db: Data<Addr<DbExecutor>>,
@@ -124,6 +126,7 @@ fn index3(
     store: Data<AppStateWithTxt>,
 ) -> Box<dyn Future<Item = &'static str, Error = Error>> {
     use futures::future::ok;
+    let websocket_url = store.websocket.send.clone();
     let sd = AutoCancel {
         db: db.clone(),
         store: store.clone(),
@@ -136,6 +139,7 @@ fn index3(
                 for res in &list {
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
+                    let shop_id = res.shop_id.clone();
                     let send_data = ReqToUser {
                         comm: ReqToComm::new_auto_cancle(res.id.clone()),
                         params: ReqToUserData {
@@ -148,8 +152,23 @@ fn index3(
                             to: res.notification_key.clone(),
                         },
                     };
+                    let websocket_url2 =  websocket_url.clone();
 
-                    let result = to_user(send_data, db_addr, store3);
+                    let result = to_user(send_data, db_addr, store3)
+                        .and_then( move |res| {
+                                let url = format!("{}{}/test", websocket_url2, shop_id);
+                                SSLClinet::build()
+                                    .get(url) 
+                                    .send() 
+                                    .map_err(|e|  {
+                                        println!("SSLClinet::build(): {}", e);
+                                        ServiceError::BadRequest(e.to_string())
+                                    })
+                                    .and_then(|response| {
+                                        res
+                                    }).from_err()
+                                    
+                        });
                     Arbiter::spawn(
                         result
                             .map(|res| {

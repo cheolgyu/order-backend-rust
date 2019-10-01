@@ -9,7 +9,7 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub shop_id: String,
-    pub state: String,
+    pub state: i32,
     pub price: f64,
     pub products: Vec<CartProduct>,
     pub sw_token: String,

@@ -45,7 +45,7 @@ table! {
     order (id) {
         id -> Int4,
         shop_id -> Uuid,
-        state -> Varchar,
+        state -> Int4,
         price -> Float8,
         products -> Jsonb,
         sw_token -> Varchar,

@@ -20,7 +20,7 @@ use uuid::Uuid;
 pub struct Order {
     pub id: i32,
     pub shop_id: Uuid,
-    pub state: String,
+    pub state: i32,
     pub price: f64,
     pub products: serde_json::Value,
     pub sw_token: String,
@@ -34,7 +34,7 @@ pub struct Order {
 #[table_name = "order"]
 pub struct New {
     pub shop_id: Uuid,
-    pub state: String,
+    pub state: i32,
     pub price: f64,
     pub products: serde_json::Value,
     pub sw_token: String,

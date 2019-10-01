@@ -236,7 +236,7 @@ CREATE TABLE "order" (
 
   id SERIAL PRIMARY KEY,
   shop_id UUID NOT NULL,
-  state VARCHAR NOT NULL,
+  state INTEGER NOT NULL DEFAULT 0,
   price float8 NOT NULL,
   
   products jsonb NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE "order" (
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
   deleted_at TIMESTAMP  
 ); 
-
+COMMENT ON COLUMN "order"."state" IS '-2: 미응답거절, -1: 거절, 1: 대기, 2: 수락, 3: 수령 ';
 -- Your SQL goes here
 
 /*
@@ -286,9 +286,9 @@ CREATE TABLE "fcm" (
 -- 구매한 주문의 자동 취소 프로시저
 CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
      WITH updt AS (
-      update "order" set state = 'auto_cacnle' 
+      update "order" set state = -2
       where 
-      state = 'req'  and 
+      state = 1  and 
       Date_trunc('minute', CURRENT_TIMESTAMP) = Date_trunc('minute', created_at+ time '00:05' )
       RETURNING id, shop_id,sw_token
     )

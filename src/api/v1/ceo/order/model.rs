@@ -16,13 +16,13 @@ use uuid::Uuid;
 pub struct Update {
     pub id: i32,
     pub shop_id: Uuid,
-    pub state: String,
+    pub state: i32,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpUpdate {
     pub id: i32,
     pub shop_id: Uuid,
-    pub state: String,
+    pub state: i32,
 }
 
 impl Validate for InpUpdate {
