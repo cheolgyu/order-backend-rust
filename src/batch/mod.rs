@@ -23,12 +23,12 @@ impl Batch {
     }
 
     fn come_find(&self, ctx: &mut actix::Context<Self>) {
-        ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
+        ctx.run_interval(Duration::new(3, 0), move |act, _ctx| {
             let result = index4(act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
-                    .map(|res| {
+                    .map(|_res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
@@ -39,12 +39,12 @@ impl Batch {
     }
 
     fn auto_cancel(&self, ctx: &mut actix::Context<Self>) {
-        ctx.run_interval(Duration::new(3, 0), move |act, ctx| {
+        ctx.run_interval(Duration::new(3, 0), move |act, _ctx| {
             let result = index3(act.db.clone(), act.store.clone());
             // spawn future to reactor
             Arbiter::spawn(
                 result
-                    .map(|res| {
+                    .map(|_res| {
                         //println!("Got result: {}", res);
                     })
                     .map_err(|e| {
@@ -103,7 +103,7 @@ fn index4(
                     let result = to_user(send_data, db_addr, store3);
                     Arbiter::spawn(
                         result
-                            .map(|res| {
+                            .map(|_res| {
                                 // println!("Actor is  map");
                             })
                             .map_err(|e| {
@@ -163,12 +163,12 @@ fn index3(
                                 println!("SSLClinet::build(): {}", e);
                                 ServiceError::BadRequest(e.to_string())
                             })
-                            .and_then(|response| res)
+                            .and_then(|_response| res)
                             .from_err()
                     });
                     Arbiter::spawn(
                         result
-                            .map(|res| {
+                            .map(|_res| {
                                 // println!("Actor is  map");
                             })
                             .map_err(|e| {

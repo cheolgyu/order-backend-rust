@@ -56,10 +56,6 @@ where
 
         let item = tb.filter(&id.eq(1)).load::<Object>(&pool).unwrap();
 
-        let payload = serde_json::json!({
-            "item": item,
-        });
-
         Box::new(self.service.call(req).and_then(|res| Ok(res)))
     }
 }

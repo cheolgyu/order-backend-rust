@@ -1,10 +1,5 @@
-use actix_web::{
-    client::{Client, Connector},
-    get,
-    http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-    middleware as actix_middleware, web, App, HttpRequest, HttpServer,
-};
-use openssl::ssl::{SslAcceptor, SslConnector, SslFiletype, SslMethod, SslVerifyMode};
+use actix_web::client::{Client, Connector};
+use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 
 pub struct SSLClinet {
     client: Client,
