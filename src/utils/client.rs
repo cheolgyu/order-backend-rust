@@ -2,7 +2,6 @@ use actix_web::client::{Client, Connector};
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 
 pub struct SSLClinet {
-    client: Client,
 }
 
 impl SSLClinet {

@@ -26,6 +26,7 @@ impl Validate for InpCheck {
 }
 
 impl InpCheck {
+    #[warn(dead_code)]
     pub fn new(&self, auth_user: AuthUser) -> m::Check {
         m::Check {
             user_id: auth_user.id,
@@ -90,6 +91,7 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
+    #[warn(dead_code)]
     pub fn update(&self, _auth_user: AuthUser) -> m::Update {
         m::Update {
             id: self.id.clone(),

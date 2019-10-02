@@ -111,6 +111,7 @@ pub fn put(
         })
 }
 
+#[warn(dead_code)]
 pub fn get(
     auth_user: AuthUser,
     db: Data<Addr<DbExecutor>>,
@@ -124,7 +125,7 @@ pub fn get(
         Err(err) => Ok(err.error_response()),
     })
 }
-
+#[warn(dead_code)]
 pub fn post(
     json: Json<params::InpUpdate>,
     auth_user: AuthUser,
