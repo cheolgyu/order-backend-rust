@@ -5,7 +5,7 @@ use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 use futures::future::{ok, FutureResult};
 use futures::{Future, Poll};
 
-#[warn(dead_code)]
+
 pub struct Auth;
 
 impl<S, B> Transform<S> for Auth

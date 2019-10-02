@@ -25,16 +25,6 @@ impl Validate for InpCheck {
     }
 }
 
-impl InpCheck {
-    #[warn(dead_code)]
-    pub fn new(&self, auth_user: AuthUser) -> m::Check {
-        m::Check {
-            user_id: auth_user.id,
-            name: "".to_string(),
-            sw_token: self.sw_token.clone(),
-        }
-    }
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
@@ -90,13 +80,3 @@ impl Validate for InpUpdate {
     }
 }
 
-impl InpUpdate {
-    #[warn(dead_code)]
-    pub fn update(&self, _auth_user: AuthUser) -> m::Update {
-        m::Update {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            sw_token: self.name.clone(),
-        }
-    }
-}

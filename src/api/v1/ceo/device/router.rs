@@ -111,31 +111,3 @@ pub fn put(
         })
 }
 
-#[warn(dead_code)]
-pub fn get(
-    auth_user: AuthUser,
-    db: Data<Addr<DbExecutor>>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
-    db.send(m::GetList {
-        user_id: auth_user.id,
-    })
-    .from_err()
-    .and_then(|res| match res {
-        Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-        Err(err) => Ok(err.error_response()),
-    })
-}
-#[warn(dead_code)]
-pub fn post(
-    json: Json<params::InpUpdate>,
-    auth_user: AuthUser,
-    db: Data<Addr<DbExecutor>>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
-    result(json.validate())
-        .from_err()
-        .and_then(move |_| db.send(json.into_inner().update(auth_user)).from_err())
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
-        })
-}
