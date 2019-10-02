@@ -10,7 +10,6 @@ use actix_web::{
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
-use uuid::Uuid;
 
 pub fn post(
     json: Json<InpUpdate>,

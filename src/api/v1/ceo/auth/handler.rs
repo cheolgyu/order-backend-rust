@@ -9,7 +9,7 @@ use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer, Text, Uuid as uu};
+use diesel::sql_types::{Integer, Uuid as uu};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup

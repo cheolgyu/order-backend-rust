@@ -1,13 +1,11 @@
 use crate::errors::ServiceError;
 use crate::fcm::model::*;
-use crate::models::fcm::New;
 use crate::models::msg::Msg;
 use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::client::SSLClinet;
 use actix::Addr;
 
 use actix_web::{
-    client::Client,
     http::header::CONTENT_TYPE,
     web::{BytesMut, Data},
 };
@@ -62,7 +60,6 @@ pub fn to_user(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
-    let order_id = send_data.comm.order_id.clone();
     println!(
         "to_user=>:  url={:?}, key={:?}, params={:?} ",
         store.webpush.send.clone(),

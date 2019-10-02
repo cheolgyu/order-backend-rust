@@ -7,7 +7,6 @@ use crate::utils::client::SSLClinet;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    client::Client,
     web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
@@ -19,13 +18,9 @@ pub fn put(
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     let j1 = json.clone();
-    let j2 = json.clone();
     let db2 = db.clone();
-    let db3 = db.clone();
     let store2 = store.clone();
 
-    let key = store.webpush.key.clone();
-    let webpush_url_send = store.webpush.send.clone();
     let websocket_url = store.websocket.send.clone();
 
     result(json.validate())
@@ -38,7 +33,7 @@ pub fn put(
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
                     .map_err(|e| ServiceError::BadRequest(e.to_string()))
-                    .and_then(|response| {
+                    .and_then(|_response| {
                         // <- server http response
                         res
                     })

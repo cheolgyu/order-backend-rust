@@ -5,7 +5,6 @@ use crate::models::DbExecutor;
 
 use crate::utils::client::SSLClinet;
 use actix::Addr;
-use actix_web::client::Client;
 use actix_web::web::BytesMut;
 use actix_web::{
     web::{Data, Json, Path},

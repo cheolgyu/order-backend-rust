@@ -1,5 +1,5 @@
 // #![deny(warnings)]
-#![allow(warnings)]
+// #![allow(warnings)]
 
 #[macro_use]
 extern crate diesel;
@@ -26,7 +26,6 @@ use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
 
 use actix_cors::Cors;
 use actix_web::{
-    client::{Client, Connector},
     get,
     http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     middleware as actix_middleware, web, App, HttpRequest, HttpServer,

@@ -5,19 +5,16 @@ use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    client::Client,
     web::{Data, Json, Path},
     HttpResponse, ResponseError,
 };
 use futures::{
-    future::{err, result, Either},
+    future::{result, Either},
     Future,
 };
 
 use crate::fcm::model::*;
 use crate::fcm::router::to_user;
-use crate::models::msg::Msg;
-use futures::future::FutureResult;
 
 pub fn put(
     json: Json<model::InpNew>,
@@ -32,10 +29,8 @@ pub fn put(
     let order_id = json.clone().order_id.clone();
     let j = json.into_inner();
     let db2 = db.clone();
-    let db3 = db.clone();
     let db4 = db.clone();
     let shop_id = info2.shop_id.unwrap();
-    let db5 = db.clone();
 
     result(j.validate())
         .from_err()

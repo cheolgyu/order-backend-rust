@@ -80,7 +80,7 @@ impl Handler<model::NowList> for DbExecutor {
             .filter(&deleted_at.is_null())
             .filter(&state.eq(1))
             .or_filter(&state.eq(2))
-            .get_results::<Object>(conn)?; 
+            .get_results::<Object>(conn)?;
 
         let payload = serde_json::json!({
             "item": item,

@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{AuthUser, Info};
+use crate::api::v1::ceo::auth::model::AuthUser;
 use crate::api::v1::ceo::device::model as params;
 use crate::errors::ServiceError;
 use crate::fcm::model::*;
@@ -9,7 +9,6 @@ use crate::models::{AppStateWithTxt, DbExecutor};
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    client::Client,
     web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
@@ -28,7 +27,6 @@ pub fn check(
     let sw_token2 = sw_token.clone();
     let sw_token3 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
-    let db2 = db.clone();
     let db4 = db.clone();
     let user_id = auth_user.id;
 
@@ -58,7 +56,6 @@ pub fn check(
                     )
                     .and_then(move |res_opt| match res_opt {
                         Ok(msg) => {
-                            let shop_id2 = shop_id.clone();
                             let notification_key = msg.data["item"]["resp"]["body"]
                                 ["notification_key"]
                                 .as_str()
@@ -71,9 +68,7 @@ pub fn check(
                                 .from_err(),
                             )
                         }
-                        Err(e) => Either::B(err(ServiceError::BadRequest(
-                            "check device: tttest1".into(),
-                        ))),
+                        Err(e) => Either::B(err(ServiceError::BadRequest(e.to_string()))),
                     })
                     .and_then(move |_res| {
                         db4.send(m::New {
@@ -86,7 +81,7 @@ pub fn check(
                     .map_err(|e| ServiceError::BadRequest(e.to_string()))
                     .then(|res| match res {
                         Ok(_user) => Ok(HttpResponse::Ok().json("2")),
-                        Err(e) => Ok(HttpResponse::InternalServerError().into()),
+                        Err(_e) => Ok(HttpResponse::InternalServerError().into()),
                     }),
                 )
             }

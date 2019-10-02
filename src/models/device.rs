@@ -61,7 +61,7 @@ pub struct GetWithShop {
     pub user_id: Uuid,
 }
 
-use diesel::sql_types::{BigInt, Integer, Text, Uuid as uu};
+use diesel::sql_types::{BigInt, Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct GetWithShopRes {
     #[sql_type = "uu"]

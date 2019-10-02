@@ -1,5 +1,4 @@
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
 use crate::models::order::Order;
 use crate::models::order_detail::OrderDetail;
 use crate::schema::order_detail;

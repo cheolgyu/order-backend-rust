@@ -1,6 +1,5 @@
 use crate::api::v1::ceo::order_detail::model;
 use crate::errors::ServiceError;
-use crate::models::msg::Msg;
 use crate::models::order::Order;
 use crate::models::order_detail::OrderDetail as Object;
 use crate::models::DbExecutor;
