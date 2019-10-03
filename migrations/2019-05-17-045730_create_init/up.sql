@@ -17,7 +17,7 @@ CREATE TABLE "valid" (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   valid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "user" (
@@ -33,7 +33,7 @@ CREATE TABLE "user" (
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "user_device" (
@@ -45,7 +45,7 @@ CREATE TABLE "user_device" (
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "shop" (
@@ -56,7 +56,7 @@ CREATE TABLE "shop" (
   notification_key VARCHAR NOT NULL DEFAULT ''  ,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "shop_notification" (
@@ -64,10 +64,10 @@ CREATE TABLE "shop_notification" (
   shop_id UUID NOT NULL,
   interval  INTEGER NOT NULL DEFAULT 60,
   content VARCHAR NOT NULL DEFAULT '60초 후 기본 메시지',
-  
+
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "product" (
@@ -79,7 +79,7 @@ CREATE TABLE "product" (
   opt_group INTEGER[]  Not NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "option" (
@@ -92,7 +92,7 @@ CREATE TABLE "option" (
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE "option_group" (
@@ -105,7 +105,7 @@ CREATE TABLE "option_group" (
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 -- 조회 프로시저
@@ -117,18 +117,18 @@ AS
 BEGIN
     IF (p_id IS NULL) THEN
         IF (s_id  IS NULL) THEN
-           RETURN QUERY 
-           
+           RETURN QUERY
+
            SELECT count(id)::int
             FROM   "user" u
             WHERE  u.id = u_id ;
         ELSE
-          RETURN QUERY 
+          RETURN QUERY
            SELECT count(s.id)::int FROM ( SELECT u.id FROM "user" as u WHERE u.id = u_id)
             as u left join shop s ON u.id = s.ceo_id AND s.id = s_id ;
         END IF ;
     ELSE
-        RETURN QUERY 
+        RETURN QUERY
            SELECT count(p.id)::int
             FROM (
                     SELECT u.id
@@ -138,18 +138,18 @@ BEGIN
                 left join shop s
                 ON u.id = s.ceo_id and   s.id = s_id
                 left join product as p
-                on s.id = p.shop_id and p.id =p_id 
+                on s.id = p.shop_id and p.id =p_id
                 ;
     END IF ;
-    
+
 END;
-$$ LANGUAGE plpgsql; 
+$$ LANGUAGE plpgsql;
 
 
 
 
 INSERT INTO "user" ("id", "account_id", "account_password", "email", "name", "role", "created_at", "updated_at", "deleted_at") VALUES
-('0290a0ad-9851-461b-af42-0313f15c9702',	'dlacjfrb123',	
+('0290a0ad-9851-461b-af42-0313f15c9702',	'dlacjfrb123',
 crypt('dlacjfrb123!@#',gen_salt('bf'))
 ,	'cjfrb119@hanmail.net',	'',	'ceo',	'2019-05-18 12:44:02.647759',	'2019-05-18 12:44:02.647759',	NULL);
 INSERT INTO "shop" ("id", "ceo_id", "name", "products", "notification_key", "created_at", "updated_at", "deleted_at") VALUES
@@ -225,10 +225,10 @@ CREATE TABLE "order_detail" (
   state INTEGER NOT NULL,
   txt jsonb NOT NULL,
   req_session_id jsonb NOT NULL,
-  
+
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 COMMENT ON COLUMN "order_detail"."state" IS '0: 거절, 1:승인, 2: 수령';
 
@@ -238,14 +238,14 @@ CREATE TABLE "order" (
   shop_id UUID NOT NULL,
   state INTEGER NOT NULL DEFAULT 0,
   price float8 NOT NULL,
-  
+
   products jsonb NOT NULL,
   sw_token VARCHAR NOT NULL,
-  
+
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
-); 
+  deleted_at TIMESTAMP
+);
 COMMENT ON COLUMN "order"."state" IS '-2: 미응답거절, -1: 거절, 1: 대기, 2: 수락, 3: 수령 ';
 -- Your SQL goes here
 
@@ -254,7 +254,7 @@ COMMENT ON COLUMN "order"."state" IS '-2: 미응답거절, -1: 거절, 1: 대기
 - 사장님에게 발신
     고객이 주문시
     시스템:배치가 주문자동취소시
-- 고객에게 발신 -  
+- 고객에게 발신 -
     주문상세-사장님이 주문 승인시
     주문상세-사장님이 주문 거절시
     주문상세-사장님이 주문 수령시
@@ -263,7 +263,7 @@ COMMENT ON COLUMN "order"."state" IS '-2: 미응답거절, -1: 거절, 1: 대기
     시스템:배치가 주문 자동 수령요청시 최대 2회 5분간격.
 */
 
-CREATE TABLE "fcm" ( 
+CREATE TABLE "fcm" (
 
   id SERIAL PRIMARY KEY,
   "to" VARCHAR NOT NULL,
@@ -274,10 +274,10 @@ CREATE TABLE "fcm" (
   trigger  VARCHAR NOT NULL DEFAULT ''  ,
   req jsonb NOT NULL,
   resp jsonb NOT NULL,
- 
+
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
-  deleted_at TIMESTAMP  
+  deleted_at TIMESTAMP
 );
 
 
@@ -287,8 +287,8 @@ CREATE TABLE "fcm" (
 CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token text,notification_key text) as $$
      WITH updt AS (
       update "order" set state = -2
-      where 
-      state = 1  and 
+      where
+      state = 1  and
       Date_trunc('minute', CURRENT_TIMESTAMP) = Date_trunc('minute', created_at+ time '00:05' )
       RETURNING id, shop_id,sw_token
     )
@@ -296,38 +296,42 @@ CREATE FUNCTION auto_cancle() returns table(id integer,shop_id uuid,sw_token tex
 $$ language 'sql';
 
 
-CREATE VIEW view_comfind_info AS 
-SELECT    od.order_id AS order_id , 
-          od.id       AS order_detail_id, 
+CREATE VIEW view_comfind_info AS
+SELECT    od.order_id AS order_id ,
+          od.id       AS order_detail_id,
           od.shop_id  AS shop_id,
-          sn.id as shop_notification_id, 
-          o.sw_token  AS to , 
-          sn.content  AS content, 
-          s.NAME      AS shop_name 
-FROM      "order_detail" od 
-LEFT JOIN "order" o 
-ON        od.order_id = o.id 
-LEFT JOIN shop s 
-ON        od.shop_id = s.id 
-LEFT JOIN shop_notification sn 
-ON        od.shop_id = sn.shop_id 
-AND       sn.id NOT IN 
-          ( 
-                 SELECT f.shop_notification_id 
-                 FROM   fcm f 
-                 WHERE  f.order_detail_state=2 
-                 AND    f.TRIGGER= 'batch::comfind' ) 
-WHERE     od.state = 2 
+          sn.id as shop_notification_id,
+          o.sw_token  AS to ,
+          sn.content  AS content,
+          s.NAME      AS shop_name
+FROM      "order_detail" od
+LEFT JOIN "order" o
+ON        od.order_id = o.id
+LEFT JOIN shop s
+ON        od.shop_id = s.id
+LEFT JOIN shop_notification sn
+ON        od.shop_id = sn.shop_id
+AND       sn.id NOT IN
+          (
+                 SELECT f.shop_notification_id
+                 FROM   fcm f
+                 WHERE  f.order_detail_state=2
+                 AND    f.TRIGGER= 'batch::comfind' )
+WHERE     od.state = 2
 AND       Date_trunc('minute', CURRENT_TIMESTAMP) = date_trunc('minute', (od.created_at + interval '1 seconds'*sn.interval))
 ;
 -- 구매한 주문의 사장님의 제조완료에 대한 배치 프로시저
-CREATE FUNCTION come_find() 
-returns TABLE(order_id integer,order_detail_id integer,shop_id uuid,shop_notification_id integer,"to" text,content text,shop_name text) AS $$ 
-SELECT * 
+CREATE FUNCTION come_find()
+returns TABLE(order_id integer,order_detail_id integer,shop_id uuid,shop_notification_id integer,"to" text,content text,shop_name text) AS $$
+SELECT *
 FROM   view_comfind_info $$ language 'sql';
 
 
 
 
 
-
+INSERT INTO "order" ("id", "shop_id", "state", "price", "products", "sw_token", "created_at", "updated_at", "deleted_at") VALUES
+(2,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	1,	0,	'[{"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}]',	'fj8DHHFxGQo:APA91bHCwO-c7E2qB9rZQ1Y2bqcD3_DqqUNpfKgXhWTAPrQtT9dT7ryAE9osABVGEWw75GN0JC9J2l5quyIOqbErGCuZHmfBqFoRLdnYvviksymXHttYKP_acw22kpFbTGOjJnJe8d_2',	'2020-10-03 20:34:35.277757',	'2019-10-03 20:34:38.262362',	NULL),
+(3,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	1,	0,	'[{"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}]',	'fj8DHHFxGQo:APA91bHCwO-c7E2qB9rZQ1Y2bqcD3_DqqUNpfKgXhWTAPrQtT9dT7ryAE9osABVGEWw75GN0JC9J2l5quyIOqbErGCuZHmfBqFoRLdnYvviksymXHttYKP_acw22kpFbTGOjJnJe8d_2',	'2020-10-03 20:34:35.277757',	'2019-10-03 20:34:41.33856',	NULL),
+(4,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	1,	0,	'[{"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 2, "select_opt_name": "그란데", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 5, "name": "아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 2, "select_opt_name": "그란데", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 6, "name": "아이스아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 3, "select_opt_name": "벤티", "select_opt_price": 1500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}, {"id": 20, "name": "프리미엄샷 추가", "default": 12, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 12, "name": "프리미엄샷", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 12, "select_opt_name": "프리미엄샷", "select_opt_price": 500.0}]}, {"id": 6, "name": "아이스아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}, {"id": 20, "name": "프리미엄샷 추가", "default": 12, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 12, "name": "프리미엄샷", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 12, "select_opt_name": "프리미엄샷", "select_opt_price": 500.0}]}, {"id": 6, "name": "아이스아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}, {"id": 20, "name": "프리미엄샷 추가", "default": 12, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 12, "name": "프리미엄샷", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 12, "select_opt_name": "프리미엄샷", "select_opt_price": 500.0}]}, {"id": 6, "name": "아이스아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 2, "select_opt_name": "그란데", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}, {"id": 20, "name": "프리미엄샷 추가", "default": 12, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 12, "name": "프리미엄샷", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 12, "select_opt_name": "프리미엄샷", "select_opt_price": 500.0}]}, {"id": 6, "name": "아이스아메리카노", "price": 1000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 3, "select_opt_name": "벤티", "select_opt_price": 1500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}, {"id": 20, "name": "프리미엄샷 추가", "default": 12, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 12, "name": "프리미엄샷", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 12, "select_opt_name": "프리미엄샷", "select_opt_price": 500.0}]}, {"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 3, "select_opt_name": "벤티", "select_opt_price": 1500.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 3, "select_opt_name": "벤티", "select_opt_price": 1500.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 5, "select_opt_name": "따뜻한", "select_opt_price": 0.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}, {"id": 4, "name": "바닐라 라뗴", "price": 2000.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 5, "select_opt_name": "따뜻한", "select_opt_price": 0.0}, {"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 3, "select_opt_name": "벤티", "select_opt_price": 1500.0}, {"id": 18, "name": "바닐라추가", "default": 10, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 10, "name": "바닐라크림", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 10, "select_opt_name": "바닐라크림", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}]',	'fj8DHHFxGQo:APA91bHCwO-c7E2qB9rZQ1Y2bqcD3_DqqUNpfKgXhWTAPrQtT9dT7ryAE9osABVGEWw75GN0JC9J2l5quyIOqbErGCuZHmfBqFoRLdnYvviksymXHttYKP_acw22kpFbTGOjJnJe8d_2',	'2020-10-03 20:34:35.277757',	'2019-10-03 20:35:12.234283',	NULL),
+(1,	'109b7b41-f8eb-4702-abdb-6bfb95f57072',	1,	0,	'[{"id": 3, "name": "카페라떼", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_group_list": [{"id": 1, "name": "컵사이즈", "default": 1, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 1, "name": "레귤러", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 2, "name": "그란데", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 3, "name": "벤티", "price": 1500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 1, "select_opt_name": "레귤러", "select_opt_price": 0.0}, {"id": 16, "name": "온도", "default": 4, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 4, "name": "차가운", "price": 500.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}, {"id": 5, "name": "따뜻한", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 4, "select_opt_name": "차가운", "select_opt_price": 500.0}, {"id": 19, "name": "샷추가", "default": 11, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "option_list": [{"id": 11, "name": "일반샷", "price": 0.0, "shop_id": "109b7b41-f8eb-4702-abdb-6bfb95f57072", "html_type": "s"}], "select_opt_id": 11, "select_opt_name": "일반샷", "select_opt_price": 0.0}]}]',	'fj8DHHFxGQo:APA91bHCwO-c7E2qB9rZQ1Y2bqcD3_DqqUNpfKgXhWTAPrQtT9dT7ryAE9osABVGEWw75GN0JC9J2l5quyIOqbErGCuZHmfBqFoRLdnYvviksymXHttYKP_acw22kpFbTGOjJnJe8d_2',	'2020-10-03 20:34:35.277757',	'2019-10-03 20:34:35.277757',	NULL);
