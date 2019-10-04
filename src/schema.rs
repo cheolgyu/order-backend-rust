@@ -47,6 +47,7 @@ table! {
         shop_id -> Uuid,
         state -> Int4,
         price -> Float8,
+        cnt -> Int4,
         products -> Jsonb,
         sw_token -> Varchar,
         created_at -> Timestamp,

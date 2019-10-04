@@ -238,7 +238,7 @@ CREATE TABLE "order" (
   shop_id UUID NOT NULL,
   state INTEGER NOT NULL DEFAULT 0,
   price float8 NOT NULL,
-
+  cnt  INTEGER NOT NULL DEFAULT 0,
   products jsonb NOT NULL,
   sw_token VARCHAR NOT NULL,
 

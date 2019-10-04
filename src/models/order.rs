@@ -22,6 +22,7 @@ pub struct Order {
     pub shop_id: Uuid,
     pub state: i32,
     pub price: f64,
+    pub cnt: i32,
     pub products: serde_json::Value,
     pub sw_token: String,
     pub created_at: NaiveDateTime,
@@ -36,6 +37,7 @@ pub struct New {
     pub shop_id: Uuid,
     pub state: i32,
     pub price: f64,
+    pub cnt: i32,
     pub products: serde_json::Value,
     pub sw_token: String,
 }
