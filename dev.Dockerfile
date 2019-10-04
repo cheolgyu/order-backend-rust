@@ -5,7 +5,5 @@ COPY . .
 
 RUN cargo build
 EXPOSE 3000
+RUN diesel migration run
 CMD [ "cargo", "watch","-x","run" ]
-
-
-
