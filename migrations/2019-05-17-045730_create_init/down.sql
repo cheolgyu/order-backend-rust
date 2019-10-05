@@ -1,4 +1,6 @@
 -- This file should undo anything in `up.sql`
+DROP VIEW IF EXISTS view_shop_info;
+DROP VIEW IF EXISTS view_comfind_info;
 DROP TABLE IF EXISTS "user";
 
 
@@ -24,7 +26,6 @@ DROP FUNCTION IF EXISTS ceo_info(u_id UUID,
 DROP FUNCTION IF EXISTS auto_cancle();
 DROP FUNCTION IF EXISTS come_find();
 
-DROP VIEW IF EXISTS view_comfind_info;
 DROP TABLE IF EXISTS "shop_notification";
 DROP TABLE IF EXISTS  "order";
 DROP TABLE IF EXISTS  "order_detail";

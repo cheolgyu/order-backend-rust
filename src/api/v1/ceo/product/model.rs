@@ -121,6 +121,14 @@ pub struct SimpleProduct {
     pub option_group_list: serde_json::Value,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
+pub struct ShopInfo {
+    #[sql_type = "uu"]
+    pub s_id: Uuid,
+    #[sql_type = "Json"]
+    pub s_info: serde_json::Value,
+}
+
 #[derive(Deserialize, Serialize, Debug, Message, Identifiable, AsChangeset)]
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "product"]
