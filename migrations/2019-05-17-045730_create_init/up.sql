@@ -76,6 +76,8 @@ CREATE TABLE "product" (
   shop_id UUID NOT NULL ,
   name VARCHAR NOT NULL,
   price float8 NOT NULL,
+  p_price float8 NOT NULL DEFAULT 0.00,
+  optg_price float8 NOT NULL DEFAULT 0.00,
   opt_group INTEGER[]  Not NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
@@ -328,12 +330,18 @@ FROM   view_comfind_info $$ language 'sql';
 
 
 CREATE VIEW view_shop_info AS
-SELECT s_id,Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
-              Json_build_object('p_id', p_id, 'p_nm', p_nm, 'og', og)))  as s_info
+SELECT s_id, 
+       Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
+       Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
+                                                          , p_price 
+       , 'optg_price', optg_price, 'og', og))) AS s_info 
 FROM   (SELECT s_id, 
                s_nm, 
                p_id, 
                p_nm, 
+               price, 
+               p_price, 
+               optg_price, 
                opt_group, 
                Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 'o', o 
                         )) AS 
@@ -347,6 +355,12 @@ FROM   (SELECT s_id,
                                AS p_id, 
                        p.name 
                                AS p_nm, 
+                       p.price 
+                               AS price, 
+                       p.p_price 
+                               AS p_price, 
+                       p.optg_price 
+                               AS optg_price, 
                        p.opt_group, 
                        og.id 
                                AS og_id, 
@@ -356,8 +370,9 @@ FROM   (SELECT s_id,
                        Json_agg(Json_build_object('o_id', o.id, 'o_nm', o.name, 
                                 'o_price', 
                                 o.price, 
-                                         'o_html_type', o.html_type 
-                                , 'og_default', og.default)) 
+                                         'o_html_type', o.html_type, 
+                                'og_default', 
+                                og.default)) 
                                AS o 
                 FROM   shop s 
                        left join product p 
@@ -379,6 +394,9 @@ FROM   (SELECT s_id,
                   s_nm, 
                   p_id, 
                   p_nm, 
+                  price, 
+                  p_price, 
+                  optg_price, 
                   opt_group)b 
 GROUP  BY s_id, 
           s_nm 

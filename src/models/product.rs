@@ -22,6 +22,8 @@ pub struct Product {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
+    pub p_price: f64,
+    pub optg_price: f64,
     pub opt_group: Vec<i32>,
     pub created_at: NaiveDateTime,
     pub updated_at: Option<NaiveDateTime>,

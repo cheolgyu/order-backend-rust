@@ -18,6 +18,8 @@ pub struct New {
     pub shop_id: Uuid,
     pub name: String,
     pub price: f64,
+    pub p_price: f64,
+    pub optg_price: f64,
     pub opt_group: Vec<i32>,
 }
 
@@ -25,6 +27,8 @@ pub struct New {
 pub struct InpNew {
     pub name: String,
     pub price: String,
+    pub p_price: String,
+    pub optg_price: String,
     pub opt_group: Vec<i32>,
 }
 
@@ -47,6 +51,8 @@ impl InpNew {
             shop_id: shop_id,
             name: self.name.to_string(),
             price: self.price.parse().expect("상품가격 파서 오류"),
+            p_price: self.p_price.parse().expect("상품가격 파서 오류"),
+            optg_price: self.optg_price.parse().expect("상품가격 파서 오류"),
             opt_group: self.opt_group.clone(),
         }
     }
@@ -59,6 +65,8 @@ pub struct Update {
     pub id: i32,
     pub name: String,
     pub price: f64,
+    pub p_price: f64,
+    pub optg_price: f64,
     pub opt_group: Vec<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -66,6 +74,8 @@ pub struct InpUpdate {
     pub id: i32,
     pub name: String,
     pub price: String,
+    pub p_price: String,
+    pub optg_price: String,
     pub opt_group: Vec<i32>,
 }
 
@@ -88,6 +98,8 @@ impl InpUpdate {
             id: self.id,
             name: self.name.to_string(),
             price: self.price.parse().expect("상품가격 파서 오류"),
+            p_price: self.p_price.parse().expect("상품가격 파서 오류"),
+            optg_price: self.optg_price.parse().expect("상품가격 파서 오류"),
             opt_group: self.opt_group.clone(),
         }
     }
@@ -106,20 +118,6 @@ pub struct GetList {
     pub shop_id: Uuid,
 }
 use diesel::sql_types::{Double, Integer, Json, Text, Uuid as uu};
-
-#[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
-pub struct SimpleProduct {
-    #[sql_type = "Integer"]
-    pub id: i32,
-    #[sql_type = "uu"]
-    pub shop_id: Uuid,
-    #[sql_type = "Text"]
-    pub name: String,
-    #[sql_type = "Double"]
-    pub price: f64,
-    #[sql_type = "Json"]
-    pub option_group_list: serde_json::Value,
-}
 
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct ShopInfo {

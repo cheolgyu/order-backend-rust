@@ -76,6 +76,8 @@ table! {
         shop_id -> Uuid,
         name -> Varchar,
         price -> Float8,
+        p_price -> Float8,
+        optg_price -> Float8,
         opt_group -> Array<Int4>,
         created_at -> Timestamp,
         updated_at -> Nullable<Timestamp>,

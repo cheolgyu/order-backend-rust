@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::product::model::{Delete, Get, GetList, New, SimpleProduct, Update};
+use crate::api::v1::ceo::product::model::{Delete, Get, GetList, New,  Update, ShopInfo};
 use crate::errors::ServiceError;
 use crate::models::product::Product as Object;
 use crate::models::DbExecutor;
@@ -75,25 +75,19 @@ impl Handler<GetList> for DbExecutor {
         use diesel::sql_query;
         use diesel::sql_types::Uuid;
 
-        let res = sql_query("
-        SELECT p.id                      AS id, 
-            p.shop_id                    AS shop_id, 
-            p.name                       AS name, 
-            p.price                      AS price, 
-            case when array_length(p.opt_group,1) is null then '[]' else Array_to_json(Array_agg(optg.* ORDER BY  array_position(p.opt_Group, optg.id)   ))  end as option_group_list 
-        FROM   PRODUCT AS p 
-            LEFT JOIN OPTION_GROUP AS optg 
-                ON optg.id = Any(p.opt_group) 
-        WHERE  p.shop_id = $1 AND p.deleted_at is null
-        GROUP  BY p.id 
+        let res = sql_query(" 
+         select s_id,s_info
+                    from 
+                    view_shop_info
+                    where s_id = $1
         ").bind::<Uuid, _>(&msg.shop_id)
-        .get_results::<SimpleProduct>(conn)?;
+        .get_result::<ShopInfo>(conn)?;
 
         let payload = serde_json::json!({
-            "items": res,
+            "shop_info": res,
         });
         Ok(Msg {
-            status: 201,
+            status: 200,
             data: payload,
         })
     }

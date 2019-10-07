@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::product::model::{SimpleProduct,ShopInfo};
+use crate::api::v1::ceo::product::model::{ShopInfo};
 use crate::api::v1::user::shop::model::{GetList, GetWithId};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
@@ -29,11 +29,10 @@ impl Handler<GetWithId> for DbExecutor {
                 ",
                 )
                 .bind::<Uuid, _>(&msg.id)
-                .get_results::<ShopInfo>(conn)?;
+                .get_result::<ShopInfo>(conn)?;
 
                 let payload = json!({
-                    "shop": _shop,
-                    "product": res,
+                    "shop_info": res,
                 });
 
                 Ok(Msg {
