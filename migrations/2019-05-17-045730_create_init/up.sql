@@ -343,7 +343,7 @@ FROM   (SELECT s_id,
                p_price, 
                optg_price, 
                opt_group, 
-               Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 'o', o 
+               Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 'og_default',og_default,'o', o 
                         )) AS 
                       og 
         FROM   (SELECT s.id 
@@ -366,6 +366,8 @@ FROM   (SELECT s_id,
                                AS og_id, 
                        og.name 
                                AS og_nm, 
+                       og.default 
+                               AS og_default,
                        og.options, 
                        Json_agg(Json_build_object('o_id', o.id, 'o_nm', o.name, 
                                 'o_price', 
