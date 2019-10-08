@@ -137,13 +137,11 @@ use diesel::sql_types::{Integer, Json, Text, Uuid as uu};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct SimpleOptionGroup {
     #[sql_type = "Integer"]
-    pub id: i32,
-    #[sql_type = "uu"]
-    pub shop_id: Uuid,
+    pub og_id: i32,
     #[sql_type = "Text"]
-    pub name: String,
+    pub og_nm: String,
     #[sql_type = "Integer"]
-    pub default: i32,
+    pub og_default: i32,
     #[sql_type = "Json"]
-    pub option_list: serde_json::Value,
+    pub o: serde_json::Value,
 }

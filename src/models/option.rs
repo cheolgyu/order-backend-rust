@@ -33,3 +33,17 @@ pub struct CartOpt {
     pub price: f64,
     pub html_type: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize,Insertable,Queryable)]
+#[table_name = "option"]
+pub struct OptRes {
+    #[column_name = "id"]
+    pub o_id: i32,
+    #[column_name = "name"]
+    pub o_nm: String,
+    #[column_name = "price"]
+    pub o_price: f64,
+    #[column_name = "html_type"]
+    pub o_html_type: String,
+    
+}
