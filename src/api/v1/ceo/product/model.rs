@@ -26,9 +26,9 @@ pub struct New {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InpNew {
     pub name: String,
-    pub price: String,
-    pub p_price: String,
-    pub optg_price: String,
+    pub price: f64,
+    pub p_price: f64,
+    pub og_price: f64,
     pub opt_group: Vec<i32>,
 }
 
@@ -50,9 +50,9 @@ impl InpNew {
         New {
             shop_id: shop_id,
             name: self.name.to_string(),
-            price: self.price.parse().expect("상품가격 파서 오류"),
-            p_price: self.p_price.parse().expect("상품가격 파서 오류"),
-            optg_price: self.optg_price.parse().expect("상품가격 파서 오류"),
+            price: self.price.clone(),
+            p_price: self.p_price.clone(),
+            optg_price: self.og_price.clone(),
             opt_group: self.opt_group.clone(),
         }
     }
@@ -73,9 +73,9 @@ pub struct Update {
 pub struct InpUpdate {
     pub id: i32,
     pub name: String,
-    pub price: String,
-    pub p_price: String,
-    pub optg_price: String,
+    pub price: f64,
+    pub p_price: f64,
+    pub og_price: f64,
     pub opt_group: Vec<i32>,
 }
 
@@ -97,9 +97,9 @@ impl InpUpdate {
         Update {
             id: self.id,
             name: self.name.to_string(),
-            price: self.price.parse().expect("상품가격 파서 오류"),
-            p_price: self.p_price.parse().expect("상품가격 파서 오류"),
-            optg_price: self.optg_price.parse().expect("상품가격 파서 오류"),
+            price: self.price.clone(),
+            p_price: self.p_price.clone(),
+            optg_price: self.og_price.clone(),
             opt_group: self.opt_group.clone(),
         }
     }
