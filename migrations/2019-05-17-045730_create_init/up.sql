@@ -409,7 +409,7 @@ CREATE VIEW view_shop_info_user AS
 SELECT s_id, 
        Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
        Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
-                                                          , p_price 
+                                , p_price , 'total_p_price',total_p_price, 'total_og_price',total_og_price
        , 'og_price', og_price, 'og', og))) AS s_info 
 FROM   (SELECT s_id, 
                s_nm, 
@@ -418,6 +418,8 @@ FROM   (SELECT s_id,
                price, 
                p_price, 
                og_price, 
+               price as total_p_price,
+               og_price as total_og_price,
                opt_group, 
                Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 
                'select_opt_id',select_opt_id, 'select_opt_name',select_opt_name, 'select_opt_price',select_opt_price, 
