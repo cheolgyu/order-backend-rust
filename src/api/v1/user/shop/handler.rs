@@ -24,7 +24,7 @@ impl Handler<GetWithId> for DbExecutor {
                     "
                     select s_id,s_info
                     from 
-                    view_shop_info
+                    view_shop_info_user
                     where s_id = $1
                 ",
                 )

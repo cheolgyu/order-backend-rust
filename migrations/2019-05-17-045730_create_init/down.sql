@@ -1,5 +1,7 @@
 -- This file should undo anything in `up.sql`
 DROP VIEW IF EXISTS view_shop_info;
+DROP VIEW IF EXISTS view_shop_info_user;
+
 DROP VIEW IF EXISTS view_comfind_info;
 DROP TABLE IF EXISTS "user";
 

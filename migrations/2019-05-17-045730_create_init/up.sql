@@ -77,7 +77,7 @@ CREATE TABLE "product" (
   name VARCHAR NOT NULL,
   price float8 NOT NULL,
   p_price float8 NOT NULL DEFAULT 0.00,
-  optg_price float8 NOT NULL DEFAULT 0.00,
+  og_price float8 NOT NULL DEFAULT 0.00,
   opt_group INTEGER[]  Not NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   updated_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ,
@@ -334,14 +334,14 @@ SELECT s_id,
        Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
        Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
                                                           , p_price 
-       , 'optg_price', optg_price, 'og', og))) AS s_info 
+       , 'og_price', og_price, 'og', og))) AS s_info 
 FROM   (SELECT s_id, 
                s_nm, 
                p_id, 
                p_nm, 
                price, 
                p_price, 
-               optg_price, 
+               og_price, 
                opt_group, 
                Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 'og_default',og_default,'o', o 
                         )) AS 
@@ -359,8 +359,8 @@ FROM   (SELECT s_id,
                                AS price, 
                        p.p_price 
                                AS p_price, 
-                       p.optg_price 
-                               AS optg_price, 
+                       p.og_price 
+                               AS og_price, 
                        p.opt_group, 
                        og.id 
                                AS og_id, 
@@ -398,9 +398,91 @@ FROM   (SELECT s_id,
                   p_nm, 
                   price, 
                   p_price, 
-                  optg_price, 
+                  og_price, 
                   opt_group)b 
 GROUP  BY s_id, 
           s_nm 
+;
+
+
+CREATE VIEW view_shop_info_user AS
+SELECT s_id, 
+       Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
+       Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
+                                                          , p_price 
+       , 'og_price', og_price, 'og', og))) AS s_info 
+FROM   (SELECT s_id, 
+               s_nm, 
+               p_id, 
+               p_nm, 
+               price, 
+               p_price, 
+               og_price, 
+               opt_group, 
+               Json_agg(Json_build_object('og_id', og_id, 'og_nm', og_nm, 
+               'select_opt_id',select_opt_id, 'select_opt_name',select_opt_name, 'select_opt_price',select_opt_price, 
+               'og_default',og_default,'o', o 
+                        )) AS 
+                      og 
+        FROM   (SELECT s.id 
+                               AS s_id 
+                               , 
+                       s.name 
+                               AS s_nm, 
+                       p.id 
+                               AS p_id, 
+                       p.name 
+                               AS p_nm, 
+                       p.price 
+                               AS price, 
+                       p.p_price 
+                               AS p_price, 
+                       p.og_price 
+                               AS og_price, 
+                       p.opt_group, 
+                       og.id 
+                               AS og_id, 
+                       og.name 
+                               AS og_nm, 
+                       og.default 
+                               AS og_default,
+                       og.options, 
+                       (select id from option where id = og.default    ) as select_opt_id,
+                        (select name from option where id = og.default    ) as select_opt_name,
+                        (select price from option where id = og.default    ) as select_opt_price,
+                       Json_agg(Json_build_object('o_id', o.id, 'o_nm', o.name, 
+                                'o_price', 
+                                o.price, 
+                                         'o_html_type', o.html_type, 
+                                'og_default', 
+                                og.default)) 
+                               AS o 
+                FROM   shop s 
+                       left join product p 
+                              ON s.id = p.shop_id 
+                                 AND p.deleted_at IS NULL 
+                       left join option_group og 
+                              ON og.id = ANY ( p.opt_group ) 
+                       left join OPTION o 
+                              ON o.id = ANY ( og.options ) 
+                GROUP  BY s.id, 
+                          s.name, 
+                          p.id, 
+                          p.name, 
+                          p.opt_group, 
+                          og.id, 
+                          og.name, 
+                          og.options) t 
+        GROUP  BY s_id, 
+                  s_nm, 
+                  p_id, 
+                  p_nm, 
+                  price, 
+                  p_price, 
+                  og_price, 
+                  opt_group)b 
+GROUP  BY s_id, 
+          s_nm 
+;
 ;
 

@@ -19,7 +19,7 @@ pub struct New {
     pub name: String,
     pub price: f64,
     pub p_price: f64,
-    pub optg_price: f64,
+    pub og_price: f64,
     pub opt_group: Vec<i32>,
 }
 
@@ -52,7 +52,7 @@ impl InpNew {
             name: self.name.to_string(),
             price: self.price.clone(),
             p_price: self.p_price.clone(),
-            optg_price: self.og_price.clone(),
+            og_price: self.og_price.clone(),
             opt_group: self.opt_group.clone(),
         }
     }
@@ -66,7 +66,7 @@ pub struct Update {
     pub name: String,
     pub price: f64,
     pub p_price: f64,
-    pub optg_price: f64,
+    pub og_price: f64,
     pub opt_group: Vec<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -99,7 +99,7 @@ impl InpUpdate {
             name: self.name.to_string(),
             price: self.price.clone(),
             p_price: self.p_price.clone(),
-            optg_price: self.og_price.clone(),
+            og_price: self.og_price.clone(),
             opt_group: self.opt_group.clone(),
         }
     }
