@@ -27,11 +27,11 @@ pub struct Opt {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartOpt {
-    pub id: i32,
-    pub shop_id: Uuid,
-    pub name: String,
-    pub price: f64,
-    pub html_type: String,
+    pub o_id: i32,
+    pub o_nm: String,
+    pub o_price: f64,
+    pub o_html_type: String,
+    pub og_default: i32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize,Insertable,Queryable)]

@@ -30,12 +30,11 @@ pub struct OptionGroup {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartOptionGroup {
-    pub id: i32,
-    pub shop_id: Uuid,
-    pub name: String,
-    pub default: i32,
+    pub og_id: i32,
+    pub og_nm: String,
+    pub og_default: i32,
     pub select_opt_id: i32,
     pub select_opt_name: String,
     pub select_opt_price: f64,
-    pub option_list: Vec<CartOpt>,
+    pub o: Vec<CartOpt>,
 }

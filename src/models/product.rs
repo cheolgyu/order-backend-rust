@@ -32,9 +32,12 @@ pub struct Product {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CartProduct {
-    pub id: i32,
-    pub shop_id: Uuid,
-    pub name: String,
+    pub p_id: i32,
+    pub p_nm: String,
     pub price: f64,
-    pub option_group_list: Vec<CartOptionGroup>,
+    pub p_price: f64,
+    pub og_price: f64,
+    pub total_p_price: f64,
+    pub total_og_price: f64,
+    pub og: Vec<CartOptionGroup>,
 }
