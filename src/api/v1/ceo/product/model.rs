@@ -117,7 +117,7 @@ pub struct Get {
 pub struct GetList {
     pub shop_id: Uuid,
 }
-use diesel::sql_types::{ Json,  Uuid as uu};
+use diesel::sql_types::{Json, Uuid as uu};
 
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct ShopInfo {

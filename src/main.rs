@@ -106,7 +106,7 @@ fn main() -> std::io::Result<()> {
             .data(pool2.clone())
             .data(store.clone())
             .data(valid_email.clone())
-          //  .wrap(actix_middleware::Logger::default())
+            .wrap(actix_middleware::Logger::default())
             .wrap(
                 Cors::new()
                     .allowed_origin(&url_frontend_ceo)
@@ -117,10 +117,11 @@ fn main() -> std::io::Result<()> {
                     .max_age(3600),
             )
             .service(
-                web::scope("/api/v1")
-                    .configure(config::ceo::v1::config)
-                    .configure(config::user::v1::config),
+                web::scope("/api/v1/ceo")
+                    .wrap(middleware::Auth)
+                    .configure(config::ceo::v1::config),
             )
+            .service(web::scope("/api/v1/user").configure(config::user::v1::config))
             .service(index)
             .service(no_params)
     })

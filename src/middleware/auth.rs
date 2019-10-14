@@ -45,7 +45,7 @@ where
         self.service.poll_ready()
     }
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
-
+        println!("auth mw : ");
         Box::new(self.service.call(req).and_then(|res| Ok(res)))
     }
 }
