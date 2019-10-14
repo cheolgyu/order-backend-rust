@@ -1,8 +1,8 @@
 use crate::api::v1::ceo::option::model::{Delete, Get, GetList, New, Update};
 use crate::errors::ServiceError;
-use crate::models::option::{Opt as Object,OptRes};
+use crate::models::option::{Opt as Object, OptRes};
 use crate::models::DbExecutor;
-use crate::schema::option::dsl::{deleted_at, id, name, option as tb, shop_id,price,html_type};
+use crate::schema::option::dsl::{deleted_at, html_type, id, name, option as tb, price, shop_id};
 use actix::Handler;
 
 use diesel;
@@ -85,7 +85,8 @@ impl Handler<GetList> for DbExecutor {
     fn handle(&mut self, _msg: GetList, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
-        let item = tb.select((id,name,price,html_type))
+        let item = tb
+            .select((id, name, price, html_type))
             .filter(&shop_id.eq(&_msg.shop_id))
             .filter(&deleted_at.is_null())
             .load::<OptRes>(conn)?;

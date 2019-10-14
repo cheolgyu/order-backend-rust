@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::product::model::{Delete, Get, GetList, New,  Update, ShopInfo};
+use crate::api::v1::ceo::product::model::{Delete, Get, GetList, New, ShopInfo, Update};
 use crate::errors::ServiceError;
 use crate::models::product::Product as Object;
 use crate::models::DbExecutor;
@@ -75,12 +75,15 @@ impl Handler<GetList> for DbExecutor {
         use diesel::sql_query;
         use diesel::sql_types::Uuid;
 
-        let res = sql_query(" 
+        let res = sql_query(
+            " 
          select s_id,s_info
                     from 
                     view_shop_info
                     where s_id = $1
-        ").bind::<Uuid, _>(&msg.shop_id)
+        ",
+        )
+        .bind::<Uuid, _>(&msg.shop_id)
         .get_result::<ShopInfo>(conn)?;
 
         let payload = serde_json::json!({

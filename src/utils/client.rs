@@ -1,8 +1,7 @@
 use actix_web::client::{Client, Connector};
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 
-pub struct SSLClinet {
-}
+pub struct SSLClinet {}
 
 impl SSLClinet {
     pub fn build() -> Client {

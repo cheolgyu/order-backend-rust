@@ -133,7 +133,7 @@ pub struct ReqToUserData {
     pub data: serde_json::Value,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Notification { 
+pub struct Notification {
     pub title: String,
     pub body: String,
 }
@@ -156,25 +156,24 @@ pub struct MyOptions {
     pub vibrate: Vec<i32>,
 }
 
-impl ReqToUserData{
-    pub fn new( target :String, title: String, body: String) -> ReqToUserData {
-        ReqToUserData{
-             to: target,
-            notification: Notification{
-                title:title.clone(),
-                body:body.clone()
+impl ReqToUserData {
+    pub fn new(target: String, title: String, body: String) -> ReqToUserData {
+        ReqToUserData {
+            to: target,
+            notification: Notification {
+                title: title.clone(),
+                body: body.clone(),
             },
-            data: serde_json::json!(Data{
-                title:title.clone(),
-                my_options: MyOptions{
+            data: serde_json::json!(Data {
+                title: title.clone(),
+                my_options: MyOptions {
                     body: body.clone(),
                     icon: "/icon.png".to_string(),
                     tag: "my_tag".to_string(),
                     click_action: "https://naver.com".to_string(),
-                    vibrate: vec![200,100,200,100,200,100,400],
+                    vibrate: vec![200, 100, 200, 100, 200, 100, 400],
                 },
             }),
         }
-       
-   }
+    }
 }

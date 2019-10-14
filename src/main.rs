@@ -16,16 +16,15 @@ use actix::prelude::*;
 
 mod api;
 mod batch;
+mod config;
 mod errors;
 mod fcm;
 mod middleware;
 mod models;
 mod schema;
 mod utils;
-mod config;
 
 use crate::models::{AppStateWithTxt, DbExecutor, WebPush, WebSocket};
-
 
 use actix_cors::Cors;
 use actix_web::{
@@ -110,16 +109,17 @@ fn main() -> std::io::Result<()> {
             .wrap(actix_middleware::Logger::default())
             .wrap(
                 Cors::new()
-              .allowed_origin(&url_frontend_ceo)
-              .allowed_origin(&url_frontend_user)
-              .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS","DELETE"])
-              .allowed_headers(vec![AUTHORIZATION, ACCEPT])
-              .allowed_header(CONTENT_TYPE)
-              .max_age(3600)
+                    .allowed_origin(&url_frontend_ceo)
+                    .allowed_origin(&url_frontend_user)
+                    .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS", "DELETE"])
+                    .allowed_headers(vec![AUTHORIZATION, ACCEPT])
+                    .allowed_header(CONTENT_TYPE)
+                    .max_age(3600),
             )
             .service(
-                web::scope("/api/v1").configure(config::ceo::v1::config)
-                   .configure(config::user::v1::config)
+                web::scope("/api/v1")
+                    .configure(config::ceo::v1::config)
+                    .configure(config::user::v1::config),
             )
             .service(index)
             .service(no_params)

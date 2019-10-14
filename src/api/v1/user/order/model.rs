@@ -12,7 +12,7 @@ pub struct InpNew {
     pub state: i32,
     pub price: f64,
     pub cnt: i32,
-    pub products: HashMap<i32,Vec<CartProduct>>,
+    pub products: HashMap<i32, Vec<CartProduct>>,
     pub sw_token: String,
 }
 

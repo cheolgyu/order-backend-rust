@@ -34,7 +34,7 @@ pub struct CartOpt {
     pub og_default: i32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize,Insertable,Queryable)]
+#[derive(Clone, Debug, Serialize, Deserialize, Insertable, Queryable)]
 #[table_name = "option"]
 pub struct OptRes {
     #[column_name = "id"]
@@ -45,5 +45,4 @@ pub struct OptRes {
     pub o_price: f64,
     #[column_name = "html_type"]
     pub o_html_type: String,
-    
 }

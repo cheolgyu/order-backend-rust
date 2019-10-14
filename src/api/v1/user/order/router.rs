@@ -44,10 +44,10 @@ pub fn put(
             let to = res.shop.notification_key.clone();
             let title = format!("[{}] 주문!", res.shop.name);
             let body = format!("주문도착.!");
-            
+
             let send_data = ReqToUser {
                 comm: ReqToComm::new_order(res.order.id),
-                params: ReqToUserData::new(to,title,body),
+                params: ReqToUserData::new(to, title, body),
             };
 
             to_user(send_data, db, store2).from_err()

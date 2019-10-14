@@ -25,7 +25,6 @@ impl Validate for InpCheck {
     }
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
     pub name: String,
@@ -79,4 +78,3 @@ impl Validate for InpUpdate {
         }
     }
 }
-

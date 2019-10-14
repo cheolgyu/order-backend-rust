@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::product::model::{ShopInfo};
+use crate::api::v1::ceo::product::model::ShopInfo;
 use crate::api::v1::user::shop::model::{GetList, GetWithId};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;

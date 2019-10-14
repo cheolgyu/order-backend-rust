@@ -82,7 +82,7 @@ fn index4(
                 for res in &list {
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
-                    let to =  res.to.clone();
+                    let to = res.to.clone();
                     let title = format!("[{}] 수령하세요.", res.shop_name);
                     let body = res.content.to_string();
                     let send_data = ReqToUser {
@@ -91,7 +91,7 @@ fn index4(
                             res.order_detail_id.clone(),
                             res.shop_notification_id.clone(),
                         ),
-                        params: ReqToUserData::new(to,title,body),
+                        params: ReqToUserData::new(to, title, body),
                     };
 
                     let result = to_user(send_data, db_addr, store3);
@@ -141,7 +141,7 @@ fn index3(
 
                     let send_data = ReqToUser {
                         comm: ReqToComm::new_auto_cancle(res.id.clone()),
-                        params: ReqToUserData::new(to,title,body),
+                        params: ReqToUserData::new(to, title, body),
                     };
                     let websocket_url2 = websocket_url.clone();
 

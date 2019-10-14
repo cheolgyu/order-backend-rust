@@ -113,7 +113,8 @@ impl Handler<GetList> for DbExecutor {
         use diesel::sql_query;
         use diesel::sql_types::Uuid;
 
-        let res = sql_query("
+        let res = sql_query(
+            "
 SELECT og.id 
        AS 
        og_id, 
@@ -132,7 +133,9 @@ WHERE  og.deleted_at IS NULL
         AND og.shop_id = $1
 GROUP  BY og.id, 
           og.name
-        ").bind::<Uuid, _>(&_msg.shop_id)
+        ",
+        )
+        .bind::<Uuid, _>(&_msg.shop_id)
         .get_results::<SimpleOptionGroup>(conn)?;
 
         let payload = serde_json::json!({

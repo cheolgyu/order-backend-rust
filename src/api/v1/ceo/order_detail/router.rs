@@ -47,7 +47,7 @@ pub fn put(
 
                 let send_data = ReqToUser {
                     comm: ReqToComm::new_order_detail(order_id, new_order_detail_id, inp_state),
-                    params: ReqToUserData::new(to,title,body),
+                    params: ReqToUserData::new(to, title, body),
                 };
                 Either::A(to_user(send_data, db, store))
             }
