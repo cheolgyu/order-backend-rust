@@ -106,7 +106,7 @@ fn main() -> std::io::Result<()> {
             .data(pool2.clone())
             .data(store.clone())
             .data(valid_email.clone())
-            .wrap(actix_middleware::Logger::default())
+          //  .wrap(actix_middleware::Logger::default())
             .wrap(
                 Cors::new()
                     .allowed_origin(&url_frontend_ceo)

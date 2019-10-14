@@ -133,7 +133,7 @@ impl InpDelete {
 pub struct GetList {
     pub shop_id: Uuid,
 }
-use diesel::sql_types::{Integer, Json, Text, Uuid as uu};
+use diesel::sql_types::{Integer, Json, Text};
 #[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
 pub struct SimpleOptionGroup {
     #[sql_type = "Integer"]
