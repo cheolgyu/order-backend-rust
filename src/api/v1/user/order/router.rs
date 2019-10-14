@@ -41,18 +41,13 @@ pub fn put(
             }, //web push
         )
         .and_then(move |res| {
+            let to = res.shop.notification_key.clone();
             let title = format!("[{}] 주문!", res.shop.name);
+            let body = format!("주문도착.!");
+            
             let send_data = ReqToUser {
                 comm: ReqToComm::new_order(res.order.id),
-                params: ReqToUserData {
-                    notification: Notification {
-                        title: title,
-                        body: "22".to_string(),
-                        icon: "33".to_string(),
-                        click_action: "44".to_string(),
-                    },
-                    to: res.shop.notification_key.clone(),
-                },
+                params: ReqToUserData::new(to,title,body),
             };
 
             to_user(send_data, db, store2).from_err()

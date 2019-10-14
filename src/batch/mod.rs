@@ -82,22 +82,16 @@ fn index4(
                 for res in &list {
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
+                    let to =  res.to.clone();
                     let title = format!("[{}] 수령하세요.", res.shop_name);
+                    let body = res.content.to_string();
                     let send_data = ReqToUser {
                         comm: ReqToComm::new_comefind(
                             res.order_id.clone(),
                             res.order_detail_id.clone(),
                             res.shop_notification_id.clone(),
                         ),
-                        params: ReqToUserData {
-                            notification: Notification {
-                                title: title,
-                                body: res.content.clone(),
-                                icon: "33".to_string(),
-                                click_action: "44".to_string(),
-                            },
-                            to: res.to.clone(),
-                        },
+                        params: ReqToUserData::new(to,title,body),
                     };
 
                     let result = to_user(send_data, db_addr, store3);
@@ -140,17 +134,14 @@ fn index3(
                     let db_addr = db2.clone();
                     let store3 = store2.clone();
                     let shop_id = res.shop_id.clone();
+
+                    let to = res.notification_key.clone();
+                    let title = format!("[자동] 주문후 5분 미응답");
+                    let body = format!("주문 자동취소됨.!");
+
                     let send_data = ReqToUser {
                         comm: ReqToComm::new_auto_cancle(res.id.clone()),
-                        params: ReqToUserData {
-                            notification: Notification {
-                                title: "[자동] 주문후 5분 미응답".to_string(),
-                                body: "22".to_string(),
-                                icon: "33".to_string(),
-                                click_action: "44".to_string(),
-                            },
-                            to: res.notification_key.clone(),
-                        },
+                        params: ReqToUserData::new(to,title,body),
                     };
                     let websocket_url2 = websocket_url.clone();
 

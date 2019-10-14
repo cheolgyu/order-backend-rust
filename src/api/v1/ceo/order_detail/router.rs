@@ -40,20 +40,14 @@ pub fn put(
             Ok(res) => {
                 let inp_state = res.order_detail.state;
                 let new_order_detail_id = res.order_detail.id;
-                let state = format!("상태코드: {}", inp_state);
+                let state_str = format!("상태코드: {}", inp_state).to_string();
+                let title = "[손님]주문에 대한 응답.".to_string();
+                let body = state_str;
                 let to = res.order.sw_token;
 
                 let send_data = ReqToUser {
                     comm: ReqToComm::new_order_detail(order_id, new_order_detail_id, inp_state),
-                    params: ReqToUserData {
-                        notification: Notification {
-                            title: "[손님]주문에 대한 응답.".to_string(),
-                            body: state,
-                            icon: "".to_string(),
-                            click_action: "".to_string(),
-                        },
-                        to: to,
-                    },
+                    params: ReqToUserData::new(to,title,body),
                 };
                 Either::A(to_user(send_data, db, store))
             }
