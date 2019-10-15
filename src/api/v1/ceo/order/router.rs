@@ -7,7 +7,7 @@ use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
     web::{Data, Json, Path},
-    Error, HttpResponse, ResponseError,
+    Error, HttpRequest, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 
@@ -35,6 +35,7 @@ pub fn post(
 }
 
 pub fn get_list(
+    req: HttpRequest,
     auth_user: AuthUser,
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
@@ -44,6 +45,11 @@ pub fn get_list(
     info.auth_user = Some(auth_user);
     let db2 = db.clone();
     let shop_id = info2.shop_id.unwrap();
+
+    let id = req.headers().get("id");
+    let role = req.headers().get("role");
+    println!("!!!!!!!!!!!!:{:?}", id);
+    println!("!!!!!!!!!!!!:{:?}", role);
 
     db.send(info)
         .from_err()

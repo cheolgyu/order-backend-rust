@@ -1,8 +1,9 @@
 use actix_service::{Service, Transform};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use actix_web::{Error, HttpResponse};
+use actix_web::{http::header, Error, HttpResponse};
 use futures::future::{ok, Either, FutureResult};
 use futures::Poll;
+use std::str::FromStr;
 
 use crate::utils::jwt::decode_token;
 
@@ -45,10 +46,23 @@ where
     fn poll_ready(&mut self) -> Poll<(), Self::Error> {
         self.service.poll_ready()
     }
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
         if let Some(auth_token) = req.headers().get("authorization") {
             if let Ok(auth_token_str) = auth_token.to_str() {
-                if let Ok(_user) = decode_token(auth_token_str) {
+                if let Ok(auth_user) = decode_token(auth_token_str) {
+
+                    let u_id = auth_user.id.hyphenated().to_string();
+                    let u_role = auth_user.role.to_string();
+
+                    req.headers_mut().insert(
+                        header::HeaderName::from_str("id").unwrap(),
+                        header::HeaderValue::from_str(&u_id).unwrap(),
+                    );
+                    req.headers_mut().insert(
+                        header::HeaderName::from_str("role").unwrap(),
+                        header::HeaderValue::from_str(&u_role).unwrap(),
+                    );
+
                     Either::A(self.service.call(req))
                 } else {
                     Either::B(ok(

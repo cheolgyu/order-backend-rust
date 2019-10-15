@@ -120,6 +120,7 @@ fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/api/v1/ceo")
                     .wrap(middleware::auth::CheckToken)
+                    .wrap(middleware::authorization::Check)
                     .configure(config::ceo::v1::config),
             )
             .service(web::scope("/api/v1/user").configure(config::user::v1::config))
