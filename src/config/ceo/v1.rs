@@ -1,6 +1,13 @@
 use crate::api;
 use actix_web::web;
-
+pub fn public(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::resource("")
+            .route(web::put().to_async(api::v1::ceo::auth::router::signup))
+            .route(web::post().to_async(api::v1::ceo::auth::router::signin))
+            .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
+    );
+}
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/{ceo_id}")
@@ -146,11 +153,5 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                             ))),
                     ),
             ),
-    );
-    cfg.service(
-        web::resource("/auth")
-            .route(web::put().to_async(api::v1::ceo::auth::router::signup))
-            .route(web::post().to_async(api::v1::ceo::auth::router::signin))
-            .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
     );
 }

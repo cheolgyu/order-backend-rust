@@ -116,9 +116,10 @@ fn main() -> std::io::Result<()> {
                     .allowed_header(CONTENT_TYPE)
                     .max_age(3600),
             )
+            .service(web::scope("/api/v1/ceo/auth").configure(config::ceo::v1::public))
             .service(
                 web::scope("/api/v1/ceo")
-                    .wrap(middleware::Auth)
+                    .wrap(middleware::auth::CheckToken)
                     .configure(config::ceo::v1::config),
             )
             .service(web::scope("/api/v1/user").configure(config::user::v1::config))
