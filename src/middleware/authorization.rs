@@ -27,7 +27,6 @@ where
     type Future = FutureResult<Self::Transform, Self::InitError>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        println!("Check Transform new_transform : ");
         ok(CheckMiddleware { service })
     }
 }

@@ -23,7 +23,6 @@ where
     type Future = FutureResult<Self::Transform, Self::InitError>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        println!("CheckToken Transform new_transform : ");
         ok(CheckTokenMiddleware { service })
     }
 }
@@ -50,7 +49,6 @@ where
         if let Some(auth_token) = req.headers().get("authorization") {
             if let Ok(auth_token_str) = auth_token.to_str() {
                 if let Ok(auth_user) = decode_token(auth_token_str) {
-
                     let u_id = auth_user.id.hyphenated().to_string();
                     let u_role = auth_user.role.to_string();
 
