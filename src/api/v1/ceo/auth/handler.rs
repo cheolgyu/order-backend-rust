@@ -1,6 +1,4 @@
-use crate::api::v1::ceo::auth::model::{
-    Info, Login, New, QueryUser, SlimUser, User,
-};
+use crate::api::v1::ceo::auth::model::{Info, Login, New, QueryUser, SlimUser, User};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
@@ -11,7 +9,7 @@ use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer,  Uuid as uu};
+use diesel::sql_types::{Integer, Uuid as uu};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
