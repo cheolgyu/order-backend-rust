@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{Info, Login, New, QueryUser, SlimUser, User};
+use crate::api::v1::ceo::auth::model::{Authorization,Info, Login, New, QueryUser, SlimUser, User};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
@@ -9,7 +9,7 @@ use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer, Uuid as uu};
+use diesel::sql_types::{Integer, Uuid as uu,Text};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
@@ -114,7 +114,31 @@ impl Handler<QueryUser> for DbExecutor {
     }
 }
 
-impl Handler<Info> for DbExecutor {
+impl Handler<Authorization> for DbExecutor { 
+    type Result = Result<usize, ServiceError>;
+
+    fn handle(&mut self, msg: Authorization, _: &mut Self::Context) -> Self::Result {
+        println!("--------authorization Handler start----------: ");
+        let conn = &self.0.get()?;
+        let msg2 = msg.clone();
+       let q = sql_query("select * from exist_resource($1,$2,$3,$4,$5) ");
+
+        let res = q
+            .bind::<Text, _>(&msg.role)
+            .bind::<Text, _>(&msg.user_id)
+            .bind::<Text, _>(&msg.shop_id)
+            .bind::<Text, _>(&msg.target)
+            .bind::<Text, _>(&msg.target_id)
+            .execute(conn)
+            .expect("Authorization 조회 오류");
+        println!("--------authorization Handler res :{:?}----------: ",res);
+         println!("--------authorization Handler end----------: ");
+         Ok(res)
+    }
+}
+
+
+impl Handler<Info> for DbExecutor { 
     type Result = Result<Info, ServiceError>;
 
     fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
@@ -149,3 +173,4 @@ impl Handler<Info> for DbExecutor {
         }
     }
 }
+ 

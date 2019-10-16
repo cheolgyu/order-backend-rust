@@ -19,6 +19,14 @@ DROP FUNCTION IF EXISTS ceo_info(u_id UUID,
                           s_id UUID,
                           p_id INTEGER);
 
+DROP FUNCTION IF EXISTS exist_resource(u_role VARCHAR,
+                          u_id VARCHAR,
+                          s_id VARCHAR,
+                          tg VARCHAR,
+                          tg_id VARCHAR
+                          );
+                          
+
 
 -- This file should undo anything in `up.sql`
 

@@ -209,6 +209,16 @@ pub struct Info {
     pub auth_user: Option<AuthUser>,
 }
 
+#[derive(Deserialize, Serialize, Debug, Message, Clone)]
+#[rtype(result = "Result<usize, ServiceError>")]
+pub struct Authorization {
+    pub role: String,
+    pub user_id: String,
+    pub shop_id: String,
+    pub target: String,
+    pub target_id: String,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Ceo {
     pub user: Option<User>,

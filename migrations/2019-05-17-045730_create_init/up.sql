@@ -148,6 +148,87 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+-- 조회 프로시저
+CREATE FUNCTION exist_resource(
+        u_role VARCHAR,
+        u_id VARCHAR,
+        s_id VARCHAR,
+        tg VARCHAR,
+        tg_id VARCHAR) returns SETOF int
+AS
+  $$
+BEGIN
+IF s_id != ''  THEN
+        IF tg_id != ''  THEN
+
+                IF tg  = 'products' THEN
+                        RETURN QUERY
+
+                        SELECT count(u.id)::int
+                        FROM   "user" u 
+                        left join shop s on s.id::text = s_id
+                        left join  "product" p on s.id::text= p.shop_id and p.id = tg_id
+                        WHERE  u.id::text = u_id ;
+
+                ELSEIF tg  = 'option_group' THEN
+                        RETURN QUERY
+
+                        SELECT Count(u.id)::int
+                        FROM   "user" u 
+                        left join shop s on s.id::text = s_id
+                        left join "option_group" og  ON s.id::text = og.shop_id AND og.id = tg_id
+                        WHERE  u.id::text = u_id ;
+
+                ELSEIF tg  = 'option' THEN
+                        RETURN QUERY
+
+                        SELECT count(u.id)::int
+                        FROM   "user" u 
+                        left join shop s on s.id::text = s_id
+                        left join  "option" o on s.id::text= o.shop_id and o.id = tg_id
+                        WHERE  u.id::text = u_id ;
+
+                ELSEIF tg  = 'order' THEN
+                        RETURN QUERY
+
+                        SELECT count(u.id)::int
+                        FROM   "user" u 
+                        left join shop s on s.id::text = s_id
+                        left join  "order" o on s.id::text= o.shop_id and o.id = tg_id
+                        WHERE  u.id::text = u_id ;
+
+                ELSEIF tg  = 'order_detail' THEN
+                        RETURN QUERY
+
+                        SELECT count(u.id)::int
+                        FROM   "user" u 
+                        left join shop s on s.id::text = s_id
+                        left join  "order_detail" od on s.id::text= od.shop_id and od.id = tg_id
+                        WHERE  u.id::text = u_id ;
+
+                ELSE
+                        RETURN QUERY
+                        SELECT 0;
+                END IF ;
+        ELSE
+                RETURN QUERY
+
+                SELECT count(u.id)::int
+                FROM   "user" u 
+                left join shop s on s.id::text = s_id
+                WHERE  u.id::text = u_id ;
+        END IF ;
+ELSE
+        RETURN QUERY
+
+        SELECT count(u.id)::int
+        FROM   "user" u 
+        WHERE  u.id::text = u_id ;
+
+END IF ;
+
+END;
+$$ LANGUAGE plpgsql;
 
 
 INSERT INTO "user" ("id", "account_id", "account_password", "email", "name", "role", "created_at", "updated_at", "deleted_at") VALUES

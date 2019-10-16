@@ -119,8 +119,10 @@ fn main() -> std::io::Result<()> {
             .service(web::scope("/api/v1/ceo/auth").configure(config::ceo::v1::public))
             .service(
                 web::scope("/api/v1/ceo")
-                    .wrap(middleware::auth::CheckToken)
+                    //실행순서2
                     .wrap(middleware::authorization::Check)
+                    //실행순서1
+                    .wrap(middleware::auth::CheckToken)
                     .configure(config::ceo::v1::config),
             )
             .service(web::scope("/api/v1/user").configure(config::user::v1::config))
