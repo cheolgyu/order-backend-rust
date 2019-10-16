@@ -145,12 +145,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                                         ),
                                     )),
                             )
-                            .service(
-                                web::scope("/order_now")
-                                    .service(web::resource("").route(
-                                        web::get().to_async(api::v1::ceo::order::router::now_list),
-                                    ))
-                            )
+                            .service(web::scope("/order_now").service(
+                                web::resource("").route(
+                                    web::get().to_async(api::v1::ceo::order::router::now_list),
+                                ),
+                            ))
                             .service(web::scope("/order_detail").service(web::resource("").route(
                                 web::put().to_async(api::v1::ceo::order_detail::router::put),
                             ))),

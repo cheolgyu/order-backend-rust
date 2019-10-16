@@ -8,13 +8,13 @@ use actix_web::{
     web::{Data, Path},
     Error, HttpResponse,
 };
+use diesel::{r2d2::ConnectionManager, PgConnection};
 use futures::future::Future;
 use futures::future::{ok, Either, FutureResult};
 use futures::Poll;
 use regex::Regex;
 use std::cell::RefCell;
 use std::rc::Rc;
-use diesel::{r2d2::ConnectionManager, PgConnection};
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 pub struct Check;
@@ -65,7 +65,7 @@ where
     }
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
         println!("--------authorization start----------: ");
-        let pool = req.app_data::<Pool>(). expect("err : get  Pool");
+        let pool = req.app_data::<Pool>().expect("err : get  Pool");
         let db = req
             .app_data::<Addr<DbExecutor>>()
             .expect("err : get  DbExecutor");
@@ -119,17 +119,17 @@ where
         println!("------------------: {}", path);
         println!("------------------: {}", res);
         use crate::errors::ServiceError;
-/*
+        /*
         let chk = db.send(data).from_err().and_then(move |res| {
             println!("request body: {:?}", res);
             res
         });
         */
-use diesel::prelude::*;
-use diesel::sql_query;
-use diesel::sql_types::{Integer, Uuid as uu,Text};
-let conn: &PgConnection = &pool.get().unwrap();
-let q = sql_query("select * from exist_resource($1,$2,$3,$4,$5) ");
+        use diesel::prelude::*;
+        use diesel::sql_query;
+        use diesel::sql_types::{Integer, Text, Uuid as uu};
+        let conn: &PgConnection = &pool.get().unwrap();
+        let q = sql_query("select * from exist_resource($1,$2,$3,$4,$5) ");
 
         let chk = q
             .bind::<Text, _>(&login_role.to_string())
@@ -140,22 +140,20 @@ let q = sql_query("select * from exist_resource($1,$2,$3,$4,$5) ");
             .execute(conn)
             .expect("Authorization 조회 오류");
 
-        if chk == 1{
+        if chk == 1 {
             println!("-------------ok-----: ");
-        }else{
+        } else {
             println!("-------------nok-----: ");
         }
-        Box::new(
-            self.service.call(req)
-         )
-        
+        Box::new(self.service.call(req))
+
         /*
-        println!("------------------: chk");
-        Box::new(self.service.call(req).and_then(|res| {
-            println!("Hi from response");
-            Ok(res)
-        }))
-*/
+                println!("------------------: chk");
+                Box::new(self.service.call(req).and_then(|res| {
+                    println!("Hi from response");
+                    Ok(res)
+                }))
+        */
         /*
         Box::new(
             db.send(data).from_err()
