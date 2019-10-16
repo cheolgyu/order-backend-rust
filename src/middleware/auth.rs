@@ -46,7 +46,6 @@ where
         self.service.poll_ready()
     }
     fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
-        println!("--------auth start----------: ");
         if let Some(auth_token) = req.headers().get("authorization") {
             if let Ok(auth_token_str) = auth_token.to_str() {
                 if let Ok(auth_user) = decode_token(auth_token_str) {
