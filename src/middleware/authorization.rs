@@ -1,18 +1,12 @@
-use crate::api::v1::ceo::auth::model::Authorization;
-use crate::models::DbExecutor;
-use crate::utils::jwt::decode_token;
-use actix::Addr;
 use actix_service::{Service, Transform};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 use actix_web::{
-    web::{Data, Path},
     Error, HttpResponse,
 };
 use diesel::prelude::*;
 use diesel::sql_query;
 use diesel::sql_types::Text;
 use diesel::{r2d2::ConnectionManager, PgConnection};
-use futures::future::Future;
 use futures::future::{ok, Either, FutureResult};
 use futures::Poll;
 use regex::Regex;
@@ -106,12 +100,13 @@ where
 
         match login_role {
             "ceo" => match login_id {
-                req_user_id => match chk {
+                login_id if login_id == req_user_id => {
+                    match chk {
                     1 => Either::A(self.service.call(req)),
                     _ => Either::B(ok(
                         req.into_response(HttpResponse::Unauthorized().finish().into_body())
                     )),
-                },
+                }},
                 _ => Either::B(ok(
                     req.into_response(HttpResponse::Unauthorized().finish().into_body())
                 )),
