@@ -12,7 +12,7 @@ use crate::utils::validator::{
 
 use actix::Message;
 use actix_web::{dev::Payload, Error, HttpRequest};
-use actix_web::{error, FromRequest};
+use actix_web::{error, http::header::HeaderMap, FromRequest};
 
 use chrono::NaiveDateTime;
 
@@ -53,6 +53,83 @@ pub struct SlimUser {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ReqInfo {
+    pub auth_id: Uuid,
+    pub auth_role: String,
+    pub req_u_id: Uuid,
+    pub req_s_id: Option<Uuid>,
+    pub req_target_type: Option<String>,
+    pub req_target_id: Option<i32>,
+}
+
+fn get_header_value(hm: &HeaderMap, key: String) -> String {
+    let res = hm
+        .get(&key)
+        .expect(&format!("req get {:?} null", key))
+        .to_str()
+        .expect(&format!("req  to_str {:?} null", key));
+
+    res.to_string()
+}
+
+impl FromRequest for ReqInfo {
+    type Config = ();
+    type Error = Error;
+    type Future = Result<ReqInfo, Error>;
+
+    fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
+        //let path_info = Path::<Info>::extract(req)?.into_inner();
+        // vec<str>
+        let key = vec![
+            "auth_id",
+            "auth_role",
+            "req_tg_id",
+            "req_u_id",
+            "req_s_id",
+            "req_tg_type",
+        ];
+        let mut val = Vec::new();
+        let hm = req.headers().to_owned();
+
+        for x in &key {
+            println!("{}", x);
+            val.push(get_header_value(&hm, x.to_string()));
+        }
+        println!("==========================");
+        for x in &val {
+            println!("{}", x);
+        }
+        println!("==========================");
+        let auth_id: &str = req
+            .headers()
+            .get("auth_id")
+            .expect("req auth_id null")
+            .to_str()
+            .unwrap();
+        let auth_role: &str = req
+            .headers()
+            .get("auth_role")
+            .expect("req auth_role null")
+            .to_str()
+            .unwrap();
+        let req_u_id: &str = req
+            .headers()
+            .get("req_u_id")
+            .expect("req req_u_id null")
+            .to_str()
+            .unwrap();
+
+        Ok(ReqInfo {
+            auth_id: Uuid::parse_str(auth_id).unwrap(),
+            auth_role: auth_role.to_string(),
+            req_u_id: Uuid::parse_str(req_u_id).unwrap(),
+            req_s_id: None,
+            req_target_type: None,
+            req_target_id: None,
+        })
+    }
+}
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthUser {
     pub id: Uuid,
     pub role: String,
@@ -72,35 +149,7 @@ impl AuthUser {
         }
     }
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ReqInfo {
-    pub auth_id: Uuid,
-    pub auth_role: String,
-}
-impl FromRequest for ReqInfo {
-    type Config = ();
-    type Error = Error;
-    type Future = Result<ReqInfo, Error>;
 
-    fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
-        let auth_id: &str = req
-            .headers()
-            .get("auth_id")
-            .expect("req auth_id null")
-            .to_str()
-            .unwrap();
-        let auth_role: &str = req
-            .headers()
-            .get("auth_role")
-            .expect("req auth_role null")
-            .to_str()
-            .unwrap();
-        Ok(ReqInfo {
-            id: Uuid::parse_str(login_id).unwrap(),
-            role: login_role.to_string(),
-        })
-    }
-}
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
@@ -242,41 +291,4 @@ pub struct Ceo {
     pub user: Option<User>,
     pub shop: Option<Shop>,
     pub product: Option<Product>,
-}
-
-#[derive(Deserialize, Serialize, Debug, Message, Clone)]
-pub struct Target {
-    pub ceo_id: String,
-    pub shop_id: Option<String>,
-    pub product_id: Option<i32>,
-    pub option_group_id: Option<i32>,
-    pub option_id: Option<i32>,
-    pub order_id: Option<i32>,
-}
-
-impl Target {
-    pub fn u_id(&self) -> Uuid {
-        Uuid::parse_str(&self.ceo_id).unwrap()
-    }
-    pub fn u_id_st(&self) -> String {
-        self.ceo_id.clone()
-    }
-    pub fn s_id(&self) -> Uuid {
-        Uuid::parse_str(&self.shop_id.clone().unwrap_or("".to_string())).unwrap()
-    }
-    pub fn s_id_st(&self) -> String {
-        self.shop_id.clone().unwrap_or("".to_string())
-    }
-    pub fn p_id(&self) -> i32 {
-        self.product_id.clone().unwrap_or(0)
-    }
-    pub fn og_id(&self) -> i32 {
-        self.option_group_id.clone().unwrap_or(0)
-    }
-    pub fn o_id(&self) -> i32 {
-        self.option_id.clone().unwrap_or(0)
-    }
-    pub fn od_id(&self) -> i32 {
-        self.order_id.clone().unwrap_or(0)
-    }
 }

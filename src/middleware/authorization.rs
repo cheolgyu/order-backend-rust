@@ -68,6 +68,7 @@ where
             .unwrap();
         let path: String = req.path().to_string();
         let fields: Vec<&str> = path.split("/").collect();
+        println!("=========================={:?}", fields);
         let req_user_id: &str = match fields.get(4) {
             Some(x) => x,
             None => "",
@@ -99,8 +100,11 @@ where
         match login_role {
             "ceo" => match login_id {
                 login_id if login_id == req_user_id => match chk {
-                    1 => Either::A(self.service.call(req)),
-                    _ => Either::B({
+                    1 => Either::A({
+                        println!("=========================={:?}", req_user_id.clone());
+                        println!("=========================={:?}", req_shop_id.clone());
+                        println!("=========================={:?}", req_target.clone());
+                        println!("=========================={:?}", req_target_id.clone());
                         req.headers_mut().insert(
                             header::HeaderName::from_str("req_u_id").unwrap(),
                             header::HeaderValue::from_str(req_user_id.clone()).unwrap(),
@@ -118,8 +122,11 @@ where
                             header::HeaderValue::from_str(req_target_id.clone()).unwrap(),
                         );
 
-                        ok(req.into_response(HttpResponse::Unauthorized().finish().into_body()))
+                        self.service.call(req)
                     }),
+                    _ => Either::B(ok(
+                        req.into_response(HttpResponse::Unauthorized().finish().into_body())
+                    )),
                 },
                 _ => Either::B(ok(
                     req.into_response(HttpResponse::Unauthorized().finish().into_body())

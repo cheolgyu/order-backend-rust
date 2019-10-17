@@ -1,5 +1,5 @@
-use crate::api::v1::ceo::auth::model::{AuthUser, LoginUser, Target};
-use crate::api::v1::ceo::shop::model::{InpNew, InpUpdate, NewShop, ShopID};
+use crate::api::v1::ceo::auth::model::{AuthUser, Info, ReqInfo};
+use crate::api::v1::ceo::shop::model::{InpNew, InpUpdate, ShopID};
 
 use crate::models::DbExecutor;
 
@@ -12,15 +12,14 @@ use actix_web::{
 };
 use futures::{future::result, Future};
 
-pub fn post(
+pub fn put(
     json: Json<InpNew>,
-    auth_user: LoginUser,
+    auth_user: AuthUser,
     _path_info: Path<String>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
-        //.and_then(move |_| db.send(NewShop::from(json.into_inner(),tg.u_id)).from_err())
         .and_then(move |_| db.send(json.into_inner().new_shop(auth_user)).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -29,10 +28,14 @@ pub fn post(
 }
 
 pub fn get(
-    tg: Path<Target>,
+    reqInfo: ReqInfo,
+    path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    db.send(ShopID { id: tg.s_id() })
+    let info = path_info.into_inner();
+    let sid = info.shop_id.unwrap();
+    let uuid_shop_id = sid;
+    db.send(ShopID { id: uuid_shop_id })
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -40,17 +43,15 @@ pub fn get(
         })
 }
 
-pub fn put(
+pub fn post(
     json: Json<InpUpdate>,
-    login_user: LoginUser,
+    auth_user: AuthUser,
+    _path_info: Path<String>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
-        .and_then(move |_| {
-            db.send(json.into_inner().update_shop(login_user))
-                .from_err()
-        })
+        .and_then(move |_| db.send(json.into_inner().update_shop(auth_user)).from_err())
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),

@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{AuthUser, Info};
+use crate::api::v1::ceo::auth::model::{AuthUser, Info, ReqInfo};
 use crate::api::v1::ceo::product::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
 
 use crate::models::DbExecutor;
@@ -71,6 +71,7 @@ pub fn get(
 }
 
 pub fn get_list(
+    reqInfo: ReqInfo,
     auth_user: AuthUser,
     path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
