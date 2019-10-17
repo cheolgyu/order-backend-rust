@@ -32,8 +32,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                 web::scope("/shops")
                     .service(
                         web::resource("")
-                            .route(web::put().to_async(api::v1::ceo::shop::router::put))
-                            .route(web::post().to_async(api::v1::ceo::shop::router::post)),
+                            .route(web::post().to_async(api::v1::ceo::shop::router::post))
+                            .route(web::put().to_async(api::v1::ceo::shop::router::put)),
                     )
                     .service(
                         web::scope("/{shop_id}")

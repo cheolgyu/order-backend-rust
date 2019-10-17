@@ -72,7 +72,35 @@ impl AuthUser {
         }
     }
 }
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ReqInfo {
+    pub auth_id: Uuid,
+    pub auth_role: String,
+}
+impl FromRequest for ReqInfo {
+    type Config = ();
+    type Error = Error;
+    type Future = Result<ReqInfo, Error>;
 
+    fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
+        let auth_id: &str = req
+            .headers()
+            .get("auth_id")
+            .expect("req auth_id null")
+            .to_str()
+            .unwrap();
+        let auth_role: &str = req
+            .headers()
+            .get("auth_role")
+            .expect("req auth_role null")
+            .to_str()
+            .unwrap();
+        Ok(ReqInfo {
+            id: Uuid::parse_str(login_id).unwrap(),
+            role: login_role.to_string(),
+        })
+    }
+}
 impl FromRequest for AuthUser {
     type Config = ();
     type Error = Error;
@@ -214,4 +242,41 @@ pub struct Ceo {
     pub user: Option<User>,
     pub shop: Option<Shop>,
     pub product: Option<Product>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Message, Clone)]
+pub struct Target {
+    pub ceo_id: String,
+    pub shop_id: Option<String>,
+    pub product_id: Option<i32>,
+    pub option_group_id: Option<i32>,
+    pub option_id: Option<i32>,
+    pub order_id: Option<i32>,
+}
+
+impl Target {
+    pub fn u_id(&self) -> Uuid {
+        Uuid::parse_str(&self.ceo_id).unwrap()
+    }
+    pub fn u_id_st(&self) -> String {
+        self.ceo_id.clone()
+    }
+    pub fn s_id(&self) -> Uuid {
+        Uuid::parse_str(&self.shop_id.clone().unwrap_or("".to_string())).unwrap()
+    }
+    pub fn s_id_st(&self) -> String {
+        self.shop_id.clone().unwrap_or("".to_string())
+    }
+    pub fn p_id(&self) -> i32 {
+        self.product_id.clone().unwrap_or(0)
+    }
+    pub fn og_id(&self) -> i32 {
+        self.option_group_id.clone().unwrap_or(0)
+    }
+    pub fn o_id(&self) -> i32 {
+        self.option_id.clone().unwrap_or(0)
+    }
+    pub fn od_id(&self) -> i32 {
+        self.order_id.clone().unwrap_or(0)
+    }
 }

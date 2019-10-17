@@ -53,11 +53,11 @@ where
                     let u_role = auth_user.role.to_string();
 
                     req.headers_mut().insert(
-                        header::HeaderName::from_str("id").unwrap(),
+                        header::HeaderName::from_str("auth_id").unwrap(),
                         header::HeaderValue::from_str(&u_id).unwrap(),
                     );
                     req.headers_mut().insert(
-                        header::HeaderName::from_str("role").unwrap(),
+                        header::HeaderName::from_str("auth_role").unwrap(),
                         header::HeaderValue::from_str(&u_role).unwrap(),
                     );
 

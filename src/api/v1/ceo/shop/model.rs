@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
+use crate::api::v1::ceo::auth::model::LoginUser;
 
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
@@ -15,13 +15,17 @@ use uuid::Uuid;
 #[rtype(result = "Result<Msg, ServiceError>")]
 #[table_name = "shop"]
 pub struct NewShop {
-    // ... other fields
-    pub id: Uuid,
     pub ceo_id: Uuid,
     pub name: String,
     pub products: Option<serde_json::Value>,
 }
-
+/*
+impl From<InpNew> for NewShop{
+    fn from(inp: InpNew) -> Self {
+        NewShop { ceo_id: u_id.clone(),name: inp.name.clone(), products: None}
+    }
+}
+*/
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InpNew {
     // ... other fields
@@ -42,10 +46,9 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new_shop(&self, auth_user: AuthUser) -> NewShop {
+    pub fn new_shop(&self, login_user: LoginUser) -> NewShop {
         NewShop {
-            id: Uuid::new_v4(),
-            ceo_id: auth_user.id,
+            ceo_id: login_user.id,
             name: self.name.to_string(),
             products: None,
         }
@@ -90,10 +93,10 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn update_shop(&self, auth_user: AuthUser) -> UpdateShop {
+    pub fn update_shop(&self, login_user: LoginUser) -> UpdateShop {
         UpdateShop {
             id: Uuid::new_v4(),
-            ceo_id: auth_user.id,
+            ceo_id: login_user.id,
             name: self.name.to_string(),
             products: None,
         }

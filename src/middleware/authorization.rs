@@ -1,13 +1,13 @@
 use actix_service::{Service, Transform};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use actix_web::{Error, HttpResponse};
+use actix_web::{http::header, Error, HttpResponse};
 use diesel::prelude::*;
 use diesel::sql_query;
 use diesel::sql_types::Text;
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use futures::future::{ok, Either, FutureResult};
 use futures::Poll;
-use regex::Regex;
+use std::str::FromStr;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -49,25 +49,25 @@ where
     fn poll_ready(&mut self) -> Poll<(), Self::Error> {
         self.service.poll_ready()
     }
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
         let pool = req.app_data::<Pool>().expect("err : get  Pool");
         let conn: &PgConnection = &pool.get().unwrap();
 
         let login_id: &str = req
             .headers()
-            .get("id")
-            .expect("req header null")
+            .get("auth_id")
+            .expect("req auth_id null")
             .to_str()
             .unwrap();
         let login_role: &str = req
             .headers()
-            .get("role")
-            .expect("req header null")
+            .get("auth_role")
+            .clone()
+            .expect("req auth_role null")
             .to_str()
             .unwrap();
-        let path: &str = req.path();
-        let re = Regex::new(r"[/]+").unwrap();
-        let fields: Vec<&str> = re.split(path).collect();
+        let path: String = req.path().to_string();
+        let fields: Vec<&str> = path.split("/").collect();
         let req_user_id: &str = match fields.get(4) {
             Some(x) => x,
             None => "",
@@ -100,9 +100,26 @@ where
             "ceo" => match login_id {
                 login_id if login_id == req_user_id => match chk {
                     1 => Either::A(self.service.call(req)),
-                    _ => Either::B(ok(
-                        req.into_response(HttpResponse::Unauthorized().finish().into_body())
-                    )),
+                    _ => Either::B({
+                        req.headers_mut().insert(
+                            header::HeaderName::from_str("req_u_id").unwrap(),
+                            header::HeaderValue::from_str(req_user_id.clone()).unwrap(),
+                        );
+                        req.headers_mut().insert(
+                            header::HeaderName::from_str("req_s_id").unwrap(),
+                            header::HeaderValue::from_str(req_shop_id.clone()).unwrap(),
+                        );
+                        req.headers_mut().insert(
+                            header::HeaderName::from_str("req_tg_type").unwrap(),
+                            header::HeaderValue::from_str(req_target.clone()).unwrap(),
+                        );
+                        req.headers_mut().insert(
+                            header::HeaderName::from_str("req_tg_id").unwrap(),
+                            header::HeaderValue::from_str(req_target_id.clone()).unwrap(),
+                        );
+
+                        ok(req.into_response(HttpResponse::Unauthorized().finish().into_body()))
+                    }),
                 },
                 _ => Either::B(ok(
                     req.into_response(HttpResponse::Unauthorized().finish().into_body())
