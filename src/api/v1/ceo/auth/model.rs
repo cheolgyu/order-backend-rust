@@ -54,12 +54,33 @@ pub struct SlimUser {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReqInfo {
-    pub auth_id: Uuid,
+    pub auth_id: String,
     pub auth_role: String,
-    pub req_u_id: Uuid,
-    pub req_s_id: Option<Uuid>,
-    pub req_target_type: Option<String>,
-    pub req_target_id: Option<i32>,
+    pub req_u_id: String,
+    pub req_s_id: String,
+    pub req_target_type: String,
+    pub req_target_id: String,
+}
+
+impl ReqInfo {
+    pub fn auth_id(&self) -> Uuid {
+        Uuid::parse_str(&self.auth_id).unwrap()
+    }
+    pub fn auth_role(&self) -> String {
+        self.auth_role.clone()
+    }
+    pub fn req_u_id(&self) -> Uuid {
+        Uuid::parse_str(&self.req_u_id).unwrap()
+    }
+    pub fn req_s_id(&self) -> Uuid {
+        Uuid::parse_str(&self.req_s_id).unwrap()
+    }
+    pub fn req_target_type(&self) -> String {
+        self.req_target_type.clone()
+    }
+     pub fn req_target_id(&self) -> i32 {
+         self.req_target_type.clone().parse::<i32>().unwrap()
+    }
 }
 
 fn get_header_value(hm: &HeaderMap, key: String) -> String {
@@ -78,8 +99,7 @@ impl FromRequest for ReqInfo {
     type Future = Result<ReqInfo, Error>;
 
     fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
-        //let path_info = Path::<Info>::extract(req)?.into_inner();
-        // vec<str>
+        let hm = req.headers().to_owned();
         let key = vec![
             "auth_id",
             "auth_role",
@@ -89,43 +109,26 @@ impl FromRequest for ReqInfo {
             "req_tg_type",
         ];
         let mut val = Vec::new();
-        let hm = req.headers().to_owned();
+        
 
         for x in &key {
             println!("{}", x);
             val.push(get_header_value(&hm, x.to_string()));
-        }
+        }   
         println!("==========================");
         for x in &val {
             println!("{}", x);
         }
         println!("==========================");
-        let auth_id: &str = req
-            .headers()
-            .get("auth_id")
-            .expect("req auth_id null")
-            .to_str()
-            .unwrap();
-        let auth_role: &str = req
-            .headers()
-            .get("auth_role")
-            .expect("req auth_role null")
-            .to_str()
-            .unwrap();
-        let req_u_id: &str = req
-            .headers()
-            .get("req_u_id")
-            .expect("req req_u_id null")
-            .to_str()
-            .unwrap();
+        
 
         Ok(ReqInfo {
-            auth_id: Uuid::parse_str(auth_id).unwrap(),
-            auth_role: auth_role.to_string(),
-            req_u_id: Uuid::parse_str(req_u_id).unwrap(),
-            req_s_id: None,
-            req_target_type: None,
-            req_target_id: None,
+            auth_id: val[0].clone(),
+            auth_role: val[1].clone(),
+            req_u_id: val[2].clone(),
+            req_s_id: val[3].clone(),
+            req_target_type: val[4].clone(),
+            req_target_id: val[5].clone(),
         })
     }
 }
