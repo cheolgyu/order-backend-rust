@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{Info, Login, New, QueryUser, SlimUser, User};
+use crate::api::v1::ceo::auth::model::{Login, New, QueryUser, SlimUser, User};
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::models::shop::Shop;
@@ -9,7 +9,6 @@ use diesel;
 
 use diesel::prelude::*;
 use diesel::sql_query;
-use diesel::sql_types::{Integer, Uuid as uu};
 use serde_json::json;
 // register/signup user
 // handle msg from api::auth.signup
@@ -111,41 +110,5 @@ impl Handler<QueryUser> for DbExecutor {
             status: 200,
             data: payload,
         })
-    }
-}
-
-impl Handler<Info> for DbExecutor {
-    type Result = Result<Info, ServiceError>;
-
-    fn handle(&mut self, msg: Info, _: &mut Self::Context) -> Self::Result {
-        let conn = &self.0.get()?;
-        let msg2 = msg.clone();
-        let msg3 = msg.clone();
-        match msg.auth_user {
-            None => Err(ServiceError::Unauthorized),
-            Some(u) => {
-                use diesel::sql_types::Nullable;
-                if u.role == "ceo" {
-                    let q = sql_query("select * from ceo_info($1,$2,$3) ");
-
-                    let res = q
-                        .bind::<uu, _>(u.id)
-                        .bind::<Nullable<uu>, _>(&msg.shop_id)
-                        .bind::<Nullable<Integer>, _>(&msg.product_id)
-                        .execute(conn)
-                        .expect("ceo_info 조회 오류");
-                    let res2 = res;
-                    if res2 == 1 {
-                        Ok(msg2)
-                    } else {
-                        Err(ServiceError::Unauthorized)
-                    }
-                } else if u.role == "super" {
-                    Ok(msg3)
-                } else {
-                    Err(ServiceError::BadRequest("누구냐".into()))
-                }
-            }
-        }
     }
 }

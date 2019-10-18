@@ -1,5 +1,5 @@
 // #![deny(warnings)]
-#![allow(warnings)]
+//#![allow(warnings)]
 
 #[macro_use]
 extern crate diesel;

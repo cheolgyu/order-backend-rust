@@ -1,5 +1,3 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
-
 use crate::errors::ServiceError;
 use crate::models::msg::Msg;
 use crate::schema::shop;
@@ -42,10 +40,10 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new_shop(&self, auth_user: AuthUser) -> NewShop {
+    pub fn new_shop(&self, u_id: Uuid) -> NewShop {
         NewShop {
             id: Uuid::new_v4(),
-            ceo_id: auth_user.id,
+            ceo_id: u_id,
             name: self.name.to_string(),
             products: None,
         }
@@ -90,10 +88,10 @@ impl Validate for InpUpdate {
 }
 
 impl InpUpdate {
-    pub fn update_shop(&self, auth_user: AuthUser) -> UpdateShop {
+    pub fn update_shop(&self, u_id: Uuid) -> UpdateShop {
         UpdateShop {
             id: Uuid::new_v4(),
-            ceo_id: auth_user.id,
+            ceo_id: u_id,
             name: self.name.to_string(),
             products: None,
         }

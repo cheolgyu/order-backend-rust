@@ -1,5 +1,3 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
-
 use crate::models::device as m;
 
 use crate::utils::validator::{re_test_name, Validate};
@@ -45,9 +43,9 @@ impl Validate for InpNew {
 }
 
 impl InpNew {
-    pub fn new(&self, auth_user: AuthUser) -> m::New {
+    pub fn new(&self, u_id: Uuid) -> m::New {
         m::New {
-            user_id: auth_user.id,
+            user_id: u_id,
             name: self.name.clone(),
             sw_token: self.sw_token.clone(),
         }

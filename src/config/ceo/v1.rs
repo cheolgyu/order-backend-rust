@@ -4,8 +4,7 @@ pub fn public(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::resource("")
             .route(web::put().to_async(api::v1::ceo::auth::router::signup))
-            .route(web::post().to_async(api::v1::ceo::auth::router::signin))
-            .route(web::get().to_async(api::v1::ceo::auth::router::getme)),
+            .route(web::post().to_async(api::v1::ceo::auth::router::signin)),
     );
 }
 pub fn config(cfg: &mut web::ServiceConfig) {

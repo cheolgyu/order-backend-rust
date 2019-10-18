@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::AuthUser;
+use crate::api::v1::ceo::auth::model::ReqInfo;
 use crate::api::v1::ceo::device::model as params;
 use crate::errors::ServiceError;
 use crate::fcm::model::*;
@@ -19,7 +19,7 @@ use futures::{
 
 pub fn check(
     json: Json<params::InpCheck>,
-    auth_user: AuthUser,
+    req_info: ReqInfo,
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = HttpResponse, Error = ServiceError> {
@@ -28,11 +28,11 @@ pub fn check(
     let sw_token3 = sw_token.clone();
     let vec = vec![sw_token2.to_string()];
     let db4 = db.clone();
-    let user_id = auth_user.id;
+    let user_id = req_info.auth_id();
 
     db.send(m::GetWithShop {
         sw_token: sw_token,
-        user_id: auth_user.id,
+        user_id: req_info.auth_id(),
     })
     .map_err(|e| ServiceError::BadRequest(e.to_string()))
     .and_then(move |res_opt| match res_opt {
@@ -99,12 +99,15 @@ pub fn check(
 
 pub fn put(
     json: Json<params::InpNew>,
-    auth_user: AuthUser,
+    req_info: ReqInfo,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
-        .and_then(move |_| db.send(json.into_inner().new(auth_user)).from_err())
+        .and_then(move |_| {
+            db.send(json.into_inner().new(req_info.auth_id()))
+                .from_err()
+        })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
             Err(e) => Ok(e.error_response()),

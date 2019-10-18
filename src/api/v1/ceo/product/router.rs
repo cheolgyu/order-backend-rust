@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{AuthUser, Info, ReqInfo};
+use crate::api::v1::ceo::auth::model::ReqInfo;
 use crate::api::v1::ceo::product::model::{Get, GetList, InpDelete, InpNew, InpUpdate};
 
 use crate::models::DbExecutor;
@@ -6,23 +6,21 @@ use crate::models::DbExecutor;
 use crate::utils::validator::Validate;
 use actix::Addr;
 use actix_web::{
-    web::{Data, Json, Path},
+    web::{Data, Json},
     Error, HttpResponse, ResponseError,
 };
 use futures::{future::result, Future};
 
 pub fn put(
+    req_info: ReqInfo,
     json: Json<InpNew>,
-    _auth_user: AuthUser,
-    info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
     result(json.validate())
         .from_err()
         .and_then(move |_| {
             let j = json.into_inner();
-            db.send(j.new(info.into_inner().shop_id.unwrap()))
-                .from_err()
+            db.send(j.new(req_info.req_s_id())).from_err()
         })
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -32,18 +30,12 @@ pub fn put(
 
 pub fn post(
     json: Json<InpUpdate>,
-    auth_user: AuthUser,
-    path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let mut info = path_info.into_inner();
-    info.auth_user = Some(auth_user);
     let j = json.into_inner();
-    let db2 = db.clone();
 
     result(j.validate())
-        .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new()).from_err())
+        .and_then(move |_| db.send(j.new()).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -52,17 +44,9 @@ pub fn post(
 }
 pub fn get(
     json: Json<Get>,
-    auth_user: AuthUser,
-    path_info: Path<Info>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let mut info = path_info.into_inner();
-    info.auth_user = Some(auth_user);
-    let j = json.into_inner();
-    let db2 = db.clone();
-
-    db.send(info)
-        .and_then(move |_| db2.send(j).from_err())
+    db.send(json.into_inner())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
@@ -71,44 +55,29 @@ pub fn get(
 }
 
 pub fn get_list(
-    reqInfo: ReqInfo,
-    auth_user: AuthUser,
-    path_info: Path<Info>,
+    req_info: ReqInfo,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let mut info = path_info.into_inner();
-    let info2 = info.clone();
-    let sid = info2.shop_id.unwrap();
-    let uusid = sid;
-    info.auth_user = Some(auth_user);
-    let db2 = db.clone();
-
-    db.send(info)
-        .from_err()
-        .and_then(move |_| db2.send(GetList { shop_id: uusid }))
-        .from_err()
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
-        })
+    db.send(GetList {
+        shop_id: req_info.req_s_id(),
+    })
+    .from_err()
+    .and_then(|res| match res {
+        Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+        Err(e) => Ok(e.error_response()),
+    })
 }
 
 pub fn delete(
-    auth_user: AuthUser,
-    path_info: Path<Info>,
-    pinfo: Path<(String, String, i32)>,
+    req_info: ReqInfo,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    let j = InpDelete { id: pinfo.2 };
-    let mut info = path_info.into_inner();
-    info.auth_user = Some(auth_user);
-    let info2 = info.clone();
-    let db2 = db.clone();
-    let shop_id = info2.shop_id.unwrap();
+    let inp = InpDelete {
+        id: req_info.req_target_id(),
+    };
 
-    result(j.validate())
-        .and_then(move |_| db.send(info).from_err())
-        .and_then(move |_| db2.send(j.new(shop_id)).from_err())
+    result(inp.validate())
+        .and_then(move |_| db.send(inp.new(req_info.req_s_id())).from_err())
         .from_err()
         .and_then(|res| match res {
             Ok(msg) => Ok(HttpResponse::Ok().json(msg)),

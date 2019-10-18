@@ -1,4 +1,4 @@
-use crate::api::v1::ceo::auth::model::{AuthUser, SlimUser};
+use crate::api::v1::ceo::auth::model::SlimUser;
 use crate::errors::ServiceError;
 use chrono::{Duration, Local};
 use jsonwebtoken::{decode, encode, Header, Validation};
@@ -26,6 +26,12 @@ impl Claims {
             exp: (Local::now() + Duration::hours(24)).timestamp(),
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AuthUser {
+    pub id: Uuid,
+    pub role: String,
 }
 
 impl From<Claims> for AuthUser {

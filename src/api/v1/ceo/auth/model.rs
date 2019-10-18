@@ -4,7 +4,6 @@ use crate::models::product::Product;
 use crate::models::shop::Shop;
 
 use crate::schema::user;
-use crate::utils::jwt::decode_token;
 use crate::utils::validator::{
     re_test_email, re_test_id, re_test_password, re_test_password_contain_num,
     re_test_password_contain_special, Validate,
@@ -70,6 +69,10 @@ impl ReqInfo {
         self.auth_role.clone()
     }
     pub fn req_u_id(&self) -> Uuid {
+        if &self.req_u_id == "" {
+            println!("================req_u_id==========:{:?}", &self.req_u_id);
+        }
+
         Uuid::parse_str(&self.req_u_id).unwrap()
     }
     pub fn req_s_id(&self) -> Uuid {
@@ -78,8 +81,8 @@ impl ReqInfo {
     pub fn req_target_type(&self) -> String {
         self.req_target_type.clone()
     }
-     pub fn req_target_id(&self) -> i32 {
-         self.req_target_type.clone().parse::<i32>().unwrap()
+    pub fn req_target_id(&self) -> i32 {
+        self.req_target_type.clone().parse::<i32>().unwrap()
     }
 }
 
@@ -103,24 +106,16 @@ impl FromRequest for ReqInfo {
         let key = vec![
             "auth_id",
             "auth_role",
-            "req_tg_id",
             "req_u_id",
             "req_s_id",
             "req_tg_type",
+            "req_tg_id",
         ];
         let mut val = Vec::new();
-        
 
         for x in &key {
-            println!("{}", x);
             val.push(get_header_value(&hm, x.to_string()));
-        }   
-        println!("==========================");
-        for x in &val {
-            println!("{}", x);
         }
-        println!("==========================");
-        
 
         Ok(ReqInfo {
             auth_id: val[0].clone(),
@@ -132,43 +127,7 @@ impl FromRequest for ReqInfo {
         })
     }
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct AuthUser {
-    pub id: Uuid,
-    pub role: String,
-}
-impl AuthUser {
-    pub fn check_user(&self, path_id: String) -> Result<(), Error> {
-        if &self.role == "ceo" {
-            if path_id == self.id.to_string() {
-                Ok(())
-            } else {
-                Err(error::ErrorUnauthorized(
-                    "본인 계정만 이용 가능합니다.",
-                ))
-            }
-        } else {
-            Err(error::ErrorUnauthorized("ceo가 아닌계정이군"))
-        }
-    }
-}
 
-impl FromRequest for AuthUser {
-    type Config = ();
-    type Error = Error;
-    type Future = Result<AuthUser, Error>;
-
-    fn from_request(req: &HttpRequest, _pl: &mut Payload) -> Self::Future {
-        //let path_info = Path::<Info>::extract(req)?.into_inner();
-        if let Some(auth_token) = req.headers().get("authorization") {
-            if let Ok(auth) = auth_token.to_str() {
-                let token: AuthUser = decode_token(auth)?;
-                return Ok(token);
-            }
-        }
-        Err(ServiceError::Unauthorized.into())
-    }
-}
 impl From<User> for SlimUser {
     fn from(user: User) -> Self {
         SlimUser {
@@ -278,15 +237,6 @@ impl Validate for InpNew {
 #[rtype(result = "Result<Msg, ServiceError>")]
 pub struct QueryUser {
     pub id: Uuid,
-}
-
-#[derive(Deserialize, Serialize, Debug, Message, Clone)]
-#[rtype(result = "Result<Info, ServiceError>")]
-pub struct Info {
-    pub ceo_id: Uuid,
-    pub shop_id: Option<Uuid>,
-    pub product_id: Option<i32>,
-    pub auth_user: Option<AuthUser>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
