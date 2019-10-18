@@ -27,7 +27,6 @@ pub fn signin(
     json: Json<Login>,
     db: Data<Addr<DbExecutor>>,
 ) -> impl Future<Item = HttpResponse, Error = Error> {
-    println!("================11==========");
     result(json.validate())
         .from_err()
         .and_then(move |_| db.send(json.into_inner()).from_err())
