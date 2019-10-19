@@ -1,6 +1,7 @@
 use crate::errors::ServiceError;
 use crate::models::order::Order;
 use crate::models::order_detail::OrderDetail;
+use crate::models::shop::Shop;
 use crate::schema::order_detail;
 use crate::utils::validator::Validate;
 use actix::Message;
@@ -22,6 +23,7 @@ pub struct New {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NewRes {
+    pub shop: Shop,
     pub order: Order,
     pub order_detail: OrderDetail,
 }

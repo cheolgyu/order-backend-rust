@@ -100,7 +100,6 @@ where
             "ceo" => match login_id {
                 login_id if login_id == req_user_id => match chk {
                     1 => Either::A({
-                        
                         req.headers_mut().insert(
                             header::HeaderName::from_str("req_u_id").unwrap(),
                             header::HeaderValue::from_str(req_user_id.clone()).unwrap(),

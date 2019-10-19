@@ -16,6 +16,19 @@ use futures::{
 use crate::fcm::model::*;
 use crate::fcm::router::to_user;
 
+fn od_state_to_string(od_state: String) -> String {
+    let res = if od_state == "0".to_string() {
+        "거절".to_string()
+    } else if od_state == "1".to_string() {
+        "승인".to_string()
+    } else if od_state == "2".to_string() {
+        "수령".to_string()
+    }else{
+        "??".to_string()
+    };
+    res
+}
+
 pub fn put(
     json: Json<model::InpNew>,
     req_info: ReqInfo,
@@ -31,15 +44,21 @@ pub fn put(
         .and_then(move |_| db.send(j.new(req_info.req_s_id())).from_err())
         .and_then(move |res_opt| match res_opt {
             Ok(res) => {
-                let inp_state = res.order_detail.state;
+                let shop_name = res.shop.name.to_string();
+                let inp_state = od_state_to_string(res.order_detail.state.to_string());
                 let new_order_detail_id = res.order_detail.id;
-                let state_str = format!("상태코드: {}", inp_state).to_string();
-                let title = "[손님]주문에 대한 응답.".to_string();
+                let state_str = format!("[{}] 주문 {}!", shop_name, inp_state).to_string();
+                //let title = "[손님]주문에 대한 응답.".to_string();
+                let title = state_str.clone();
                 let body = state_str;
                 let to = res.order.sw_token;
 
                 let send_data = ReqToUser {
-                    comm: ReqToComm::new_order_detail(order_id, new_order_detail_id, inp_state),
+                    comm: ReqToComm::new_order_detail(
+                        order_id,
+                        new_order_detail_id,
+                        res.order_detail.state,
+                    ),
                     params: ReqToUserData::new(to, title, body),
                 };
                 Either::A(to_user(send_data, db2, store))
