@@ -1,0 +1,4 @@
+watch+codecommit+codebuild+ecr+codedeploy+codepipeline+ecs( ec2+elb) = watch,elb ,build,ecr 비용큼
+backend: local에서 container 빌드후 ecr push 후 watch 이벤트로 ec2 deploy? -> ec2한개 (docker api,ws ) 
+frontend: local에서 스크립트(build 후 s3 update,aws frontend run) run 
+
