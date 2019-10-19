@@ -28,11 +28,15 @@ pub fn put(
         .and_then(
             move |res| {
                 let url = format!("{}{}/test", websocket_url, j1.shop_id);
+                println!("url=>{:?}",url );
                 SSLClinet::build()
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
-                    .map_err(|e| ServiceError::BadRequest(e.to_string()))
+                    .map_err(|e| {
+                        println!("[err] send ws =>{:?}",e );
+                        ServiceError::BadRequest(e.to_string())
+                    })
                     .and_then(|_response| {
                         // <- server http response
                         res
