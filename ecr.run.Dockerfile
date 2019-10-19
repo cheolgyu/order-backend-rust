@@ -28,3 +28,10 @@ COPY --from=cargo-build /usr/src/myapp/.env.production .env
 RUN chown myapp:myapp order-backend-rust
 
 CMD ["./order-backend-rust"]
+
+# $(aws ecr get-login --no-include-email --region ap-northeast-2)
+# docker tag prod-order-backend-rust:latest 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust:latest
+# docker push 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust:latest
+
+# $(aws ecr get-login --no-include-email --region ap-northeast-2)
+# docker pull 410450153592.dkr.ecr.ap-northeast-2.amazonaws.com/order-backend-rust:latest
