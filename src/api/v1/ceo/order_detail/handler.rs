@@ -3,7 +3,7 @@ use crate::errors::ServiceError;
 use crate::models::order::Order;
 use crate::models::order_detail::OrderDetail as Object;
 use crate::models::DbExecutor;
-use crate::schema::order::dsl::{id, order as tb_order};
+use crate::schema::order::dsl::{id, order as tb_order, state as order_state};
 use crate::schema::order_detail::dsl::{order_detail as tb, order_id, state};
 use actix::Handler;
 
@@ -20,77 +20,77 @@ impl Handler<model::New> for DbExecutor {
             .order(state.desc())
             .load::<Object>(conn)?
             .pop();
-        match check {
-            Some(check_ok) => {
-                match check_ok.state {
-                    0 => Err(ServiceError::BadRequest(
-                        "거절하신 주문 입니다.".to_string(),
+        let od = tb_order
+            .find(&msg.order_id)
+            .load::<Order>(conn)?
+            .pop();
+        match od {
+            Some(od_ok) => {
+                match od_ok.state {
+                    // 거절된 주문
+                    -1 => Err(ServiceError::BadRequest(
+                        "이미 거절하신 주문 입니다.".to_string(),
                     )),
+                    // 대기중인 주문
                     1 => match msg.state {
-                        2 => {
-                            let item_order_detail: Object = diesel::insert_into(tb)
-                                .values(&msg)
-                                .get_result::<Object>(conn)?;
-                            let item_order = tb_order
-                                .filter(&id.eq(&msg.order_id))
-                                .get_result::<Order>(conn)?;
-                            Ok(model::NewRes {
-                                order: item_order,
-                                order_detail: item_order_detail,
-                            })
-                        }
-                        1 => Err(ServiceError::BadRequest(
-                            "이미 승인된 주문입니다.".to_string(),
-                        )),
+                        //주문상세 취소
                         0 => Err(ServiceError::BadRequest(
                             "승인된 주문은 거절할수 없습니다.".to_string(),
                         )),
+                        //주문상세 승인
+                        1 => {
+                            let update_order = diesel::update(tb_order.find(&msg.order_id))
+                                .set(order_state.eq(2))
+                                .get_result::<Order>(conn)?;
+                           
+                            let item_order_detail: Object = diesel::insert_into(tb)
+                                .values(&msg)
+                                .get_result::<Object>(conn)?;
+                            
+                            Ok(model::NewRes {
+                                order: update_order,
+                                order_detail: item_order_detail,
+                            })
+                        }
+                        //주문상세 수령
+                        2 => Err(ServiceError::BadRequest(
+                            "먼저 수락을 해주세요.".to_string(),
+                        )),
+                        
                         _ => Err(ServiceError::BadRequest("누 구 냐?".to_string())),
                     },
+                    // 수락한 주문
                     2 => {
                         match msg.state {
+                            0 => Err(ServiceError::BadRequest(
+                                "이미 수락한 주문입니다. 거절할수 없습니다.".to_string(),
+                            )),
+                            1 => Err(ServiceError::BadRequest(
+                                "이미 수락한 주문입니다.".to_string(),
+                            )),
                             2 => {
-                                //추가 수령하세요 요청.
+                                let update_order = diesel::update(tb_order.find(&msg.order_id))
+                                    .set(order_state.eq(3))
+                                    .get_result::<Order>(conn)?;
+                            
                                 let item_order_detail: Object = diesel::insert_into(tb)
                                     .values(&msg)
                                     .get_result::<Object>(conn)?;
-                                let item_order = tb_order
-                                    .filter(&id.eq(&msg.order_id))
-                                    .get_result::<Order>(conn)?;
+
                                 Ok(model::NewRes {
-                                    order: item_order,
+                                    order: update_order,
                                     order_detail: item_order_detail,
                                 })
                             }
-                            1 => Err(ServiceError::BadRequest(
-                                "주문을 승인할수 없습니다.".to_string(),
-                            )),
-                            0 => Err(ServiceError::BadRequest(
-                                "주문을 거절할수 없습니다.".to_string(),
-                            )),
                             _ => Err(ServiceError::BadRequest("누구 냐?".to_string())),
                         }
                     }
                     _ => Err(ServiceError::BadRequest("누구냐?".to_string())),
                 }
             }
-            None => match msg.state {
-                2 => Err(ServiceError::BadRequest(
-                    "승인이나 거절부터하십시요.".to_string(),
+            None => Err(ServiceError::BadRequest(
+                    "잘못된 주문번호 입니다.".to_string(),
                 )),
-                _ => {
-                    let item_order_detail: Object = diesel::insert_into(tb)
-                        .values(&msg)
-                        .get_result::<Object>(conn)?;
-                    let item_order = tb_order
-                        .filter(&id.eq(&msg.order_id))
-                        .get_result::<Order>(conn)?;
-                    Ok(model::NewRes {
-                        order: item_order,
-                        order_detail: item_order_detail,
-                    })
-                }
-            },
         }
     }
 }
