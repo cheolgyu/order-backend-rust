@@ -2,8 +2,9 @@ use crate::api::v1::ceo::order::model;
 use crate::errors::ServiceError;
 use crate::models::order::Order as Object;
 use crate::models::DbExecutor;
-use crate::schema::order::dsl::{deleted_at, id, order as tb, shop_id, state};
+use crate::schema::order::dsl::{deleted_at, id, order as tb, shop_id, state, created_at};
 use actix::Handler;
+use chrono::{DateTime, Duration, Utc};
 
 use crate::models::msg::Msg;
 use diesel;
@@ -75,11 +76,16 @@ impl Handler<model::NowList> for DbExecutor {
     fn handle(&mut self, _msg: model::NowList, _: &mut Self::Context) -> Self::Result {
         let conn = &self.0.get()?;
 
+        let now2 = Utc::now().naive_utc().checked_add_signed(Duration::hours(-2)).unwrap();
+
         let item = tb
             .filter(&shop_id.eq(&_msg.shop_id))
             .filter(&deleted_at.is_null())
+            .filter(&created_at.gt(now2))
             .filter(&state.eq(1))
             .or_filter(&state.eq(2))
+            .or_filter(&state.eq(3))
+            .or_filter(&state.eq(3))
             .get_results::<Object>(conn)?;
 
         let payload = serde_json::json!({
