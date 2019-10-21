@@ -4,7 +4,7 @@ use crate::models::order::Order as Object;
 use crate::models::DbExecutor;
 use crate::schema::order::dsl::{deleted_at, id, order as tb, shop_id, state, created_at};
 use actix::Handler;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{Duration, Utc};
 
 use crate::models::msg::Msg;
 use diesel;

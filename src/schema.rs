@@ -44,6 +44,7 @@ table! {
 table! {
     order (id) {
         id -> Int4,
+        shop_order_id -> Int4,
         shop_id -> Uuid,
         state -> Int4,
         price -> Float8,

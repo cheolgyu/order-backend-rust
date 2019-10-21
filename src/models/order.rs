@@ -19,6 +19,7 @@ use uuid::Uuid;
 #[table_name = "order"]
 pub struct Order {
     pub id: i32,
+    pub shop_order_id: i32,
     pub shop_id: Uuid,
     pub state: i32,
     pub price: f64,
@@ -46,4 +47,12 @@ pub struct New {
 pub struct NewRes {
     pub order: Order,
     pub shop: Shop,
+}
+
+use diesel::sql_types::Integer;
+
+#[derive(Clone, Debug, Serialize, Deserialize, QueryableByName)]
+pub struct OrderRes {
+    #[sql_type = "Integer"]
+    pub insert_order: i32,
 }

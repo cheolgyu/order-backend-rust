@@ -12,7 +12,8 @@ DROP TABLE IF EXISTS  "option";
 DROP TABLE IF EXISTS  "option_group";
 DROP TABLE IF EXISTS  "user_device";
 
-
+DROP FUNCTION IF EXISTS "get_shop_order_id"(uuid);
+DROP FUNCTION IF EXISTS "insert_order"(uuid, integer, double precision, integer, jsonb, character varying);
 
 
 DROP FUNCTION IF EXISTS ceo_info(u_id UUID,

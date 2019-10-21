@@ -28,7 +28,6 @@ pub fn put(
         .and_then(
             move |res| {
                 let url = format!("{}{}/test", websocket_url, j1.shop_id);
-                println!("url=>{:?}",url );
                 SSLClinet::build()
                     .get(url) // <- Create request builder
                     .header("User-Agent", "Actix-web")
