@@ -164,18 +164,18 @@ impl Validate for Login {
                     if check_pwd_num {
                         Ok(())
                     } else {
-                        Err(error::ErrorBadRequest("check_pwd_num"))
+                        Err(error::ErrorBadRequest("비밀번호에 숫자가 없습니다."))
                     }
                 } else {
                     // 특수문자 미포함
-                    Err(error::ErrorBadRequest("check_pwd_special"))
+                    Err(error::ErrorBadRequest("비밀번호에 특수문자( !@#$%^& )가 없습니다.  "))
                 }
             } else {
                 //자리수,첫번째 소,대문자
-                Err(error::ErrorBadRequest("check_pwd"))
+                Err(error::ErrorBadRequest("8자리이상 영문자로 시작해야됩니다. "))
             }
         } else {
-            Err(error::ErrorBadRequest("Invalid id"))
+            Err(error::ErrorBadRequest("아이디는 영문자 5자리 이상이여야 합니다."))
         }
     }
 }
@@ -219,12 +219,12 @@ impl Validate for InpNew {
         match login.validate() {
             Ok(_) => {
                 if password_comfirm.trim() != login.password {
-                    Err(error::ErrorBadRequest("pwd "))
+                    Err(error::ErrorBadRequest(" 비밀번호가 일치하지 않습니다. "))
                 } else {
                     if check_email {
                         Ok(())
                     } else {
-                        Err(error::ErrorBadRequest("email "))
+                        Err(error::ErrorBadRequest(" 이메일 형식이 아닙니다. "))
                     }
                 }
             }
