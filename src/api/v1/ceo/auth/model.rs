@@ -164,18 +164,18 @@ impl Validate for Login {
                     if check_pwd_num {
                         Ok(())
                     } else {
-                        Err(error::ErrorBadRequest("비밀번호에 숫자가 없습니다."))
+                        Err(error::ErrorBadRequest("resp.signup.check.pwd.number"))
                     }
                 } else {
                     // 특수문자 미포함
-                    Err(error::ErrorBadRequest("비밀번호에 특수문자( !@#$%^& )가 없습니다.  "))
+                    Err(error::ErrorBadRequest("resp.signup.check.pwd.special"))
                 }
             } else {
                 //자리수,첫번째 소,대문자
-                Err(error::ErrorBadRequest("8자리이상 영문자로 시작해야됩니다. "))
+                Err(error::ErrorBadRequest("resp.signup.check.pwd.len_en"))
             }
         } else {
-            Err(error::ErrorBadRequest("아이디는 영문자 5자리 이상이여야 합니다."))
+            Err(error::ErrorBadRequest("resp.signup.check.id.len_en"))
         }
     }
 }
