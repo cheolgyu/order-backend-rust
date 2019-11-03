@@ -66,9 +66,9 @@ pub fn put(
                 };
             let send_user =to_user(u_d, db.clone(), store2.clone());
 
-            send_ws.and_then( |_|{ 
-                send_shop.and_then(|_|{
-                    send_user.and_then(|res| match res {
+            send_user.and_then( |_|{ 
+                send_ws.and_then(|_|{
+                    send_shop.and_then(|res| match res {
                         Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
                         Err(e) => Ok(e.error_response()),
                     })
