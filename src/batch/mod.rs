@@ -145,7 +145,21 @@ fn index3(
                     };
                     let websocket_url2 = websocket_url.clone();
 
-                    let result = to_user(send_data, db_addr, store3).and_then(move |res| {
+                    let o_id = res.id.clone();
+                    let user_to = res.sw_token.clone();
+                    let user_title = format!("주문이 취소됬습니다.");
+                    let user_body = format!("가게가 미응답하여 자동 취소됬습니다.");
+                    let u_d=
+                            ReqToUser {
+                            comm: ReqToComm::new_order(o_id.clone()),
+                            params: ReqToUserData::new(user_to.clone(), user_title.clone(), user_body.clone()),
+                        };
+                    let send_user =to_user(u_d, db_addr.clone(), store2.clone());
+ 
+                    let result = to_user(send_data, db_addr, store3).and_then(|_|{
+                        send_user
+                    })
+                    .and_then(move |res| {
                         let url = format!("{}{}/test", websocket_url2, shop_id);
                         SSLClinet::build()
                             .get(url)
