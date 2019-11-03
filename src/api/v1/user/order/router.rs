@@ -16,34 +16,33 @@ pub fn put(
     json: Json<model::InpNew>,
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
-) -> impl Future<Item = HttpResponse, Error = Error> {
+) -> impl Future<Item = HttpResponse, Error = ServiceError> {
+    let user_token = json.sw_token.clone();
     let j1 = json.clone();
     let db2 = db.clone();
     let store2 = store.clone();
 
     let websocket_url = store.websocket.send.clone();
 
-    result(json.validate())
-        .and_then(move |_| db2.send(json.into_inner().new()).from_err())
-        .and_then(
-            move |res| {
-                let url = format!("{}{}/test", websocket_url, j1.shop_id);
-                SSLClinet::build()
+    let validation = futures::future::result(json.validate()).map_err(|e| {
+                            println!("[err] send ws =>{:?}",e );
+                            ServiceError::BadRequest(e.to_string())
+                        });
+
+    let db_insert = db2.send(json.into_inner().new()).from_err();
+
+    validation.and_then(|_| {
+        db_insert.and_then(move |res_opt|{
+            let res = res_opt.unwrap();
+            let url = format!("{}{}/test", websocket_url, j1.shop_id);
+            let send_ws = SSLClinet::build()
                     .get(url) // <- Create request builder
-                    .header("User-Agent", "Actix-web")
                     .send() // <- Send http request
                     .map_err(|e| {
                         println!("[err] send ws =>{:?}",e );
                         ServiceError::BadRequest(e.to_string())
-                    })
-                    .and_then(|_response| {
-                        // <- server http response
-                        res
-                    })
-                    .from_err()
-            }, //web push
-        )
-        .and_then(move |res| {
+                    });
+                    
             let to = res.shop.notification_key.clone();
             let title = format!("[{}] 주문!", res.shop.name);
             let body = format!("주문도착.!");
@@ -53,11 +52,30 @@ pub fn put(
                 params: ReqToUserData::new(to, title, body),
             };
 
-            to_user(send_data, db, store2).from_err()
+            let send_shop = to_user(send_data, db.clone(), store2.clone()).from_err();
+
+            let o_id = res.order.id.clone();
+
+            let user_to = user_token.clone();
+            let user_title = format!("주문을 하셨습니다.");
+            let user_body = format!("주문을 하셨습니다.");
+            let u_d=
+                    ReqToUser {
+                    comm: ReqToComm::new_order(o_id.clone()),
+                    params: ReqToUserData::new(user_to.clone(), user_title.clone(), user_body.clone()),
+                };
+            let send_user =to_user(u_d, db.clone(), store2.clone());
+
+            send_ws.and_then( |_|{ 
+                send_shop.and_then(|_|{
+                    send_user.and_then(|res| match res {
+                        Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
+                        Err(e) => Ok(e.error_response()),
+                    })
+                })
+            })
         })
-        //.and_then(|res| Ok(HttpResponse::Ok()))
-        .and_then(|res| match res {
-            Ok(msg) => Ok(HttpResponse::Ok().json(msg)),
-            Err(e) => Ok(e.error_response()),
-        })
+    })
+
 }
+
