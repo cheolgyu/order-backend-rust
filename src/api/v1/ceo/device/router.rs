@@ -40,6 +40,12 @@ pub fn check(
             "create" | "add" => {
                 let shop_id = res.shop_id.clone();
                 let db3 = db.clone();
+                let create_add_notification_key = if  res.notification_key == "" {
+                    shop_id.to_string()
+                }else{
+                    res.notification_key.clone()
+                };
+
                 Either::A(
                     router::to_fcm(
                         ReqToFcm {
@@ -47,7 +53,7 @@ pub fn check(
                             params: ReqToFcmData {
                                 operation: res.operation.clone(),
                                 notification_key_name: shop_id.to_string(),
-                                notification_key: res.notification_key.clone(),
+                                notification_key: create_add_notification_key,
                                 registration_ids: vec,
                             },
                         },

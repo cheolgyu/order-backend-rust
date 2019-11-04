@@ -17,6 +17,7 @@ pub fn to_fcm(
     db: Data<Addr<DbExecutor>>,
     store: Data<AppStateWithTxt>,
 ) -> impl Future<Item = Result<Msg, ServiceError>, Error = ServiceError> {
+
     let resp = SSLClinet::build()
         .post(store.webpush.reg.clone())
         .header(CONTENT_TYPE, "application/json")
@@ -38,6 +39,7 @@ pub fn to_fcm(
                     Ok::<_, ServiceError>(acc)
                 })
                 .map(move |body| {
+                
                     let body: RespFcm =
                         serde_json::from_slice(&body).expect("to_fcm body 변환 오류");
                     let resp_json = serde_json::json!({
