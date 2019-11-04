@@ -508,10 +508,18 @@ CREATE VIEW view_shop_info AS
 
 CREATE VIEW view_shop_info_user AS
         SELECT s_id, 
-        Json_build_object('s_id', s_id, 's_nm', s_nm, 'p', Json_agg( 
-        Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
-                                        , p_price , 'total_p_price',total_p_price, 'total_og_price',total_og_price
-        , 'og_price', og_price, 'og', og))) AS s_info 
+        Json_build_object('s_id', s_id, 's_nm', s_nm, 'p'
+        , 
+        Json_agg( 
+                case when p_id is null then '{}'
+                else 
+                        Json_build_object('p_id', p_id, 'p_nm', p_nm, 'price', price, 'p_price' 
+                                , p_price , 'total_p_price',total_p_price, 'total_og_price',total_og_price
+                                , 'og_price', og_price, 'og', og
+                        )
+                end
+        )
+        ) AS s_info 
         FROM   (SELECT s_id, 
                 s_nm, 
                 p_id, 
