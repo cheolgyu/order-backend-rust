@@ -56,11 +56,13 @@ impl Handler<GetWithShop> for DbExecutor {
             a.notification_key, 
             a.device_cnt, 
             CASE 
-                WHEN a.notification_key != '' 
-                    AND a.device_cnt > 0 THEN 'pass' 
-                WHEN a.notification_key != '' THEN 'add' 
-                WHEN a.notification_key = '' THEN 'create' 
-                ELSE '' 
+                WHEN length(a.notification_key) > 0 THEN 
+                   case 
+                        when  a.device_cnt > 0 then 'pass'
+                        else 'add'
+                    end
+                WHEN length(a.notification_key) = 0 THEN 'create' 
+                ELSE ''  
             END AS operation 
         FROM   (SELECT s.id               AS shop_id, 
                     s.notification_key AS notification_key, 

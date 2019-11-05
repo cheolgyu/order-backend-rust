@@ -86,7 +86,6 @@ where
         };
 
         let q = sql_query("select * from exist_resource($1,$2,$3,$4,$5) ");
-
         let chk = q
             .bind::<Text, _>(&login_role.to_string())
             .bind::<Text, _>(&req_user_id.to_string())

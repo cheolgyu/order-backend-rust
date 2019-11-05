@@ -167,7 +167,7 @@ IF s_id != ''  THEN
                         SELECT count(u.id)::int
                         FROM   "user" u 
                         left join shop s on s.id::text = s_id
-                        left join  "product" p on s.id::text= p.shop_id and p.id = tg_id
+                        left join  "product" p on s.id = p.shop_id and p.id::text = tg_id
                         WHERE  u.id::text = u_id ;
 
                 ELSEIF tg  = 'option_group' THEN
@@ -176,7 +176,7 @@ IF s_id != ''  THEN
                         SELECT Count(u.id)::int
                         FROM   "user" u 
                         left join shop s on s.id::text = s_id
-                        left join "option_group" og  ON s.id::text = og.shop_id AND og.id = tg_id
+                        left join "option_group" og  ON s.id = og.shop_id AND og.id::text = tg_id
                         WHERE  u.id::text = u_id ;
 
                 ELSEIF tg  = 'option' THEN
@@ -185,7 +185,7 @@ IF s_id != ''  THEN
                         SELECT count(u.id)::int
                         FROM   "user" u 
                         left join shop s on s.id::text = s_id
-                        left join  "option" o on s.id::text= o.shop_id and o.id = tg_id
+                        left join  "option" o on s.id = o.shop_id and o.id::text = tg_id
                         WHERE  u.id::text = u_id ;
 
                 ELSEIF tg  = 'order' THEN
@@ -194,7 +194,7 @@ IF s_id != ''  THEN
                         SELECT count(u.id)::int
                         FROM   "user" u 
                         left join shop s on s.id::text = s_id
-                        left join  "order" o on s.id::text= o.shop_id and o.id = tg_id
+                        left join  "order" o on s.id::text= o.shop_id and o.id::text = tg_id
                         WHERE  u.id::text = u_id ;
 
                 ELSEIF tg  = 'order_detail' THEN
@@ -203,7 +203,7 @@ IF s_id != ''  THEN
                         SELECT count(u.id)::int
                         FROM   "user" u 
                         left join shop s on s.id::text = s_id
-                        left join  "order_detail" od on s.id::text= od.shop_id and od.id = tg_id
+                        left join  "order_detail" od on s.id = od.shop_id and od.id::text = tg_id
                         WHERE  u.id::text = u_id ;
 
                 ELSE
